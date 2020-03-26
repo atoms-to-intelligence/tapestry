@@ -22,16 +22,17 @@ def create_infection_array_with_num_cases(n, d):
 
 # Implements the COMP algorithm
 class COMP:
-  def __init__(self, n, t, s, arr):
+  def __init__(self, n, t, s, d, arr):
     self.n = n
     self.t = t
     self.s = s
+    self.d = d
     self.arr = arr
     self.initialize_M()
 
   # Test matrix
   def initialize_M(self):
-    self.M = np.random.binomial(1, s, size=(self.n, self.t))
+    self.M = np.random.binomial(1, self.s, size=(self.n, self.t))
     #for person in range(n):
     #  while sum(self.M[person]) == 0:
     #    self.M[person] = np.random.binomial(1, self.s, size=(self.t))
@@ -71,44 +72,47 @@ class COMP:
     assert (total - errors) == sum(self.arr)
     return errors, total
 
-# Test width. Max number of parallel tests available.
-t = 400
+if __name__ == '__main__':
+  # Test width. Max number of parallel tests available.
+  t = 384
 
-# Infection probability
-p = 0.001
+  # Infection probability
+  p = 0.001
 
-# Test failure probability
-q = 0.
+  # Test failure probability
+  q = 0.
 
-# Group size
-n = 10000
+  # Group size
+  n = 1000
 
-# Number of infections
-d = 20
+  # Number of infections
+  d = 20
 
-# Test assignment probability. Probability that a person gets assigned to a
-# test
-s = 1. / 20
+  # Test assignment probability. Probability that a person gets assigned to a
+  # test
+  s = 1. / 10
 
-count = 0
-extra_tests = 0
-false_positives = 0
-num_expts = 1000
-for i in range(num_expts):
-  sys.stdout.write('\r')
-  sys.stdout.write('Iteration %d / %d' % (i+1, num_expts))
-  #arr = create_infection_array_with_num_cases(n, d)
-  arr = create_infection_array_with_prob(n, p)
-  comp = COMP(n, t, s, arr)
-  results = comp.get_results()
-  errors, total = comp.decode(results)
-  #print('errors / total =', errors, '/', total)
-  if errors > 0:
-    count += 1
-    extra_tests += total
-    false_positives += errors
-print('Number of cases in which error was made:', count, '/', num_expts)
-print('Number of extra tests done:', extra_tests)
-print('Number of false positives:', false_positives)
+  count = 0
+  extra_tests = 0
+  false_positives = 0
+  num_expts = 10
+  for i in range(num_expts):
+    #sys.stdout.write('\r')
+    sys.stdout.write('\n')
+    sys.stdout.write('Iteration %d / %d' % (i+1, num_expts))
+    arr = create_infection_array_with_num_cases(n, d)
+    #arr = create_infection_array_with_prob(n, p)
+    comp = COMP(n, t, s, arr)
+    results = comp.get_results()
+    errors, total = comp.decode(results)
+    sys.stdout.write(', errors / total = ' + str(errors) + ' / ' + str(total))
+    if errors > 0:
+      count += 1
+      extra_tests += total
+      false_positives += errors
+  sys.stdout.write('\n')
+  print('Number of cases in which error was made:', count, '/', num_expts)
+  print('Number of extra tests done:', extra_tests)
+  print('Number of false positives:', false_positives)
 
 

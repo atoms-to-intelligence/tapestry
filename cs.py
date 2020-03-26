@@ -15,7 +15,7 @@ class CS(COMP):
   # and qpcr
   def get_quantitative_results(self):
     conc = np.expand_dims(self.conc, axis=-1)
-    print(self.M.shape, conc.shape)
+    #print(self.M.shape, conc.shape)
     return np.matmul(self.M.T, conc).flatten()
 
   # Initial concentration of RNA in each sample
@@ -33,7 +33,7 @@ class CS(COMP):
     lasso.fit(self.M.T, results)
     #print('best lambda = ', lasso.alpha_)
     answer = lasso.coef_
-    score = math.sqrt(np.linalg.norm(answer - self.conc) / 20)
+    score = math.sqrt(np.linalg.norm(answer - self.conc) / self.d)
     infected = (answer != 0.).astype(np.int32)
 
     # Compute stats
@@ -45,18 +45,20 @@ class CS(COMP):
     fp = sum(fpos)
     fn = sum(fneg)
     
-    print('score: %.2f' % score, 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
-    return tp, fp, fn
+    return score, tp, fp, fn
+
+  def decode_qp(self, results):
+    pass
 
 def main():
   # Test width. Max number of parallel tests available.
-  t = 96
+  t = 96*4
 
   # Group size
   n = 1000
 
   # Number of infections. Sparsity
-  d = 8
+  d = 40
 
   # Test assignment probability. Probability that a person gets assigned to a
   # test
@@ -65,10 +67,27 @@ def main():
   # lambda for regularization
   l = 0.1
 
-  arr = create_infection_array_with_num_cases(n, d)
-  cs = CS(n, t, s, d, l, arr)
-  results = cs.get_quantitative_results()
-  print(results.shape)
-  tp, fp, fn = cs.decode_lasso(results)
+  no_error = 0
+  num_expts = 1000
+  total_tp = 0
+  total_fp = 0
+  total_fn = 0
+  for i in range(num_expts):
+    arr = create_infection_array_with_num_cases(n, d)
+    cs = CS(n, t, s, d, l, arr)
+    results = cs.get_quantitative_results()
+    score, tp, fp, fn = cs.decode_lasso(results)
+    print('iter = %d score: %.2f' % (i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
+    if fp == 0 and fn == 0:
+      no_error += 1
+    total_tp += tp
+    total_fp += fp
+    total_fn += fn
+
+  precision = total_tp / float(total_tp + total_fp)
+  recall = total_tp / float(total_tp + total_fn)
+  print('No errors in %d / %d cases' % (no_error, num_expts))
+  print('precision = %.3f, recall = %.3f' % (precision, recall))
+  print('total fp = ', total_fp, 'total fn = ', total_fn)
 
 main()
