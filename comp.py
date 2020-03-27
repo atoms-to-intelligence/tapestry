@@ -86,11 +86,11 @@ if __name__ == '__main__':
   n = 1000
 
   # Number of infections
-  d = 20
+  d = 10
 
   # Test assignment probability. Probability that a person gets assigned to a
   # test
-  s = 1. / 10
+  s = 1. / d
 
   count = 0
   extra_tests = 0
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     sys.stdout.write('Iteration %d / %d' % (i+1, num_expts))
     arr = create_infection_array_with_num_cases(n, d)
     #arr = create_infection_array_with_prob(n, p)
-    comp = COMP(n, t, s, arr)
+    comp = COMP(n, t, s, d, arr)
     results = comp.get_results()
     errors, total = comp.decode(results)
     sys.stdout.write(', errors / total = ' + str(errors) + ' / ' + str(total))
