@@ -111,7 +111,7 @@ class CSExpts:
 
     return stats
 
-def main():
+def main(n, d, t):
   # Test width. Max number of parallel tests available.
   #t = 12
 
@@ -147,59 +147,61 @@ def dump_to_file(filename, stats):
   df.to_csv(filename, index=False, columns=cols)
   
 
-tt = {
-      32: range(5, 17),
-      40: range(12, 30),
-      50: range(12, 40),
-      60: range(12, 45),
-      64: range(12, 45),
-      70: range(14, 45),
-      80: range(14, 50),
-      90: range(14, 50),
-      96: range(14, 60),
-      100: range(14, 60),
-      128: range(14, 64)
-    }
+def do_expts_and_dump_stats():
+  tt = {
+        32: range(5, 17),
+        40: range(12, 30),
+        50: range(12, 40),
+        60: range(12, 45),
+        64: range(12, 45),
+        70: range(14, 45),
+        80: range(14, 50),
+        90: range(14, 50),
+        96: range(14, 60),
+        100: range(14, 60),
+        128: range(14, 64)
+      }
 
-#dd = [1, 2]
-dd = [2]
-#nn = [32, 64, 96, 128]
-#nn= [60, 70, 80, 90]
-nn = [32]
+  #dd = [1, 2]
+  dd = [2]
+  #nn = [32, 64, 96, 128]
+  #nn= [60, 70, 80, 90]
+  nn = [32]
 
-stats = {}
-algorithm = 'lasso'
+  stats = {}
+  algorithm = 'lasso'
 
-stats_dir = 'stats/%s' % algorithm
-if not os.path.exists(stats_dir):
-  os.makedirs(stats_dir)
+  stats_dir = 'stats/%s' % algorithm
+  if not os.path.exists(stats_dir):
+    os.makedirs(stats_dir)
 
-for n in nn:
-  stats[n] = {}
-  for d in dd:
-    stats[n][d] = {}
-    t_stats = []
-    for t in tt[n]:
-      print('n = %d, d = %d, t = %d' % (n, d, t))
-      item = main()
-      item['t'] = t
-      #print(item)
-      stats[n][d][t] = item
-      t_stats.append(item)
-      #printable = json.dumps(item, indent=4)
-      #print(printable)
-      #stats['(n=%d, d=%d, t=%d)' % (n, d, t)] = item
+  for n in nn:
+    stats[n] = {}
+    for d in dd:
+      stats[n][d] = {}
+      t_stats = []
+      for t in tt[n]:
+        print('n = %d, d = %d, t = %d' % (n, d, t))
+        item = main(n, d, t)
+        item['t'] = t
+        #print(item)
+        stats[n][d][t] = item
+        t_stats.append(item)
+        #printable = json.dumps(item, indent=4)
+        #print(printable)
+        #stats['(n=%d, d=%d, t=%d)' % (n, d, t)] = item
 
-    # Now print these stats to file
-    filename = './stats/%s/stats_n_%d_d_%d.csv' % (algorithm, n, d)
-    dump_to_file(filename, t_stats)
+      # Now print these stats to file
+      filename = './stats/%s/stats_n_%d_d_%d.csv' % (algorithm, n, d)
+      dump_to_file(filename, t_stats)
 
-print('Viable scenarios with no errors:')
-for n in nn:
-  for d in dd:
-    for t in tt[n]:
-      item = stats[n][d][t]
-      if item['precision'] > 0.999 and item['recall'] > 0.9999:
-        print(n, d, item )
-#printable = json.dumps(stats, indent=4)
-#print(printable)
+  print('Viable scenarios with no errors:')
+  for n in nn:
+    for d in dd:
+      for t in tt[n]:
+        item = stats[n][d][t]
+        if item['precision'] > 0.999 and item['recall'] > 0.9999:
+          print(n, d, item )
+  #printable = json.dumps(stats, indent=4)
+  #print(printable)
+
