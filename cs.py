@@ -6,6 +6,7 @@ from comp import create_infection_array_with_num_cases, COMP
 
 import json
 import pandas as pd
+import os
 
 # Use compressed sensing to solve 0.5*||Mx - y||^2 + l * ||x||_1
 class CS(COMP):
@@ -127,7 +128,7 @@ def main():
   # lambda for regularization
   l = 0.01
 
-  num_expts = 1
+  num_expts = 1000
   quant_csexpts = CSExpts('Quant    ')
   ber_csexpts = CSExpts('Bernoulli')
   for i in range(num_expts):
@@ -148,22 +149,38 @@ def dump_to_file(filename, stats):
 
 tt = {
       32: range(5, 17),
-      64: range(6, 32),
-      96: range(7, 48),
-      128: range(7, 64)
+      40: range(12, 30),
+      50: range(12, 40),
+      60: range(12, 45),
+      64: range(12, 45),
+      70: range(14, 45),
+      80: range(14, 50),
+      90: range(14, 50),
+      96: range(14, 60),
+      100: range(14, 60),
+      128: range(14, 64)
     }
 
-dd = [1, 2]
-nn = [32, 64, 96, 128]
+#dd = [1, 2]
+dd = [2]
+#nn = [32, 64, 96, 128]
+#nn= [60, 70, 80, 90]
+nn = [32]
 
 stats = {}
+algorithm = 'lasso'
+
+stats_dir = 'stats/%s' % algorithm
+if not os.path.exists(stats_dir):
+  os.makedirs(stats_dir)
+
 for n in nn:
   stats[n] = {}
   for d in dd:
     stats[n][d] = {}
     t_stats = []
     for t in tt[n]:
-      #print('n = %d, d = %d, t = %d' % (n, d, t))
+      print('n = %d, d = %d, t = %d' % (n, d, t))
       item = main()
       item['t'] = t
       #print(item)
@@ -174,7 +191,7 @@ for n in nn:
       #stats['(n=%d, d=%d, t=%d)' % (n, d, t)] = item
 
     # Now print these stats to file
-    filename = './stats/stats_n_%d_d_%d.csv' % (n, d)
+    filename = './stats/%s/stats_n_%d_d_%d.csv' % (algorithm, n, d)
     dump_to_file(filename, t_stats)
 
 print('Viable scenarios with no errors:')
@@ -184,6 +201,5 @@ for n in nn:
       item = stats[n][d][t]
       if item['precision'] > 0.999 and item['recall'] > 0.9999:
         print(n, d, item )
-        #print(item)
 #printable = json.dumps(stats, indent=4)
 #print(printable)
