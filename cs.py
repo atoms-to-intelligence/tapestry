@@ -5,6 +5,7 @@ from sklearn.linear_model import Lasso, LassoLars, LassoCV, LassoLarsCV
 from comp import create_infection_array_with_num_cases, COMP
 
 import json
+import pandas as pd
 
 # Use compressed sensing to solve 0.5*||Mx - y||^2 + l * ||x||_1
 class CS(COMP):
@@ -138,6 +139,12 @@ def main():
   return quant_csexpts.return_stats(num_expts)
   #ber_csexpts.print_stats(num_expts)
 
+def dump_to_file(filename, stats):
+  df = pd.DataFrame.from_dict(stats)
+  cols = ['t', 'precision', 'recall', 'total_tp', 'total_fp', 'total_fn',
+      'no_error', 'expts']
+  df.to_csv(filename, index=False, columns=cols)
+  
 
 tt = {
       32: range(5, 17),
@@ -151,14 +158,32 @@ nn = [32, 64, 96, 128]
 
 stats = {}
 for n in nn:
+  stats[n] = {}
   for d in dd:
+    stats[n][d] = {}
+    t_stats = []
     for t in tt[n]:
       #print('n = %d, d = %d, t = %d' % (n, d, t))
       item = main()
-      print(item)
+      item['t'] = t
+      #print(item)
+      stats[n][d][t] = item
+      t_stats.append(item)
       #printable = json.dumps(item, indent=4)
       #print(printable)
-      stats['(n=%d, d=%d, t=%d)' % (n, d, t)] = item
+      #stats['(n=%d, d=%d, t=%d)' % (n, d, t)] = item
 
-printable = json.dumps(stats, indent=4)
-print(printable)
+    # Now print these stats to file
+    filename = './stats/stats_n_%d_d_%d.csv' % (n, d)
+    dump_to_file(filename, t_stats)
+
+print('Viable scenarios with no errors:')
+for n in nn:
+  for d in dd:
+    for t in tt[n]:
+      item = stats[n][d][t]
+      if item['precision'] > 0.999 and item['recall'] > 0.9999:
+        print(n, d, item )
+        #print(item)
+#printable = json.dumps(stats, indent=4)
+#print(printable)
