@@ -25,7 +25,7 @@ class CS(COMP):
   # Initial concentration of RNA in each sample
   def create_conc_matrix_from_infection_array(self, arr):
     #conc = 1 + np.random.poisson(lam=5, size=self.n)
-    conc = np.random.randint(low=1, high=11, size=self.n)
+    conc = np.random.randint(low=1, high=32769, size=self.n) / 32768.
     #conc = np.ones(self.n)
     self.conc = conc * arr # Only keep those entries which are 
 
@@ -73,6 +73,8 @@ class CSExpts:
   def __init__(self, name):
     self.name = name
     self.no_error = 0
+    self.no_fp = 0
+    self.no_fn = 0
     self.total_tp = 0
     self.total_fp = 0
     self.total_fn = 0
@@ -84,6 +86,10 @@ class CSExpts:
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
+    if fp == 0:
+      self.no_fp += 1
+    if fn == 0:
+      self.no_fn += 1
     self.total_tp += tp
     self.total_fp += fp
     self.total_fn += fn
@@ -93,6 +99,8 @@ class CSExpts:
     recall = self.total_tp / float(self.total_tp + self.total_fn)
     #print('******', self.name, 'Statistics', '******')
     print('No errors in %d / %d cases' % (self.no_error, num_expts))
+    print('No fp in %d / %d cases' % (self.no_fp, num_expts))
+    print('No fn in %d / %d cases' % (self.no_fn, num_expts))
     print('precision = %.6f, recall = %.6f' % (precision, recall))
     print('total tp =', self.total_tp, 'total fp = ', self.total_fp, 'total fn = ', self.total_fn)
 
@@ -111,7 +119,7 @@ class CSExpts:
 
     return stats
 
-def main(n, d, t):
+def main(n, d, t, num_expts=1000):
   # Test width. Max number of parallel tests available.
   #t = 12
 
@@ -128,7 +136,6 @@ def main(n, d, t):
   # lambda for regularization
   l = 0.01
 
-  num_expts = 1000
   quant_csexpts = CSExpts('Quant    ')
   ber_csexpts = CSExpts('Bernoulli')
   for i in range(num_expts):
@@ -136,9 +143,11 @@ def main(n, d, t):
     cs = CS(n, t, s, d, l, arr)
     quant_csexpts.do_single_expt(i, cs, cs.conc)
     #ber_csexpts.do_single_expt(i, cs, arr)
-  #quant_csexpts.print_stats(num_expts)
+  quant_csexpts.print_stats(num_expts)
   return quant_csexpts.return_stats(num_expts)
   #ber_csexpts.print_stats(num_expts)
+
+main(40, 2, 16)
 
 def dump_to_file(filename, stats):
   df = pd.DataFrame.from_dict(stats)
@@ -184,12 +193,8 @@ def do_expts_and_dump_stats():
         print('n = %d, d = %d, t = %d' % (n, d, t))
         item = main(n, d, t)
         item['t'] = t
-        #print(item)
         stats[n][d][t] = item
         t_stats.append(item)
-        #printable = json.dumps(item, indent=4)
-        #print(printable)
-        #stats['(n=%d, d=%d, t=%d)' % (n, d, t)] = item
 
       # Now print these stats to file
       filename = './stats/%s/stats_n_%d_d_%d.csv' % (algorithm, n, d)
@@ -202,6 +207,4 @@ def do_expts_and_dump_stats():
         item = stats[n][d][t]
         if item['precision'] > 0.999 and item['recall'] > 0.9999:
           print(n, d, item )
-  #printable = json.dumps(stats, indent=4)
-  #print(printable)
 
