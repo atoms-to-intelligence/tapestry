@@ -15,38 +15,6 @@ def soft_thresh(x, l):
     return np.sign(x) * np.maximum(np.abs(x) - l, 0.)
 
 
-def ista(A, b, l, maxit):
-    x = np.zeros(A.shape[1])
-    pobj = []
-    L = linalg.norm(A) ** 2  # Lipschitz constant
-    time0 = time.time()
-    for _ in range(maxit):
-        x = soft_thresh(x + np.dot(A.T, b - A.dot(x)) / L, l / L)
-        this_pobj = 0.5 * linalg.norm(A.dot(x) - b) ** 2 + l * linalg.norm(x, 1)
-        pobj.append((time.time() - time0, this_pobj))
-
-    times, pobj = map(np.array, zip(*pobj))
-    return x, pobj, times
-
-def fista(A, b, l, maxit):
-    x = np.zeros(A.shape[1])
-    pobj = []
-    t = 1
-    z = x.copy()
-    L = linalg.norm(A) ** 2
-    time0 = time.time()
-    for _ in range(maxit):
-        xold = x.copy()
-        z = z + A.T.dot(b - A.dot(z)) / L
-        x = soft_thresh(z, l / L)
-        t0 = t
-        t = (1. + sqrt(1. + 4. * t ** 2)) / 2.
-        z = x + ((t0 - 1.) / t) * (x - xold)
-        this_pobj = 0.5 * linalg.norm(A.dot(x) - b) ** 2 + l * linalg.norm(x, 1)
-        pobj.append((time.time() - time0, this_pobj))
-
-    times, pobj = map(np.array, zip(*pobj))
-    return x, pobj, times
 
 
 # Use compressed sensing to solve 0.5*||Mx - y||^2 + l * ||x||_1
@@ -78,22 +46,26 @@ class CS(COMP):
     #lasso = Lasso(alpha=self.l, max_iter=1000)
     #lasso = LassoCV(n_alphas=100)
     #lasso.fit(self.M.T, results)
+    
     temp_mat=(self.M.T).astype(float)
-    #print(type(results))
-    
-    
+    #temp_mat=np.matrix(temp_mat)
+    #print(np.shape(temp_mat))
     
     #print('best lambda = ', lasso.alpha_)
     #answer = lasso.coef_
     #Using ISTA
-    temp_mat=pylops.MatrixMult(temp_mat)
-    answer = pylops.optimization.sparsity.FISTA(temp_mat, results, 1000, eps=self.l, tol=0, returninfo=True)[0]
+    #temp_mat=pylops.MatrixMult(temp_mat)
+    #answer = pylops.optimization.sparsity.ISTA(temp_mat, results, 10000, eps=self.l, tol=0, returninfo=True)[0]
     #Using OMP
-    #answer = pylops.optimization.sparsity.OMP(temp_mat, results, 20000, sigma=2e-5)[0]
+    #print(type(temp_mat))
+    temp_mat=pylops.MatrixMult(temp_mat)
+    #print(temp_mat)
+    answer = pylops.optimization.sparsity.OMP(temp_mat, results, 10000, sigma=0.4)[0]
     #Using spgl1 lasso
     #[answer,r,g,info] = spg.spg_lasso(temp_mat,results,1e-4);
     #Using ISTA function
     #answer = fista(temp_mat, results, self.l, 10000)[0]
+    #print(answer)
 
     score = math.sqrt(np.linalg.norm(answer - self.conc) / self.d)
     infected = (answer != 0.).astype(np.int32)
@@ -123,6 +95,8 @@ class CSExpts:
   # Find results using qPCR
   def do_single_expt(self, i, cs, x):
     results = cs.get_quantitative_results(x)
+    #Adding gaussian noise here
+    results=results+np.random.normal(0,0.01*np.median(results),results.size)
     score, tp, fp, fn = cs.decode_lasso(results)
     print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
@@ -141,31 +115,31 @@ class CSExpts:
 
 def main():
   # Test width. Max number of parallel tests available.
-  t = 384
+  t = 16
 
   # Group size
-  n = 1000
+  n = 40
 
   # Number of infections. Sparsity
-  d = 20
+  d = 2
 
   # Test assignment probability. Probability that a person gets assigned to a
   # test
   s = 500. / 1000
 
   # lambda for regularization
-  l = 500
+  l = 400
 
-  num_expts = 50
+  num_expts = 500
   quant_csexpts = CSExpts('Quant    ')
   ber_csexpts = CSExpts('Bernoulli')
   for i in range(num_expts):
     arr = create_infection_array_with_num_cases(n, d)
     cs = CS(n, t, s, d, l, arr)
     quant_csexpts.do_single_expt(i, cs, cs.conc)
-    ber_csexpts.do_single_expt(i, cs, arr)
+    #ber_csexpts.do_single_expt(i, cs, arr)
   quant_csexpts.print_stats(num_expts)
-  ber_csexpts.print_stats(num_expts)
+  #ber_csexpts.print_stats(num_expts)
 
 
 main()
