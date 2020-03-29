@@ -72,9 +72,22 @@ class COMP:
     assert (total - errors) == sum(self.arr)
     return errors, total
 
+  def decode_comp_new(self, infections):
+    infected = np.all(self.M * infections == self.M, axis=1).astype(np.int32)
+    # Compute stats
+    tpos = (infected * self.arr)
+    fneg = (1 - infected) * self.arr
+    fpos = infected * (1 - self.arr)
+    
+    tp = sum(tpos)
+    fp = sum(fpos)
+    fn = sum(fneg)
+    
+    return 0., tp, fp, fn
+
 if __name__ == '__main__':
   # Test width. Max number of parallel tests available.
-  t = 384
+  t = 96
 
   # Infection probability
   p = 0.001
@@ -86,7 +99,7 @@ if __name__ == '__main__':
   n = 1000
 
   # Number of infections
-  d = 10
+  d = 40
 
   # Test assignment probability. Probability that a person gets assigned to a
   # test
