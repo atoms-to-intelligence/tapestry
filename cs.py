@@ -72,9 +72,9 @@ class CS(COMP):
 class CSExpts:
   def __init__(self, name):
     self.name = name
-    self.no_error = 0
-    self.no_fp = 0
-    self.no_fn = 0
+    self.no_error = 0 # number of expts with no error
+    self.no_fp = 0 # number of expts with no false +ve
+    self.no_fn = 0 # number of expts with no false -ve
     self.total_tp = 0
     self.total_fp = 0
     self.total_fn = 0
@@ -97,12 +97,15 @@ class CSExpts:
   def print_stats(self, num_expts):
     precision = self.total_tp / float(self.total_tp + self.total_fp)
     recall = self.total_tp / float(self.total_tp + self.total_fn)
+    avg_fp = self.total_fp / (num_expts - self.no_fp)
+    avg_fn = self.total_fn / (num_expts - self.no_fn)
     #print('******', self.name, 'Statistics', '******')
     print('No errors in %d / %d cases' % (self.no_error, num_expts))
     print('No fp in %d / %d cases' % (self.no_fp, num_expts))
     print('No fn in %d / %d cases' % (self.no_fn, num_expts))
     print('precision = %.6f, recall = %.6f' % (precision, recall))
     print('total tp =', self.total_tp, 'total fp = ', self.total_fp, 'total fn = ', self.total_fn)
+    print('avg fp = %.3f' % avg_fp, 'avg fn = %.3f' % avg_fn)
 
   def return_stats(self, num_expts):
     precision = self.total_tp / float(self.total_tp + self.total_fp)
@@ -134,7 +137,7 @@ def main(n, d, t, num_expts=1000):
   s = 500. / 1000
 
   # lambda for regularization
-  l = 0.01
+  l = 0.002
 
   quant_csexpts = CSExpts('Quant    ')
   ber_csexpts = CSExpts('Bernoulli')
