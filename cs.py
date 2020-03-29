@@ -1,6 +1,7 @@
 import numpy as np
 import math
 from sklearn.linear_model import Lasso, LassoLars, LassoCV, LassoLarsCV
+import pylops
 
 from comp import create_infection_array_with_num_cases, COMP
 
@@ -29,7 +30,7 @@ optimized_M = np.array([[0., 1., 0., 1., 0., 1., 1., 0., 0., 0., 1., 1., 0., 1.,
           1.,         1., 0., 1., 0., 1., 0., 0., 0., 1., 1., 0., 0., 0., 0.,
           0., 1., 1., 1.,         0., 0., 0., 0.]])
 
-print(optimized_M.shape)
+#print(optimized_M.shape)
 #sys.exit(1)
 
 # Use compressed sensing to solve 0.5*||Mx - y||^2 + l * ||x||_1
@@ -38,6 +39,7 @@ class CS(COMP):
     super().__init__(n, t, s, d, arr)
     if M is not None:
       self.M = M.T
+      #print(self.M.shape)
     self.create_conc_matrix_from_infection_array(arr)
     self.l = l
 
@@ -56,20 +58,30 @@ class CS(COMP):
   # Initial concentration of RNA in each sample
   def create_conc_matrix_from_infection_array(self, arr):
     #conc = 1 + np.random.poisson(lam=5, size=self.n)
-    conc = np.random.randint(low=1, high=32769, size=self.n) / 32768.
+    #conc = np.random.randint(low=1, high=32769, size=self.n) / 32768.
+    conc = np.random.randint(low=1, high=11, size=self.n) / 10.
     #conc = np.ones(self.n)
     self.conc = conc * arr # Only keep those entries which are 
 
   # Solve the CS problem using Lasso
   #
   # y is results
-  def decode_lasso(self, results):
-    #lasso = LassoLars(alpha=self.l)
-    lasso = Lasso(alpha=self.l, max_iter=10000)
-    #lasso = LassoCV(n_alphas=100)
-    lasso.fit(self.M.T, results)
-    #print('best lambda = ', lasso.alpha_)
-    answer = lasso.coef_
+  def decode_lasso(self, results, algo='lasso'):
+    if algo == 'lasso':
+      #lasso = LassoLars(alpha=self.l)
+      lasso = Lasso(alpha=self.l, max_iter=10000)
+      #lasso = LassoCV(n_alphas=100)
+      lasso.fit(self.M.T, results)
+      #print('best lambda = ', lasso.alpha_)
+      answer = lasso.coef_
+    elif algo == 'OMP':
+      temp_mat=(self.M.T).astype(float)
+      temp_mat=pylops.MatrixMult(temp_mat)
+      answer = pylops.optimization.sparsity.OMP(temp_mat, results, 10000,
+          sigma=1e-10)[0]
+    else:
+      raise ValueError('No such algorithm %s' % algo)
+
     score = math.sqrt(np.linalg.norm(answer - self.conc) / self.d)
     infected = (answer != 0.).astype(np.int32)
 
@@ -163,12 +175,12 @@ class CSExpts:
     self.total_fn = 0
 
   # Find results using qPCR
-  def do_single_expt(self, i, cs, x, cross_validation=True):
-    y, sigval = cs.get_quantitative_results(cs.conc, add_noise=True)
+  def do_single_expt(self, i, cs, x, cross_validation=True, add_noise=True):
+    y, sigval = cs.get_quantitative_results(cs.conc, add_noise=add_noise)
     # Now find lambda
     if cross_validation:
       l = cs.do_cross_validation_get_lambda(y, sigval)
-    score, tp, fp, fn = cs.decode_lasso(y)
+    score, tp, fp, fn = cs.decode_lasso(y, algo='OMP')
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -208,7 +220,9 @@ class CSExpts:
 
     return stats
 
-def main(n, d, t, num_expts=1000):
+def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
+    cross_validation=False,
+    add_noise=False):
   # Test width. Max number of parallel tests available.
   #t = 12
 
@@ -223,21 +237,27 @@ def main(n, d, t, num_expts=1000):
   s = 500. / 1000
 
   # lambda for regularization
-  l = 0.01
+  l = 1000.
 
-  cv_expts = CSExpts('CV')
+  if xs is not None:
+    assert num_expts == len(xs)
+
+  #cv_expts = CSExpts('CV')
   nocv_expts = CSExpts('No CV')
   for i in range(num_expts):
-    arr = create_infection_array_with_num_cases(n, d)
-    #cs = CS(n, t, s, d, l, arr, optimized_M)
-    cs = CS(n, t, s, d, l, arr, None)
-    nocv_expts.do_single_expt(i, cs, cs.conc, cross_validation=False)
-    cv_expts.do_single_expt(i, cs, cs.conc, cross_validation=True)
+    if xs is not None:
+      x = xs[i]
+    else:
+      x = create_infection_array_with_num_cases(n, d)
+    #cs = CS(n, t, s, d, l, x, optimized_M)
+    cs = CS(n, t, s, d, l, x, M)
+    nocv_expts.do_single_expt(i, cs, cs.conc,
+        cross_validation=cross_validation,
+        add_noise=add_noise)
+    #cv_expts.do_single_expt(i, cs, cs.conc, cross_validation=True)
   nocv_expts.print_stats(num_expts)
-  cv_expts.print_stats(num_expts)
-  return cv_expts.return_stats(num_expts)
-
-main(40, 2, 16, num_expts=100)
+  #cv_expts.print_stats(num_expts)
+  return nocv_expts.return_stats(num_expts)
 
 def dump_to_file(filename, stats):
   df = pd.DataFrame.from_dict(stats)
@@ -297,4 +317,6 @@ def do_expts_and_dump_stats():
         item = stats[n][d][t]
         if item['precision'] > 0.999 and item['recall'] > 0.9999:
           print(n, d, item )
+
+do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M)
 
