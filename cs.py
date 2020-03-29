@@ -8,6 +8,7 @@ import json
 import pandas as pd
 import os
 
+np.set_printoptions(precision=2)
 # Use compressed sensing to solve 0.5*||Mx - y||^2 + l * ||x||_1
 class CS(COMP):
   def __init__(self, n, t, s, d, l, arr):
@@ -53,12 +54,41 @@ class CS(COMP):
     
     return score, tp, fp, fn
 
+  def decode_lasso_for_cv(self, l, train_M, train_y, test_M, test_y):
+    lasso = Lasso(alpha=l, max_iter=10000)
+    lasso.fit(train_M, train_y)
+    pred_y = lasso.predict(test_M)
+    score = np.linalg.norm(test_y - pred_y)
+    return score
+
   def do_cross_validation_get_lambda(self, results):
-    a = np.linspace(0.0001, 0.0010, num=10)
-    print(a)
-    ll = np.concatenate(a, 10*a, 100*a, 1000*a, 10000*a)
+    sigval = 0.1*np.median(np.absolute(results));
+    lambda_min = max([sigval*math.sqrt(math.log(self.n))-5,0.001]);
+    lambda_max = sigval*math.sqrt(math.log(self.n))+5;
+    n_step = math.ceil((lambda_max - lambda_min) / 0.01)
+    ll = np.linspace(lambda_min, lambda_max, n_step)
+    #a = np.linspace(0.0001, 0.0010, num=10)
+    #print(a)
+    #ll = np.concatenate([a, 10*a, 100*a, 1000*a, 10000*a, 100000*a])
+    #print(ll)
+    r = math.ceil(0.9*self.t)
+    train_M = self.M[:r]
+    test_M = self.M[r:]
+    y = self.get_quantitative_results(self.conc)
+    train_y = y[:r]
+    test_y = y[r:]
+    scores = []
     for l in ll:
-      pass
+      score = self.decode_lasso_for_cv(l, train_M, train_y, test_M, test_y)
+      scores.append(score)
+    scores = np.array(scores)
+    idx = np.argmin(scores)
+    #print(idx)
+    self.l = ll[idx]
+    #print('lambdas = ', ll)
+    #print('scores = ', scores)
+    print('Choosing lambda = %.4f' % self.l, 'score = %.4f' % score)
+    return self.l
 
   def decode_qp(self, results):
     pass
@@ -144,13 +174,16 @@ def main(n, d, t, num_expts=1000):
   for i in range(num_expts):
     arr = create_infection_array_with_num_cases(n, d)
     cs = CS(n, t, s, d, l, arr)
+    # Now find lambda
+    results = cs.get_quantitative_results(cs.conc)
+    l = cs.do_cross_validation_get_lambda(results)
     quant_csexpts.do_single_expt(i, cs, cs.conc)
     #ber_csexpts.do_single_expt(i, cs, arr)
   quant_csexpts.print_stats(num_expts)
   return quant_csexpts.return_stats(num_expts)
   #ber_csexpts.print_stats(num_expts)
 
-main(40, 2, 16)
+main(40, 2, 16, num_expts=100)
 
 def dump_to_file(filename, stats):
   df = pd.DataFrame.from_dict(stats)
