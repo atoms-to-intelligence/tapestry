@@ -5,7 +5,7 @@ import pylops
 
 from comp import create_infection_array_with_num_cases, COMP
 from matrices import *
-
+import nnompcv
 import json
 import pandas as pd
 import os
@@ -58,6 +58,8 @@ class CS(COMP):
       temp_mat=pylops.MatrixMult(temp_mat)
       answer = pylops.optimization.sparsity.OMP(temp_mat, results, 10000,
           sigma=0.001)[0]
+    elif algo== 'NNOMP':
+      answer=nnompcv.nnomp(self.M.T.astype('double'),0,results,0,10)
     else:
       raise ValueError('No such algorithm %s' % algo)
 
@@ -171,7 +173,7 @@ class CSExpts:
     # Now find lambda
     if cross_validation:
       l = cs.do_cross_validation_get_lambda(y, sigval)
-    score, tp, fp, fn = cs.decode_lasso(y, algo='OMP')
+    score, tp, fp, fn = cs.decode_lasso(y, algo='NNOMP')
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -186,8 +188,8 @@ class CSExpts:
   def print_stats(self, num_expts):
     precision = self.total_tp / float(self.total_tp + self.total_fp)
     recall = self.total_tp / float(self.total_tp + self.total_fn)
-    avg_fp = self.total_fp / (num_expts - self.no_fp)
-    avg_fn = self.total_fn / (num_expts - self.no_fn)
+    avg_fp = self.total_fp / (num_expts - self.no_fp) if self.total_fp!=0  else 0
+    avg_fn = self.total_fn / (num_expts - self.no_fn) if self.total_fn!=0  else 0
     print('******', self.name, 'Statistics', '******')
     print('No errors in %d / %d cases' % (self.no_error, num_expts))
     print('No fp in %d / %d cases' % (self.no_fp, num_expts))
