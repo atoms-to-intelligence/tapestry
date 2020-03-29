@@ -18,10 +18,15 @@ class CS(COMP):
 
   # Multiply actual conc matrix to M. This is the part done by mixing samples
   # and qpcr
-  def get_quantitative_results(self, conc):
+  def get_quantitative_results(self, conc, add_noise=False):
     conc = np.expand_dims(conc, axis=-1)
     #print(self.M.shape, conc.shape)
-    return np.matmul(self.M.T, conc).flatten()
+    y = np.matmul(self.M.T, conc).flatten()
+    sigval = 0.
+    if add_noise:
+      sigval = 0.01*np.median(np.absolute(y))
+      y = y + np.random.normal(0., sigval, len(y))
+    return y, sigval
 
   # Initial concentration of RNA in each sample
   def create_conc_matrix_from_infection_array(self, arr):
@@ -54,16 +59,24 @@ class CS(COMP):
     
     return score, tp, fp, fn
 
-  def decode_lasso_for_cv(self, l, train_M, train_y, test_M, test_y):
-    lasso = Lasso(alpha=l, max_iter=10000)
-    lasso.fit(train_M, train_y)
-    pred_y = lasso.predict(test_M)
-    score = np.linalg.norm(test_y - pred_y)
-    return score
+  def decode_lasso_for_cv(self, l, train_Ms, train_ys, test_Ms, test_ys):
+    scores = []
+    for train_M, train_y, test_M, test_y in zip(train_Ms, train_ys, test_Ms,
+        test_ys):
+      #print('Doing lasso with')
+      #print(train_M.shape, train_y.shape, test_M.shape, test_y.shape)
+      lasso = Lasso(alpha=l, max_iter=10000)
+      lasso.fit(train_M, train_y)
+      pred_y = lasso.predict(test_M)
+      score = np.linalg.norm(test_y - pred_y) / len(test_y)
+      scores.append(score)
 
-  def do_cross_validation_get_lambda(self, results):
-    sigval = 0.1*np.median(np.absolute(results));
-    lambda_min = max([sigval*math.sqrt(math.log(self.n))-5,0.001]);
+    avg_score = np.average(scores)
+    max_score = max(scores)
+    return avg_score
+
+  def do_cross_validation_get_lambda(self, y, sigval):
+    lambda_min = max([sigval*math.sqrt(math.log(self.n))-5,0.01]);
     lambda_max = sigval*math.sqrt(math.log(self.n))+5;
     n_step = math.ceil((lambda_max - lambda_min) / 0.01)
     ll = np.linspace(lambda_min, lambda_max, n_step)
@@ -71,15 +84,27 @@ class CS(COMP):
     #print(a)
     #ll = np.concatenate([a, 10*a, 100*a, 1000*a, 10000*a, 100000*a])
     #print(ll)
-    r = math.ceil(0.9*self.t)
-    train_M = self.M[:r]
-    test_M = self.M[r:]
-    y = self.get_quantitative_results(self.conc)
-    train_y = y[:r]
-    test_y = y[r:]
+
+    train_Ms = []
+    test_Ms = []
+    train_ys = []
+    test_ys = []
+    M = self.M.T
+    # We'll do leave one out cross-validation
+    for r in range(1):
+      train_M = np.delete(M, r, axis=0)
+      test_M = np.expand_dims(M[r], axis=0)
+      train_y = np.delete(y, r, axis=0)
+      test_y = np.array([y[r]])
+
+      train_Ms.append(train_M)
+      train_ys.append(train_y)
+      test_Ms.append(test_M)
+      test_ys.append(test_y)
+
     scores = []
     for l in ll:
-      score = self.decode_lasso_for_cv(l, train_M, train_y, test_M, test_y)
+      score = self.decode_lasso_for_cv(l, train_Ms, train_ys, test_Ms, test_ys)
       scores.append(score)
     scores = np.array(scores)
     idx = np.argmin(scores)
@@ -111,8 +136,10 @@ class CSExpts:
 
   # Find results using qPCR
   def do_single_expt(self, i, cs, x):
-    results = cs.get_quantitative_results(x)
-    score, tp, fp, fn = cs.decode_lasso(results)
+    y, sigval = cs.get_quantitative_results(cs.conc, add_noise=True)
+    # Now find lambda
+    l = cs.do_cross_validation_get_lambda(y, sigval)
+    score, tp, fp, fn = cs.decode_lasso(y)
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -174,9 +201,6 @@ def main(n, d, t, num_expts=1000):
   for i in range(num_expts):
     arr = create_infection_array_with_num_cases(n, d)
     cs = CS(n, t, s, d, l, arr)
-    # Now find lambda
-    results = cs.get_quantitative_results(cs.conc)
-    l = cs.do_cross_validation_get_lambda(results)
     quant_csexpts.do_single_expt(i, cs, cs.conc)
     #ber_csexpts.do_single_expt(i, cs, arr)
   quant_csexpts.print_stats(num_expts)
