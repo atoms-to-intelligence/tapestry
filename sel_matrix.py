@@ -1,6 +1,10 @@
 from cs import *
 import pickle
 
+import json
+from json import encoder
+encoder.FLOAT_REPR = lambda o: format(o, '.3f')
+
 # Out of a list of matrices, choose the best one
 #
 # Generate 1000 x's to do the expt. The same x will be used to evaluate all
@@ -18,14 +22,24 @@ def find_best_matrix(n, d, t, Ms, num_expts=1000):
 
   return stats
 
-n = 40
+n = 60
 d = 2
-t = 16
-Ms = [np.random.binomial(1, 0.5, size=(t, n)) for i in range(100)]
-Ms.append(optimized_M)
-stats = find_best_matrix(n, d, t, Ms, num_expts=1000)
-for stat, M in zip(stats, Ms):
-  if stat['precision'] >= 0.80 and stat['recall'] >= 0.90:
-    print(stat)
+t = 24
+#Ms = [np.random.binomial(1, 0.5, size=(t, n)) for i in range(10)]
+#Ms = [optimized_M for i in range(10)]
+Ms = []
+Ms.append(optimized_M_3)
+#Ms.append(optimized_M_4)
+ss = []
+for d in range(2, 11):
+  stats = find_best_matrix(n, d, t, Ms, num_expts=1000)
+  ss.extend(stats)
+  #for stat, M in zip(stats, Ms):
+  #  if stat['precision'] >= 0.80 and stat['recall'] >= 0.90:
+  #    print(stat)
 
-print(stat)
+for stat in ss:
+  s = json.dumps(stat)
+  print(s)
+
+#print(stat)
