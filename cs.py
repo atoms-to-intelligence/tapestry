@@ -4,34 +4,13 @@ from sklearn.linear_model import Lasso, LassoLars, LassoCV, LassoLarsCV
 import pylops
 
 from comp import create_infection_array_with_num_cases, COMP
+from matrices import *
 
 import json
 import pandas as pd
 import os
 
 np.set_printoptions(precision=2)
-
-optimized_M = np.array([[0., 1., 0., 1., 0., 1., 1., 0., 0., 0., 1., 1., 0., 1., 1., 0., 0., 0.,       0., 0., 0., 1., 0., 1., 0., 0., 1., 0., 1., 0., 0., 0., 0., 0., 1., 1.,         0., 1., 1., 0.],
-        [1., 0., 0., 1., 0., 0., 0., 1., 0., 1., 0., 0., 1., 1., 0., 0., 0., 1.,         1., 1., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 1., 1.,         1., 1., 0., 0.],
-        [0., 0., 0., 0., 0., 1., 1., 0., 0., 0., 1., 1., 0., 0., 0., 0., 1., 1.,         1., 0., 1., 0., 0., 0., 1., 1., 0., 1., 1., 0., 1., 1., 1., 0., 0., 0.,         0., 1., 0., 0.],
-        [1., 1., 1., 1., 0., 0., 1., 0., 0., 0., 1., 1., 0., 1., 1., 0., 0., 0.,         0., 1., 0., 0., 0., 0., 1., 0., 1., 0., 0., 1., 0., 1., 0., 0., 0., 0.,         0., 0., 1., 1.],
-        [1., 1., 0., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.,         1., 1., 1., 0., 1., 0., 0., 1., 1., 1., 0., 0., 1., 0., 0., 1., 0., 0.,         0., 1., 0., 1.],
-        [0., 0., 1., 1., 1., 1., 1., 1., 0., 1., 0., 0., 0., 1., 1., 0., 0., 0.,         0., 0., 1., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 1., 1., 1., 0.,         0., 0., 0., 1.],
-        [0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 1., 0., 1., 0., 1., 1., 0., 0.,         1., 0., 1., 0., 0., 0., 1., 0., 0., 1., 0., 1., 1., 0., 1., 0., 0., 1.,         1., 0., 1., 0.],
-        [1., 1., 1., 0., 1., 1., 0., 0., 1., 1., 0., 0., 0., 0., 0., 1., 0., 0.,         0., 1., 0., 0., 1., 0., 1., 1., 0., 0., 0., 0., 0., 1., 0., 1., 1., 0.,         1., 0., 1., 0.],
-        [0., 1., 0., 0., 0., 1., 0., 1., 1., 1., 0., 1., 0., 0., 0., 1., 0., 1.,         0., 0., 0., 0., 0., 1., 0., 0., 1., 0., 1., 0., 0., 0., 1., 1., 1., 0.,         1., 1., 0., 0.],
-        [0., 0., 0., 0., 0., 0., 1., 1., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0.,         1., 1., 0., 1., 1., 1., 1., 1., 1., 0., 0., 0., 1., 0., 0., 0., 1., 1.,         1., 0., 0., 0.],
-        [0., 0., 0., 0., 0., 0., 0., 0., 1., 1., 1., 1., 0., 1., 0., 1., 1., 0.,         1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 1., 1., 1., 1., 0., 0., 1.,         0., 0., 0., 1.],
-        [1., 0., 1., 0., 0., 1., 0., 0., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1.,         0., 0., 0., 1., 0., 1., 0., 0., 1., 1., 0., 1., 0., 1., 1., 1., 0., 0.,         0., 0., 0., 1.],
-        [0., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 1., 1., 0., 0., 0., 1.,         0., 1., 1., 0., 0., 1., 1., 1., 0., 0., 1., 1., 0., 1., 0., 0., 0., 0.,         1., 0., 0., 0.],
-        [0., 0., 0., 0., 1., 0., 1., 1., 0., 1., 1., 0., 1., 1., 0., 0., 1., 0.,         0., 0., 0., 1., 1., 0., 1., 0., 0., 1., 1., 1., 0., 0., 1., 0., 0., 0.,         0., 0., 1., 0.],
-        [0., 1., 0., 0., 1., 0., 0., 1., 1., 0., 0., 0., 1., 0., 0., 1., 0., 1.,         0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 1., 0., 0., 1., 0., 1.,         1., 0., 0., 1.],
-        [1., 0., 1., 0., 0., 0., 0., 0., 1., 0., 0., 1., 1., 0., 1., 1., 1.,
-          1.,         1., 0., 1., 0., 1., 0., 0., 0., 1., 1., 0., 0., 0., 0.,
-          0., 1., 1., 1.,         0., 0., 0., 0.]])
-
-#print(optimized_M.shape)
-#sys.exit(1)
 
 # Use compressed sensing to solve 0.5*||Mx - y||^2 + l * ||x||_1
 class CS(COMP):
@@ -58,8 +37,8 @@ class CS(COMP):
   # Initial concentration of RNA in each sample
   def create_conc_matrix_from_infection_array(self, arr):
     #conc = 1 + np.random.poisson(lam=5, size=self.n)
-    #conc = np.random.randint(low=1, high=32769, size=self.n) / 32768.
-    conc = np.random.randint(low=1, high=11, size=self.n) / 10.
+    conc = np.random.randint(low=1, high=32769, size=self.n) / 32768.
+    #conc = np.random.randint(low=1, high=11, size=self.n) / 10.
     #conc = np.ones(self.n)
     self.conc = conc * arr # Only keep those entries which are 
 
@@ -78,7 +57,7 @@ class CS(COMP):
       temp_mat=(self.M.T).astype(float)
       temp_mat=pylops.MatrixMult(temp_mat)
       answer = pylops.optimization.sparsity.OMP(temp_mat, results, 10000,
-          sigma=1e-10)[0]
+          sigma=0.001)[0]
     else:
       raise ValueError('No such algorithm %s' % algo)
 
@@ -96,15 +75,26 @@ class CS(COMP):
     
     return score, tp, fp, fn
 
-  def decode_lasso_for_cv(self, l, train_Ms, train_ys, test_Ms, test_ys):
+  def decode_lasso_for_cv(self, train_Ms, train_ys, test_Ms, test_ys,
+      algo='lasso', l=None, sigma=None):
+
+    if algo == 'lasso' and l is None:
+      raise ValueError('Need l for algo lasso')
+    elif algo == 'OMP' and sigma is None:
+      raise ValueError('Need sigma for algo OMP')
+
     scores = []
     for train_M, train_y, test_M, test_y in zip(train_Ms, train_ys, test_Ms,
         test_ys):
       #print('Doing lasso with')
       #print(train_M.shape, train_y.shape, test_M.shape, test_y.shape)
-      lasso = Lasso(alpha=l, max_iter=10000)
-      lasso.fit(train_M, train_y)
-      pred_y = lasso.predict(test_M)
+      if algo == 'lasso':
+        lasso = Lasso(alpha=l, max_iter=10000)
+        lasso.fit(train_M, train_y)
+        pred_y = lasso.predict(test_M)
+      elif algo == 'OMP':
+        pass
+
       score = np.linalg.norm(test_y - pred_y) / len(test_y)
       scores.append(score)
 
@@ -144,7 +134,8 @@ class CS(COMP):
 
     scores = []
     for l in ll:
-      score = self.decode_lasso_for_cv(l, train_Ms, train_ys, test_Ms, test_ys)
+      score = self.decode_lasso_for_cv(train_Ms, train_ys, test_Ms, test_ys,
+          l=l)
       scores.append(score)
     scores = np.array(scores)
     idx = np.argmin(scores)
@@ -255,9 +246,14 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
         cross_validation=cross_validation,
         add_noise=add_noise)
     #cv_expts.do_single_expt(i, cs, cs.conc, cross_validation=True)
+  print('n = %d, d = %d, t = %d' % (n, d, t))
   nocv_expts.print_stats(num_expts)
   #cv_expts.print_stats(num_expts)
-  return nocv_expts.return_stats(num_expts)
+  stat = nocv_expts.return_stats(num_expts)
+  stat['n'] = n
+  stat['d'] = d
+  stat['t'] = t
+  return stat
 
 def dump_to_file(filename, stats):
   df = pd.DataFrame.from_dict(stats)
@@ -318,5 +314,5 @@ def do_expts_and_dump_stats():
         if item['precision'] > 0.999 and item['recall'] > 0.9999:
           print(n, d, item )
 
-do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M)
+#do_many_expts(60, 4, 24, num_expts=1000, M=optimized_M_4)
 
