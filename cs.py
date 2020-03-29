@@ -30,8 +30,11 @@ class CS(COMP):
     y = np.matmul(self.M.T, conc).flatten()
     sigval = 0.
     if add_noise:
-      sigval = 0.01*np.median(np.absolute(y))
-      y = y + np.random.normal(0., sigval, len(y))
+      sigval = 0.01*np.absolute(y)
+      error = np.random.normal(0., sigval)
+      #print('y = ', y)
+      #print('adding error:', error)
+      y = y + error
     return y, sigval
 
   # Initial concentration of RNA in each sample
@@ -168,10 +171,12 @@ class CSExpts:
   # Find results using qPCR
   def do_single_expt(self, i, cs, x, cross_validation=True, add_noise=True):
     y, sigval = cs.get_quantitative_results(cs.conc, add_noise=add_noise)
+    bool_y = (y > 0).astype(np.int32)
     # Now find lambda
     if cross_validation:
       l = cs.do_cross_validation_get_lambda(y, sigval)
-    score, tp, fp, fn = cs.decode_lasso(y, algo='OMP')
+    #score, tp, fp, fn = cs.decode_lasso(y, algo='OMP')
+    score, tp, fp, fn = cs.decode_comp_new(bool_y)
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -186,8 +191,14 @@ class CSExpts:
   def print_stats(self, num_expts):
     precision = self.total_tp / float(self.total_tp + self.total_fp)
     recall = self.total_tp / float(self.total_tp + self.total_fn)
-    avg_fp = self.total_fp / (num_expts - self.no_fp)
-    avg_fn = self.total_fn / (num_expts - self.no_fn)
+    if num_expts == self.no_fp:
+      avg_fp = 0
+    else:
+      avg_fp = self.total_fp / (num_expts - self.no_fp)
+    if num_expts == self.no_fn:
+      avg_fn = 0
+    else:
+      avg_fn = self.total_fn / (num_expts - self.no_fn)
     print('******', self.name, 'Statistics', '******')
     print('No errors in %d / %d cases' % (self.no_error, num_expts))
     print('No fp in %d / %d cases' % (self.no_fp, num_expts))
@@ -314,5 +325,6 @@ def do_expts_and_dump_stats():
         if item['precision'] > 0.999 and item['recall'] > 0.9999:
           print(n, d, item )
 
-#do_many_expts(60, 4, 24, num_expts=1000, M=optimized_M_4)
+#do_many_expts(400, 4, 64, num_expts=1000, M=optimized_M_5, add_noise=True)
+do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M_2, add_noise=True)
 
