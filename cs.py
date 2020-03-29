@@ -9,10 +9,35 @@ import pandas as pd
 import os
 
 np.set_printoptions(precision=2)
+
+optimized_M = np.array([[0., 1., 0., 1., 0., 1., 1., 0., 0., 0., 1., 1., 0., 1., 1., 0., 0., 0.,       0., 0., 0., 1., 0., 1., 0., 0., 1., 0., 1., 0., 0., 0., 0., 0., 1., 1.,         0., 1., 1., 0.],
+        [1., 0., 0., 1., 0., 0., 0., 1., 0., 1., 0., 0., 1., 1., 0., 0., 0., 1.,         1., 1., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 1., 1.,         1., 1., 0., 0.],
+        [0., 0., 0., 0., 0., 1., 1., 0., 0., 0., 1., 1., 0., 0., 0., 0., 1., 1.,         1., 0., 1., 0., 0., 0., 1., 1., 0., 1., 1., 0., 1., 1., 1., 0., 0., 0.,         0., 1., 0., 0.],
+        [1., 1., 1., 1., 0., 0., 1., 0., 0., 0., 1., 1., 0., 1., 1., 0., 0., 0.,         0., 1., 0., 0., 0., 0., 1., 0., 1., 0., 0., 1., 0., 1., 0., 0., 0., 0.,         0., 0., 1., 1.],
+        [1., 1., 0., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.,         1., 1., 1., 0., 1., 0., 0., 1., 1., 1., 0., 0., 1., 0., 0., 1., 0., 0.,         0., 1., 0., 1.],
+        [0., 0., 1., 1., 1., 1., 1., 1., 0., 1., 0., 0., 0., 1., 1., 0., 0., 0.,         0., 0., 1., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 1., 1., 1., 0.,         0., 0., 0., 1.],
+        [0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 1., 0., 1., 0., 1., 1., 0., 0.,         1., 0., 1., 0., 0., 0., 1., 0., 0., 1., 0., 1., 1., 0., 1., 0., 0., 1.,         1., 0., 1., 0.],
+        [1., 1., 1., 0., 1., 1., 0., 0., 1., 1., 0., 0., 0., 0., 0., 1., 0., 0.,         0., 1., 0., 0., 1., 0., 1., 1., 0., 0., 0., 0., 0., 1., 0., 1., 1., 0.,         1., 0., 1., 0.],
+        [0., 1., 0., 0., 0., 1., 0., 1., 1., 1., 0., 1., 0., 0., 0., 1., 0., 1.,         0., 0., 0., 0., 0., 1., 0., 0., 1., 0., 1., 0., 0., 0., 1., 1., 1., 0.,         1., 1., 0., 0.],
+        [0., 0., 0., 0., 0., 0., 1., 1., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0.,         1., 1., 0., 1., 1., 1., 1., 1., 1., 0., 0., 0., 1., 0., 0., 0., 1., 1.,         1., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 0., 0., 0., 1., 1., 1., 1., 0., 1., 0., 1., 1., 0.,         1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 1., 1., 1., 1., 0., 0., 1.,         0., 0., 0., 1.],
+        [1., 0., 1., 0., 0., 1., 0., 0., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1.,         0., 0., 0., 1., 0., 1., 0., 0., 1., 1., 0., 1., 0., 1., 1., 1., 0., 0.,         0., 0., 0., 1.],
+        [0., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 1., 1., 0., 0., 0., 1.,         0., 1., 1., 0., 0., 1., 1., 1., 0., 0., 1., 1., 0., 1., 0., 0., 0., 0.,         1., 0., 0., 0.],
+        [0., 0., 0., 0., 1., 0., 1., 1., 0., 1., 1., 0., 1., 1., 0., 0., 1., 0.,         0., 0., 0., 1., 1., 0., 1., 0., 0., 1., 1., 1., 0., 0., 1., 0., 0., 0.,         0., 0., 1., 0.],
+        [0., 1., 0., 0., 1., 0., 0., 1., 1., 0., 0., 0., 1., 0., 0., 1., 0., 1.,         0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 1., 0., 0., 1., 0., 1.,         1., 0., 0., 1.],
+        [1., 0., 1., 0., 0., 0., 0., 0., 1., 0., 0., 1., 1., 0., 1., 1., 1.,
+          1.,         1., 0., 1., 0., 1., 0., 0., 0., 1., 1., 0., 0., 0., 0.,
+          0., 1., 1., 1.,         0., 0., 0., 0.]])
+
+print(optimized_M.shape)
+#sys.exit(1)
+
 # Use compressed sensing to solve 0.5*||Mx - y||^2 + l * ||x||_1
 class CS(COMP):
-  def __init__(self, n, t, s, d, l, arr):
+  def __init__(self, n, t, s, d, l, arr, M=None):
     super().__init__(n, t, s, d, arr)
+    if M is not None:
+      self.M = M.T
     self.create_conc_matrix_from_infection_array(arr)
     self.l = l
 
@@ -73,17 +98,20 @@ class CS(COMP):
 
     avg_score = np.average(scores)
     max_score = max(scores)
+    median_score = np.median(scores)
+    min_score = np.min(scores)
     return avg_score
+    #return min_score
 
   def do_cross_validation_get_lambda(self, y, sigval):
     lambda_min = max([sigval*math.sqrt(math.log(self.n))-5,0.01]);
     lambda_max = sigval*math.sqrt(math.log(self.n))+5;
     n_step = math.ceil((lambda_max - lambda_min) / 0.01)
     ll = np.linspace(lambda_min, lambda_max, n_step)
-    #a = np.linspace(0.0001, 0.0010, num=10)
-    #print(a)
+    #a = np.linspace(0.001, 0.01, num=10)
     #ll = np.concatenate([a, 10*a, 100*a, 1000*a, 10000*a, 100000*a])
-    #print(ll)
+    #ll = np.concatenate([a, 10*a, 100*a])
+    #ll = np.linspace(0.001, 1., 1000)
 
     train_Ms = []
     test_Ms = []
@@ -135,10 +163,11 @@ class CSExpts:
     self.total_fn = 0
 
   # Find results using qPCR
-  def do_single_expt(self, i, cs, x):
+  def do_single_expt(self, i, cs, x, cross_validation=True):
     y, sigval = cs.get_quantitative_results(cs.conc, add_noise=True)
     # Now find lambda
-    l = cs.do_cross_validation_get_lambda(y, sigval)
+    if cross_validation:
+      l = cs.do_cross_validation_get_lambda(y, sigval)
     score, tp, fp, fn = cs.decode_lasso(y)
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
@@ -156,7 +185,7 @@ class CSExpts:
     recall = self.total_tp / float(self.total_tp + self.total_fn)
     avg_fp = self.total_fp / (num_expts - self.no_fp)
     avg_fn = self.total_fn / (num_expts - self.no_fn)
-    #print('******', self.name, 'Statistics', '******')
+    print('******', self.name, 'Statistics', '******')
     print('No errors in %d / %d cases' % (self.no_error, num_expts))
     print('No fp in %d / %d cases' % (self.no_fp, num_expts))
     print('No fn in %d / %d cases' % (self.no_fn, num_expts))
@@ -194,18 +223,19 @@ def main(n, d, t, num_expts=1000):
   s = 500. / 1000
 
   # lambda for regularization
-  l = 0.002
+  l = 0.01
 
-  quant_csexpts = CSExpts('Quant    ')
-  ber_csexpts = CSExpts('Bernoulli')
+  cv_expts = CSExpts('CV')
+  nocv_expts = CSExpts('No CV')
   for i in range(num_expts):
     arr = create_infection_array_with_num_cases(n, d)
-    cs = CS(n, t, s, d, l, arr)
-    quant_csexpts.do_single_expt(i, cs, cs.conc)
-    #ber_csexpts.do_single_expt(i, cs, arr)
-  quant_csexpts.print_stats(num_expts)
-  return quant_csexpts.return_stats(num_expts)
-  #ber_csexpts.print_stats(num_expts)
+    #cs = CS(n, t, s, d, l, arr, optimized_M)
+    cs = CS(n, t, s, d, l, arr, None)
+    nocv_expts.do_single_expt(i, cs, cs.conc, cross_validation=False)
+    cv_expts.do_single_expt(i, cs, cs.conc, cross_validation=True)
+  nocv_expts.print_stats(num_expts)
+  cv_expts.print_stats(num_expts)
+  return cv_expts.return_stats(num_expts)
 
 main(40, 2, 16, num_expts=100)
 
