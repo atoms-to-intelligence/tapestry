@@ -31,7 +31,7 @@ Ms = []
 Ms.append(optimized_M_3)
 #Ms.append(optimized_M_4)
 ss = []
-for d in range(2, 11):
+for d in range(2,7):
   stats = find_best_matrix(n, d, t, Ms, num_expts=1000)
   ss.extend(stats)
   #for stat, M in zip(stats, Ms):

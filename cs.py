@@ -5,7 +5,7 @@ import pylops
 
 from comp import create_infection_array_with_num_cases, COMP
 from matrices import *
-
+import nnompcv
 import json
 import pandas as pd
 import os
@@ -61,6 +61,19 @@ class CS(COMP):
       temp_mat=pylops.MatrixMult(temp_mat)
       answer = pylops.optimization.sparsity.OMP(temp_mat, results, 10000,
           sigma=0.001)[0]
+    elif algo== 'NNOMP':
+      #print('yp1')
+      answer=nnompcv.nnomp(self.M.T.astype('double'),0,results,0,10)
+    elif algo=='NNOMPCV':
+      temp_mat = (self.M.T).astype(float)
+      mr = math.ceil(0.9*temp_mat.shape[1])
+      m = temp_mat.shape[1]
+      Ar = temp_mat[0:mr, :]
+      Acv = temp_mat[mr+1:m, :]
+      yr = results[0:mr]
+      ycv = results[mr+1:m]
+      #print('yo')
+      answer = nnompcv.nnomp(Ar, Acv, yr, ycv, 10, True)
     else:
       raise ValueError('No such algorithm %s' % algo)
 
@@ -175,8 +188,12 @@ class CSExpts:
     # Now find lambda
     if cross_validation:
       l = cs.do_cross_validation_get_lambda(y, sigval)
+<<<<<<< HEAD
     #score, tp, fp, fn = cs.decode_lasso(y, algo='OMP')
     score, tp, fp, fn = cs.decode_comp_new(bool_y)
+=======
+    score, tp, fp, fn = cs.decode_lasso(y, algo='NNOMPCV')
+>>>>>>> ali
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -191,6 +208,7 @@ class CSExpts:
   def print_stats(self, num_expts):
     precision = self.total_tp / float(self.total_tp + self.total_fp)
     recall = self.total_tp / float(self.total_tp + self.total_fn)
+<<<<<<< HEAD
     if num_expts == self.no_fp:
       avg_fp = 0
     else:
@@ -199,6 +217,10 @@ class CSExpts:
       avg_fn = 0
     else:
       avg_fn = self.total_fn / (num_expts - self.no_fn)
+=======
+    avg_fp = self.total_fp / (num_expts - self.no_fp) if self.total_fp!=0  else 0
+    avg_fn = self.total_fn / (num_expts - self.no_fn) if self.total_fn!=0  else 0
+>>>>>>> ali
     print('******', self.name, 'Statistics', '******')
     print('No errors in %d / %d cases' % (self.no_error, num_expts))
     print('No fp in %d / %d cases' % (self.no_fp, num_expts))
@@ -295,7 +317,7 @@ def do_expts_and_dump_stats():
   nn = [32]
 
   stats = {}
-  algorithm = 'lasso'
+  algorithm = 'NNOMPCV'
 
   stats_dir = 'stats/%s' % algorithm
   if not os.path.exists(stats_dir):
