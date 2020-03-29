@@ -59,7 +59,18 @@ class CS(COMP):
       answer = pylops.optimization.sparsity.OMP(temp_mat, results, 10000,
           sigma=0.001)[0]
     elif algo== 'NNOMP':
+      #print('yp1')
       answer=nnompcv.nnomp(self.M.T.astype('double'),0,results,0,10)
+    elif algo=='NNOMPCV':
+      temp_mat = (self.M.T).astype(float)
+      mr = math.ceil(0.9*temp_mat.shape[1])
+      m = temp_mat.shape[1]
+      Ar = temp_mat[0:mr, :]
+      Acv = temp_mat[mr+1:m, :]
+      yr = results[0:mr]
+      ycv = results[mr+1:m]
+      #print('yo')
+      answer = nnompcv.nnomp(Ar, Acv, yr, ycv, 10, True)
     else:
       raise ValueError('No such algorithm %s' % algo)
 
@@ -173,7 +184,7 @@ class CSExpts:
     # Now find lambda
     if cross_validation:
       l = cs.do_cross_validation_get_lambda(y, sigval)
-    score, tp, fp, fn = cs.decode_lasso(y, algo='NNOMP')
+    score, tp, fp, fn = cs.decode_lasso(y, algo='NNOMPCV')
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -286,7 +297,7 @@ def do_expts_and_dump_stats():
   nn = [32]
 
   stats = {}
-  algorithm = 'lasso'
+  algorithm = 'NNOMPCV'
 
   stats_dir = 'stats/%s' % algorithm
   if not os.path.exists(stats_dir):
