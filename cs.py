@@ -5,7 +5,7 @@ import pylops
 
 from comp import create_infection_array_with_num_cases, COMP
 from matrices import *
-
+import nnompcv
 import json
 import pandas as pd
 import os
@@ -29,6 +29,7 @@ class CS(COMP):
     conc = np.expand_dims(conc, axis=-1)
     #print(self.M.shape, conc.shape)
     y = np.matmul(self.M.T, conc).flatten()
+    # print('lol')
     sigval = 0.
     if add_noise:
       if noise_magnitude is not None:
@@ -43,8 +44,8 @@ class CS(COMP):
         error = np.random.normal(0., sigval)
 
 
-      print('y = ', y)
-      print('adding error:', error)
+      # print('y = ', y)
+      # print('adding error:', error)
       y = y + error
     return y, sigval
 
@@ -72,6 +73,19 @@ class CS(COMP):
       temp_mat=pylops.MatrixMult(temp_mat)
       answer = pylops.optimization.sparsity.OMP(temp_mat, results, 10000,
           sigma=0.001)[0]
+    elif algo== 'NNOMP':
+      #print('yp1')
+      answer=nnompcv.nnomp(self.M.T.astype('double'),0,results,0,30)
+    elif algo=='NNOMPCV':
+      temp_mat = (self.M.T).astype(float)
+      mr = math.ceil(0.9*temp_mat.shape[1])
+      m = temp_mat.shape[1]
+      Ar = temp_mat[0:mr, :]
+      Acv = temp_mat[mr+1:m, :]
+      yr = results[0:mr]
+      ycv = results[mr+1:m]
+      #print('yo')
+      answer = nnompcv.nnomp(Ar, Acv, yr, ycv, 30, True)
     else:
       raise ValueError('No such algorithm %s' % algo)
 
@@ -192,8 +206,7 @@ class CSExpts:
       l = cs.do_cross_validation_get_lambda(y, sigval)
     elif cross_validation:
       raise ValueError('No cross validation implemented for %s' % algo)
-
-    if algo == 'OMP' or algo == 'lasso':
+    if algo == 'OMP' or algo == 'lasso' or algo=='NNOMP' or algo=='NNOMPCV':
       score, tp, fp, fn = cs.decode_lasso(y, algo)
     if algo == 'COMP':
       score, tp, fp, fn = cs.decode_comp_new(bool_y)
@@ -320,7 +333,7 @@ def do_expts_and_dump_stats():
   nn = [32]
 
   stats = {}
-  algorithm = 'lasso'
+  algorithm = 'NNOMPCV'
 
   stats_dir = 'stats/%s' % algorithm
   if not os.path.exists(stats_dir):
@@ -352,7 +365,8 @@ def do_expts_and_dump_stats():
         if item['precision'] > 0.999 and item['recall'] > 0.9999:
           print(n, d, item )
 
-do_many_expts(400, 1, 64, num_expts=1000, M=optimized_M_5, add_noise=True)
+if __name__=='__main__':
+  do_many_expts(400, 1, 64, num_expts=1000, M=optimized_M_5, add_noise=True,algo='NNOMP')
 
 # Following code assumes the same Gaussian noise for each y
 #for noise in [0.0001, 0.0002, 0.0004, 0.0008, 0.001, 0.002, 0.004, 0.008, 0.01]:
