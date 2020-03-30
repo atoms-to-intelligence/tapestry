@@ -24,16 +24,27 @@ class CS(COMP):
 
   # Multiply actual conc matrix to M. This is the part done by mixing samples
   # and qpcr
-  def get_quantitative_results(self, conc, add_noise=False):
+  def get_quantitative_results(self, conc, add_noise=False,
+      noise_magnitude=None):
     conc = np.expand_dims(conc, axis=-1)
     #print(self.M.shape, conc.shape)
     y = np.matmul(self.M.T, conc).flatten()
     sigval = 0.
     if add_noise:
-      sigval = 0.01*np.absolute(y)
-      error = np.random.normal(0., sigval)
-      #print('y = ', y)
-      #print('adding error:', error)
+      if noise_magnitude is not None:
+        # This error is independent of the magnitude
+        sigval = noise_magnitude
+        error = np.random.normal(0., sigval)
+        raise ValueError("This noise model is incorrect and hence disabled. "
+            "Enable this if you know what you're doing")
+      else:
+        # This error is proportional to magnitude of y
+        sigval = 0.01*np.absolute(y)
+        error = np.random.normal(0., sigval)
+
+
+      print('y = ', y)
+      print('adding error:', error)
       y = y + error
     return y, sigval
 
@@ -169,14 +180,24 @@ class CSExpts:
     self.total_fn = 0
 
   # Find results using qPCR
-  def do_single_expt(self, i, cs, x, cross_validation=True, add_noise=True):
-    y, sigval = cs.get_quantitative_results(cs.conc, add_noise=add_noise)
+  def do_single_expt(self, i, cs, x, cross_validation=True, add_noise=True,
+      algo='OMP', noise_magnitude=None):
+
+    y, sigval = cs.get_quantitative_results(cs.conc, add_noise=add_noise,
+        noise_magnitude=noise_magnitude)
     bool_y = (y > 0).astype(np.int32)
+
     # Now find lambda
-    if cross_validation:
+    if cross_validation and algo == 'lasso':
       l = cs.do_cross_validation_get_lambda(y, sigval)
-    #score, tp, fp, fn = cs.decode_lasso(y, algo='OMP')
-    score, tp, fp, fn = cs.decode_comp_new(bool_y)
+    elif cross_validation:
+      raise ValueError('No cross validation implemented for %s' % algo)
+
+    if algo == 'OMP' or algo == 'lasso':
+      score, tp, fp, fn = cs.decode_lasso(y, algo)
+    if algo == 'COMP':
+      score, tp, fp, fn = cs.decode_comp_new(bool_y)
+
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -224,7 +245,9 @@ class CSExpts:
 
 def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
     cross_validation=False,
-    add_noise=False):
+    add_noise=False,
+    algo='OMP',
+    noise_magnitude=None):
   # Test width. Max number of parallel tests available.
   #t = 12
 
@@ -254,10 +277,12 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
     #cs = CS(n, t, s, d, l, x, optimized_M)
     cs = CS(n, t, s, d, l, x, M)
     nocv_expts.do_single_expt(i, cs, cs.conc,
+        algo=algo,
         cross_validation=cross_validation,
-        add_noise=add_noise)
+        add_noise=add_noise,
+        noise_magnitude=noise_magnitude)
     #cv_expts.do_single_expt(i, cs, cs.conc, cross_validation=True)
-  print('n = %d, d = %d, t = %d' % (n, d, t))
+  print('\nn = %d, d = %d, t = %d\n' % (n, d, t))
   nocv_expts.print_stats(num_expts)
   #cv_expts.print_stats(num_expts)
   stat = nocv_expts.return_stats(num_expts)
@@ -327,6 +352,10 @@ def do_expts_and_dump_stats():
         if item['precision'] > 0.999 and item['recall'] > 0.9999:
           print(n, d, item )
 
-#do_many_expts(400, 4, 64, num_expts=1000, M=optimized_M_5, add_noise=True)
-do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M_2, add_noise=True)
+do_many_expts(400, 1, 64, num_expts=1000, M=optimized_M_5, add_noise=True)
+
+# Following code assumes the same Gaussian noise for each y
+#for noise in [0.0001, 0.0002, 0.0004, 0.0008, 0.001, 0.002, 0.004, 0.008, 0.01]:
+#  do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M_2, add_noise=True,
+#      cross_validation=False, algo='OMP', noise_magnitude=noise)
 
