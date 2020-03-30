@@ -33,12 +33,6 @@ class COMP:
   # Test matrix
   def initialize_M(self):
     self.M = np.random.binomial(1, self.s, size=(self.n, self.t))
-    #for person in range(n):
-    #  while sum(self.M[person]) == 0:
-    #    self.M[person] = np.random.binomial(1, self.s, size=(self.t))
-    #    print('changing tests for person', person)
-    # Count of number of people in only 1 test
-    #print(sum([item == 1 for item in [sum(row) for row in self.M]]))
 
   # Get test results from infection array and test matrix
   # In reality this will happen from group testing
@@ -46,23 +40,7 @@ class COMP:
     arr_T = np.expand_dims(self.arr, axis=-1)
     infections = np.sum(arr_T * self.M, axis=0)
     infections = (infections>0).astype(np.int32)
-    #print(infections)
     return infections
-    #positive_tests = np.argwhere(infections > 0)
-    #positive_tests =  positive_tests[:,0].tolist()
-    #print(positive_tests)
-    #return positive_tests
-    # Now get results from infections
-    #positive_tests = []
-    #for test in range(self.t):
-    #  positive = 0
-    #  for person in range(self.n):
-    #    positive += (self.arr[person] * self.M[person, test])
-    #  if positive > 0:
-    #    positive_tests.append(test)
-
-    #positive_tests = np.array(positive_tests)
-    #return positive_tests
 
   def decode(self, infections):
     infected = np.all(self.M * infections == self.M, axis=1).astype(np.int32)

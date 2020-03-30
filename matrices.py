@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 
 optimized_M_1 = np.array([[0., 1., 0., 1., 0., 1., 1., 0., 0., 0., 1., 1., 0., 1., 1., 0., 0., 0.,       0., 0., 0., 1., 0., 1., 0., 0., 1., 0., 1., 0., 0., 0., 0., 0., 1., 1.,         0., 1., 1., 0.],
         [1., 0., 0., 1., 0., 0., 0., 1., 0., 1., 0., 0., 1., 1., 0., 0., 0., 1.,         1., 1., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 1., 1.,         1., 1., 0., 0.],
@@ -1708,6 +1709,26 @@ optimized_M_5 = np.array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0
          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
          0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.,
          0., 0., 0., 0.]])
+
+def convert_matlab_format(M, f):
+  f.write('[ ')
+  for row in M:
+    for item in row:
+      f.write(str(item) + ' ')
+    f.write(';\n')
+  f.write(']')
+
+# Uncomment following code if you want to convert these matrices to matlab
+
+#mat = np.array([[1, 2, 3, 4], [3, 4, 5, 6], [10, 11, 12, 13]])
+#print(mat)
+#convert_matlab_format(mat, sys.stdout)
+#names = ['optimized_M_2.txt', 'optimized_M_3.txt', 'optimized_M_5.txt']
+#for mat, name in zip([optimized_M_2, optimized_M_3, optimized_M_5], names):
+#  with open(name, 'w') as f:
+#    convert_matlab_format(mat, f)
+
+# Uncomment following to print stats about these matrices
 
 #print(optimized_M_1.shape)
 #print(optimized_M_2.shape)
