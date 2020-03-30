@@ -29,6 +29,7 @@ class CS(COMP):
     conc = np.expand_dims(conc, axis=-1)
     #print(self.M.shape, conc.shape)
     y = np.matmul(self.M.T, conc).flatten()
+    # print('lol')
     sigval = 0.
     if add_noise:
       if noise_magnitude is not None:
@@ -43,8 +44,8 @@ class CS(COMP):
         error = np.random.normal(0., sigval)
 
 
-      print('y = ', y)
-      print('adding error:', error)
+      # print('y = ', y)
+      # print('adding error:', error)
       y = y + error
     return y, sigval
 
@@ -364,7 +365,8 @@ def do_expts_and_dump_stats():
         if item['precision'] > 0.999 and item['recall'] > 0.9999:
           print(n, d, item )
 
-do_many_expts(400, 1, 64, num_expts=1000, M=optimized_M_5, add_noise=True)
+if __name__=='__main__':
+  do_many_expts(400, 1, 64, num_expts=1000, M=optimized_M_5, add_noise=True,algo='NNOMP')
 
 # Following code assumes the same Gaussian noise for each y
 #for noise in [0.0001, 0.0002, 0.0004, 0.0008, 0.001, 0.002, 0.004, 0.008, 0.01]:
