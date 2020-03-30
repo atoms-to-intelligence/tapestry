@@ -190,7 +190,7 @@ class CSExpts:
       l = cs.do_cross_validation_get_lambda(y, sigval)
     #score, tp, fp, fn = cs.decode_lasso(y, algo='OMP')
     # score, tp, fp, fn = cs.decode_comp_new(bool_y)
-    score, tp, fp, fn = cs.decode_lasso(y, algo='NNOMPCV')
+    score, tp, fp, fn = cs.decode_lasso(y, algo='NNOMP')
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1

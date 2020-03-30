@@ -22,16 +22,16 @@ def find_best_matrix(n, d, t, Ms, num_expts=1000):
 
   return stats
 
-n = 400
+n = 60
 d = 2
-t = 64
+t = 24
 #Ms = [np.random.binomial(1, 0.5, size=(t, n)) for i in range(10)]
 #Ms = [optimized_M for i in range(10)]
 Ms = []
-Ms.append(optimized_M_5)
+Ms.append(optimized_M_3)
 #Ms.append(optimized_M_4)
 ss = []
-for d in range(10,20):
+for d in range(1,11):
   stats = find_best_matrix(n, d, t, Ms, num_expts=1000)
   ss.extend(stats)
   #for stat, M in zip(stats, Ms):
