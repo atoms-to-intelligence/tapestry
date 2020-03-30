@@ -307,7 +307,9 @@ def do_expts_and_dump_stats():
       stats[n][d] = {}
       t_stats = []
       for t in tt[n]:
-        print('n = %d, d = %d, t = %d' % (n, d, t))
+        print("")
+        print('n = %d, d = %d, t = %d ' % (n, d, t))
+        print(" ")
         item = main(n, d, t)
         item['t'] = t
         stats[n][d][t] = item
