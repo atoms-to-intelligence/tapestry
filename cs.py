@@ -432,6 +432,7 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
   nocv_expts.n = n
   nocv_expts.d = d
   nocv_expts.t = t
+  nocv_expts.mr = mr
   #cv_expts.print_stats(num_expts)
   stat = nocv_expts.return_stats(num_expts)
   stat['n'] = n
@@ -502,13 +503,16 @@ def do_expts_and_dump_stats():
           print(n, d, item )
 
 def run_many_parallel_expts():
-  num_expts = 10
-  expts = Parallel(n_jobs=8)\
+  num_expts = 1000
+  n = 60
+  t = 24
+  matrix = optimized_M_3
+  expts = Parallel(n_jobs=10)\
   (\
       delayed(do_many_expts)\
       (
-        40, d, 16, num_expts=num_expts, M=optimized_M_2,\
-        add_noise=True,algo='NNOMP_random_cv', mr=11 \
+        n, d, t, num_expts=num_expts, M=matrix,\
+        add_noise=True,algo='NNOMP_random_cv', mr=16 \
       )\
       for d in range(1, 11)\
   )
@@ -518,11 +522,27 @@ def run_many_parallel_expts():
     print(prntstr)
     expt.print_stats(num_expts)
 
+def run_many_parallel_expts_mr():
+  num_expts = 1000
+  expts = Parallel(n_jobs=10)\
+  (\
+      delayed(do_many_expts)\
+      (
+        60, 2, 24, num_expts=num_expts, M=optimized_M_3,\
+        add_noise=True,algo='NNOMP_random_cv', mr=mr \
+      )\
+      for mr in range(14, 23)\
+  )
+
+  for expt in expts:
+    prntstr = ('\nn = %d, d = %d, t = %d, mr = %d\n' % (expt.n, expt.d, expt.t, expt.mr))
+    print(prntstr)
+    expt.print_stats(num_expts)
 
 
 if __name__=='__main__':
-  #do_many_expts(40, 10, 16, num_expts=100, M=optimized_M_2,
-  #    add_noise=True,algo='COMP')
+  #do_many_expts(60, 2, 24, num_expts=100, M=optimized_M_3,
+  #    add_noise=True,algo='NNOMP_random_cv', mr=17)
   run_many_parallel_expts()
   #for mr in range(8, 15):
   #  do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M_2,
