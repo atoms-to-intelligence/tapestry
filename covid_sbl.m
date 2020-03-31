@@ -2,19 +2,21 @@
 clear;
 clc;
 matrices;
-[m,n] = size (M5); A = M5;
+[m,n] = size (M2); A = M2;
 
 % m = 40;
 % n = 100;
 % mr = ceil(0.9*m);
 % mcv = m-mr;
 for s = 1:10
-nsignals = 100;
+nsignals = 1000;
 
 % A = rand(m,n); A(A < 0.5) = 0; A(A >= 0.5) = 1;
 
-FN_count = 0;
-FP_count = 0;
+
+fn = zeros(nsignals,1); fp = zeros(nsignals,1); tn = zeros(nsignals,1); tp = zeros(nsignals,1);
+noFP_count = 0; noFN_count=0; noError_count=0;
+
 for kk = 1:nsignals
     x = zeros(n,1);
     indices = randperm(n); x(indices(1:s)) = 999*rand(s,1)+1; true_supp = indices(1:s);
@@ -74,20 +76,38 @@ for kk = 1:nsignals
         
     end
         rmse(kk) = norm(x_est-x,2)/norm(x,2);
-        FN = length(find(x_est == 0 & x > 0));
-        FP = length(find(x_est > 0 & x == 0));
-        if FN==0
-            FN_count = FN_count+1;
+        fn(kk) = length(find(x_est == 0 & x > 0));
+        fp(kk) = length(find(x_est > 0 & x == 0));
+        tn(kk) = length(find(x_est == 0 & x == 0));
+        tp(kk) = length(find(x_est > 0 & x > 0));
+        if fn(kk) ==0
+            noFN_count = noFN_count+1;
         end
-        if FP==0
-            FP_count = FP_count+1;
+        
+        if fp(kk) ==0
+            noFP_count = noFP_count+1;
         end
-        false_neg(kk) = FN/s;
-        false_pos(kk) = FP/(n-s);
-        accuracy(kk) =  length(find((x_est > 0 & x > 0) |(x_est == 0 & x == 0) ))/n;
-%         fprintf('\nRMSE: %f, FN: %f, FP: %f, Acc: %f',rmse(kk),false_neg(kk),false_pos(kk),accuracy(kk));
+        if (fn(kk)+fp(kk)) ==0
+            noError_count = noError_count+1;
+        end
+        
 end
-
-fprintf('\ns = %d, avg. RMSE = %f, avg. FNR = %f, avg. FPR = %f, avg. Acc = %f',s,mean(rmse),mean(false_neg),mean(false_pos),mean(accuracy));
-fprintf('\n No FN in %d cases, No FP in %d cases ',FN_count,FP_count)
+FN = sum(fn);
+FP = sum(fp);
+TN = sum(tn);
+TP = sum(tp);
+if isempty(fn(fn>1)) ==1 
+    avg_fn = 0;
+else
+    avg_fn = mean(fn(fn>1));
+end
+if isempty(fp(fp>1)) ==1
+    avg_fp = 0;
+else
+    avg_fp = mean(fp(fp>1));
+end
+precision = TP/(TP+FP);
+recall = TP/(TP+FN);
+% fprintf('\ns = %d, avg. RMSE = %f, avg. Precision = %f, avg. Recall = %f',s,mean(rmse),precision,recall);
+fprintf(' %d,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d \n',s,precision,recall,avg_fp,avg_fn,FP,FN,TP,(TP+FN),(TP+FP),noFP_count,noFN_count, noError_count)
 end
