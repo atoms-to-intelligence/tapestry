@@ -75,7 +75,7 @@ class CS(COMP):
           sigma=0.001)[0]
     elif algo== 'NNOMP':
       #print('yp1')
-      answer=nnompcv.nnomp(self.M.T.astype('double'),0,results,0,30)
+      answer=nnompcv.nnomp(self.M.T.astype('double'),0,results,0,30, cv=False)
     elif algo=='NNOMPCV':
       temp_mat = (self.M.T).astype(float)
       mr = math.ceil(0.9*temp_mat.shape[1])
@@ -85,7 +85,9 @@ class CS(COMP):
       yr = results[0:mr]
       ycv = results[mr+1:m]
       #print('yo')
-      answer = nnompcv.nnomp(Ar, Acv, yr, ycv, 30, True)
+      answer = nnompcv.nnomp(Ar, Acv, yr, ycv, 30, cv=True)
+    elif algo == 'NNOMPLOOCV':
+      answer = self.decode_nnomp_loo_cv(results)
     else:
       raise ValueError('No such algorithm %s' % algo)
 
@@ -132,6 +134,64 @@ class CS(COMP):
     min_score = np.min(scores)
     return avg_score
     #return min_score
+
+  # Get num random splits with given fraction. Sensing matrix will have at
+  # least frac fraction of rows
+  #def return_random_splits(self, y, num, frac=0.9):
+
+  # Return splits for leave-one-out cross-validation
+  def return_loo_cv_splits(self, y):
+    train_Ms = []
+    test_Ms = []
+    train_ys = []
+    test_ys = []
+
+    # Unfortunately self.M is n x t so we need to transpose it
+    M = self.M.T
+
+    # Each row will be left out once as test_M
+    for r in range(self.t):
+      train_M = np.delete(M, r, axis=0)
+      test_M = np.expand_dims(M[r], axis=0)
+      train_y = np.delete(y, r, axis=0)
+      test_y = np.array([y[r]])
+
+      train_Ms.append(train_M)
+      train_ys.append(train_y)
+      test_Ms.append(test_M)
+      test_ys.append(test_y)
+
+    return train_Ms, train_ys, test_Ms, test_ys
+
+  # Find best d by cross-validation using these splits
+  #
+  # Best d is the one found by majority of the splits
+  def get_d_nnomp_cv(self, splits, max_d=30):
+    train_Ms, train_ys, test_Ms, test_ys = splits
+    counts = np.zeros(max_d + 1)
+    for train_M, train_y, test_M, test_y in zip(train_Ms, train_ys, test_Ms,
+        test_ys):
+      _, error, d = nnompcv.nnomp(train_M, test_M, train_y, test_y, 30, cv=True)
+      counts[d] += 1
+
+    for d, count in enumerate(counts):
+      if count > 0:
+        print('d = %d, count = %d' % (d, count))
+
+    best_d = np.argmax(counts)
+    print('Best d by majority voting amongs cross-validation splits:', best_d)
+    return best_d
+
+  # Do leave one out splits
+  # get best d from those splits
+  # Run final nnomp algorithm using best d and entire matrix
+  def decode_nnomp_loo_cv(self, y):
+    splits = self.return_loo_cv_splits(y)
+    best_d = self.get_d_nnomp_cv(splits)
+    x = nnompcv.nnomp(self.M.T.astype('double'), 0, y, 0,
+        best_d, cv=False)
+    return x
+    
 
   def do_cross_validation_get_lambda(self, y, sigval):
     lambda_min = max([sigval*math.sqrt(math.log(self.n))-5,0.01]);
@@ -206,7 +266,8 @@ class CSExpts:
       l = cs.do_cross_validation_get_lambda(y, sigval)
     elif cross_validation:
       raise ValueError('No cross validation implemented for %s' % algo)
-    if algo == 'OMP' or algo == 'lasso' or algo=='NNOMP' or algo=='NNOMPCV':
+    if algo == 'OMP' or algo == 'lasso' or algo == 'NNOMP' or algo == 'NNOMPCV' \
+        or algo == 'NNOMPLOOCV':
       score, tp, fp, fn = cs.decode_lasso(y, algo)
     if algo == 'COMP':
       score, tp, fp, fn = cs.decode_comp_new(bool_y)
@@ -366,7 +427,8 @@ def do_expts_and_dump_stats():
           print(n, d, item )
 
 if __name__=='__main__':
-  do_many_expts(400, 1, 64, num_expts=1000, M=optimized_M_5, add_noise=True,algo='NNOMP')
+  do_many_expts(40, 2, 16, num_expts=1, M=optimized_M_2,
+      add_noise=True,algo='NNOMPLOOCV')
 
 # Following code assumes the same Gaussian noise for each y
 #for noise in [0.0001, 0.0002, 0.0004, 0.0008, 0.001, 0.002, 0.004, 0.008, 0.01]:

@@ -28,7 +28,7 @@ def nnomp(A, Acv, y, ycv, d, cv=False):
           minepscv = epscv
           minx = x1
   if(cv):
-    return minx
+    return minx, minepscv, i + 1
   else:
     return x1
 
