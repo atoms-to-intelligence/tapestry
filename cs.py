@@ -139,8 +139,11 @@ class CS(COMP):
 
   # Get num random splits with given fraction. Sensing matrix will have at
   # most frac fraction of rows
-  def return_random_splits(self, y, num, frac):
-    mr = math.floor(frac * self.t)
+  def return_random_splits(self, y, num, frac, mr=None):
+    if mr is None:
+      mr = math.floor(frac * self.t)
+    else:
+      assert mr < self.t
     r = self.t - mr
     # Following code only works for r > 1
     assert r > 1
@@ -234,7 +237,7 @@ class CS(COMP):
   # Run final nnomp algorithm using best d and entire matrix
   def decode_nnomp_multi_split_cv(self, y, method='random_splits'):
     if method == 'random_splits':
-      splits = self.return_random_splits(y, 10, frac=0.7)
+      splits = self.return_random_splits(y, 100, frac=0.7, mr=10)
     elif method == 'loo_splits':
       splits = self.return_loo_cv_splits(y)
 
@@ -305,7 +308,7 @@ class CSExpts:
     self.total_fn = 0
 
   # Find results using qPCR
-  def do_single_expt(self, i, cs, x, cross_validation=True, add_noise=True,
+  def do_single_expt(self, i, num_expts, cs, x, cross_validation=True, add_noise=True,
       algo='OMP', noise_magnitude=None):
 
     y, sigval = cs.get_quantitative_results(cs.conc, add_noise=add_noise,
@@ -323,6 +326,9 @@ class CSExpts:
     if algo == 'COMP':
       score, tp, fp, fn = cs.decode_comp_new(bool_y)
 
+    sys.stdout.write('\riter = %d / %d score: %.2f tp = %d fp = %d fn = %d' %
+        (i, num_expts, score, tp, fp, fn))
+    sys.stdout.flush()
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -394,21 +400,27 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
 
   #cv_expts = CSExpts('CV')
   nocv_expts = CSExpts('No CV')
-  for i in range(num_expts):
-    if xs is not None:
-      x = xs[i]
-    else:
-      x = create_infection_array_with_num_cases(n, d)
-    #cs = CS(n, t, s, d, l, x, optimized_M)
-    cs = CS(n, t, s, d, l, x, M)
-    nocv_expts.do_single_expt(i, cs, cs.conc,
-        algo=algo,
-        cross_validation=cross_validation,
-        add_noise=add_noise,
-        noise_magnitude=noise_magnitude)
-    #cv_expts.do_single_expt(i, cs, cs.conc, cross_validation=True)
-  print('\nn = %d, d = %d, t = %d\n' % (n, d, t))
-  nocv_expts.print_stats(num_expts)
+  try:
+    for i in range(num_expts):
+      if xs is not None:
+        x = xs[i]
+      else:
+        x = create_infection_array_with_num_cases(n, d)
+      #cs = CS(n, t, s, d, l, x, optimized_M)
+      cs = CS(n, t, s, d, l, x, M)
+      nocv_expts.do_single_expt(i, num_expts, cs, cs.conc,
+          algo=algo,
+          cross_validation=cross_validation,
+          add_noise=add_noise,
+          noise_magnitude=noise_magnitude)
+      #cv_expts.do_single_expt(i, cs, cs.conc, cross_validation=True)
+    print('\nn = %d, d = %d, t = %d\n' % (n, d, t))
+    nocv_expts.print_stats(num_expts)
+  except KeyboardInterrupt:
+    print('\nn = %d, d = %d, t = %d\n' % (n, d, t))
+    nocv_expts.print_stats(i)
+    raise
+
   #cv_expts.print_stats(num_expts)
   stat = nocv_expts.return_stats(num_expts)
   stat['n'] = n
@@ -480,7 +492,7 @@ def do_expts_and_dump_stats():
 if __name__=='__main__':
   #do_many_expts(40, 10, 16, num_expts=100, M=optimized_M_2,
   #    add_noise=True,algo='COMP')
-  do_many_expts(40, 2, 16, num_expts=100, M=optimized_M_2,
+  do_many_expts(40, 3, 16, num_expts=1000, M=optimized_M_2,
       add_noise=True,algo='NNOMP_random_cv')
   #do_many_expts(40, 4, 16, num_expts=1000, M=optimized_M_2,
   #    add_noise=True,algo='NNOMP_loo_cv')
