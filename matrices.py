@@ -1742,7 +1742,7 @@ if __name__ == '__main__':
   #print(np.sum(optimized_M_3))
   #print(np.sum(optimized_M_4))
   #print(np.sum(optimized_M_5))
-  #for M in [optimized_M_1, optimized_M_2, optimized_M_3, optimized_M_4]:
-  #  sums = np.sum(M, axis=1)
-  #  print(sums)
-  #  print(max(sums))
+  for M in [optimized_M_1, optimized_M_2, optimized_M_3, optimized_M_4]:
+    sums = np.sum(M, axis=1)
+    print(sums)
+    print(max(sums))
