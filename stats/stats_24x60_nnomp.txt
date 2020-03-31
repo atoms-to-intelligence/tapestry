@@ -1,0 +1,81 @@
+n = 60, d = 2, t = 24, mr = 14
+
+No errors in 569 / 1000 cases
+No fp in 999 / 1000 cases
+No fn in 570 / 1000 cases
+precision = 0.999363, recall = 0.785000
+total tp = 1570.0 total fp =  1.0 total fn =  430.0
+avg fp = 1.000 avg fn = 1.000
+
+n = 60, d = 2, t = 24, mr = 15
+
+No errors in 647 / 1000 cases
+No fp in 997 / 1000 cases
+No fn in 650 / 1000 cases
+precision = 0.998185, recall = 0.825000
+total tp = 1650.0 total fp =  3.0 total fn =  350.0
+avg fp = 1.000 avg fn = 1.000
+
+n = 60, d = 2, t = 24, mr = 16
+
+No errors in 670 / 1000 cases
+No fp in 995 / 1000 cases
+No fn in 675 / 1000 cases
+precision = 0.997024, recall = 0.837500
+total tp = 1675.0 total fp =  5.0 total fn =  325.0
+avg fp = 1.000 avg fn = 1.000
+
+n = 60, d = 2, t = 24, mr = 17
+
+No errors in 667 / 1000 cases
+No fp in 993 / 1000 cases
+No fn in 674 / 1000 cases
+precision = 0.995836, recall = 0.837000
+total tp = 1674.0 total fp =  7.0 total fn =  326.0
+avg fp = 1.000 avg fn = 1.000
+
+n = 60, d = 2, t = 24, mr = 18
+
+No errors in 612 / 1000 cases
+No fp in 990 / 1000 cases
+No fn in 622 / 1000 cases
+precision = 0.993873, recall = 0.811000
+total tp = 1622.0 total fp =  10.0 total fn =  378.0
+avg fp = 1.000 avg fn = 1.000
+
+n = 60, d = 2, t = 24, mr = 19
+
+No errors in 457 / 1000 cases
+No fp in 983 / 1000 cases
+No fn in 474 / 1000 cases
+precision = 0.988598, recall = 0.737000
+total tp = 1474.0 total fp =  17.0 total fn =  526.0
+avg fp = 1.000 avg fn = 1.000
+
+n = 60, d = 2, t = 24, mr = 20
+
+No errors in 224 / 1000 cases
+No fp in 987 / 1000 cases
+No fn in 237 / 1000 cases
+precision = 0.986443, recall = 0.618500
+total tp = 1237.0 total fp =  17.0 total fn =  763.0
+avg fp = 1.308 avg fn = 1.000
+
+n = 60, d = 2, t = 24, mr = 21
+
+No errors in 46 / 1000 cases
+No fp in 997 / 1000 cases
+No fn in 49 / 1000 cases
+precision = 0.993371, recall = 0.524500
+total tp = 1049.0 total fp =  7.0 total fn =  951.0
+avg fp = 2.333 avg fn = 1.000
+
+n = 60, d = 2, t = 24, mr = 22
+
+No errors in 0 / 1000 cases
+No fp in 1000 / 1000 cases
+No fn in 0 / 1000 cases
+precision = 1.000000, recall = 0.500000
+total tp = 1000.0 total fp =  0.0 total fn =  1000.0
+avg fp = 0.000 avg fn = 1.000
+
