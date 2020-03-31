@@ -14,13 +14,14 @@ np.set_printoptions(precision=3)
 
 # Use compressed sensing to solve 0.5*||Mx - y||^2 + l * ||x||_1
 class CS(COMP):
-  def __init__(self, n, t, s, d, l, arr, M=None):
+  def __init__(self, n, t, s, d, l, arr, M=None, mr=None):
     super().__init__(n, t, s, d, arr)
     if M is not None:
       self.M = M.T
       #print(self.M.shape)
     self.create_conc_matrix_from_infection_array(arr)
     self.l = l
+    self.mr = mr
 
   # Multiply actual conc matrix to M. This is the part done by mixing samples
   # and qpcr
@@ -237,7 +238,7 @@ class CS(COMP):
   # Run final nnomp algorithm using best d and entire matrix
   def decode_nnomp_multi_split_cv(self, y, method='random_splits'):
     if method == 'random_splits':
-      splits = self.return_random_splits(y, 100, frac=0.7, mr=10)
+      splits = self.return_random_splits(y, 100, frac=0.7, mr=self.mr)
     elif method == 'loo_splits':
       splits = self.return_loo_cv_splits(y)
 
@@ -378,7 +379,8 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
     cross_validation=False,
     add_noise=False,
     algo='OMP',
-    noise_magnitude=None):
+    noise_magnitude=None,
+    mr=None):
   # Test width. Max number of parallel tests available.
   #t = 12
 
@@ -400,6 +402,11 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
 
   #cv_expts = CSExpts('CV')
   nocv_expts = CSExpts('No CV')
+  if mr is None:
+    prntstr = ('\nn = %d, d = %d, t = %d\n' % (n, d, t))
+  else:
+    prntstr = ('\nn = %d, d = %d, t = %d, mr = %d\n' % (n, d, t, mr))
+  print(prntstr)
   try:
     for i in range(num_expts):
       if xs is not None:
@@ -407,17 +414,16 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
       else:
         x = create_infection_array_with_num_cases(n, d)
       #cs = CS(n, t, s, d, l, x, optimized_M)
-      cs = CS(n, t, s, d, l, x, M)
+      cs = CS(n, t, s, d, l, x, M, mr)
       nocv_expts.do_single_expt(i, num_expts, cs, cs.conc,
           algo=algo,
           cross_validation=cross_validation,
           add_noise=add_noise,
           noise_magnitude=noise_magnitude)
       #cv_expts.do_single_expt(i, cs, cs.conc, cross_validation=True)
-    print('\nn = %d, d = %d, t = %d\n' % (n, d, t))
+    print('')
     nocv_expts.print_stats(num_expts)
   except KeyboardInterrupt:
-    print('\nn = %d, d = %d, t = %d\n' % (n, d, t))
     nocv_expts.print_stats(i)
     raise
 
@@ -492,8 +498,9 @@ def do_expts_and_dump_stats():
 if __name__=='__main__':
   #do_many_expts(40, 10, 16, num_expts=100, M=optimized_M_2,
   #    add_noise=True,algo='COMP')
-  do_many_expts(40, 3, 16, num_expts=1000, M=optimized_M_2,
-      add_noise=True,algo='NNOMP_random_cv')
+  for mr in range(8, 15):
+    do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M_2,
+        add_noise=True,algo='NNOMP_random_cv', mr=mr)
   #do_many_expts(40, 4, 16, num_expts=1000, M=optimized_M_2,
   #    add_noise=True,algo='NNOMP_loo_cv')
   #do_many_expts(40, 3, 16, num_expts=1000, M=optimized_M_2,
