@@ -78,7 +78,7 @@ class CS(COMP):
           sigma=0.001)[0]
     elif algo== 'NNOMP':
       #print('yp1')
-      answer=nnompcv.nnomp(self.M.T.astype('double'),0,results,0, 30, cv=False)
+      answer=nnompcv.nnomp(self.M.T.astype('float'),0,results,0, 30, cv=False)
     elif algo=='NNOMPCV':
       temp_mat = (self.M.T).astype(float)
       mr = math.ceil(0.9*temp_mat.shape[1])
@@ -245,7 +245,7 @@ class CS(COMP):
       splits = self.return_loo_cv_splits(y)
 
     best_d = self.get_d_nnomp_cv(splits)
-    x = nnompcv.nnomp(self.M.T.astype('double'), 0, y, 0,
+    x = nnompcv.nnomp(self.M.T.astype('float'), 0, y, 0,
         best_d, cv=False)
     return x
     
@@ -503,18 +503,19 @@ def do_expts_and_dump_stats():
           print(n, d, item )
 
 def run_many_parallel_expts():
-  num_expts = 1000
-  n = 60
-  t = 24
-  matrix = optimized_M_3
-  expts = Parallel(n_jobs=10)\
+  num_expts = 100
+  n = 400
+  t = 64
+  matrix = optimized_M_5
+  mr = 45
+  expts = Parallel(n_jobs=1)\
   (\
       delayed(do_many_expts)\
       (
         n, d, t, num_expts=num_expts, M=matrix,\
-        add_noise=True,algo='NNOMP_random_cv', mr=16 \
+        add_noise=True,algo='NNOMP_random_cv', mr=45 \
       )\
-      for d in range(1, 11)\
+      for d in range(6, 11)\
   )
 
   for expt in expts:
@@ -524,7 +525,7 @@ def run_many_parallel_expts():
 
 def run_many_parallel_expts_mr():
   num_expts = 1000
-  expts = Parallel(n_jobs=10)\
+  expts = Parallel(n_jobs=4)\
   (\
       delayed(do_many_expts)\
       (
@@ -541,8 +542,8 @@ def run_many_parallel_expts_mr():
 
 
 if __name__=='__main__':
-  #do_many_expts(60, 2, 24, num_expts=100, M=optimized_M_3,
-  #    add_noise=True,algo='NNOMP_random_cv', mr=17)
+  #do_many_expts(400, 5, 64, num_expts=100, M=optimized_M_5,
+  #    add_noise=True,algo='NNOMP_random_cv', mr=45)
   run_many_parallel_expts()
   #for mr in range(8, 15):
   #  do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M_2,
