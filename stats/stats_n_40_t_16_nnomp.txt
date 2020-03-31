@@ -1,0 +1,89 @@
+n = 40, d = 1, t = 16
+
+No errors in 1000 / 1000 cases
+No fp in 1000 / 1000 cases
+No fn in 1000 / 1000 cases
+precision = 1.000000, recall = 1.000000
+total tp = 1000.0 total fp =  0.0 total fn =  0.0
+avg fp = 0.000 avg fn = 0.000
+
+n = 40, d = 2, t = 16
+
+No errors in 914 / 1000 cases
+No fp in 992 / 1000 cases
+No fn in 919 / 1000 cases
+precision = 0.995842, recall = 0.958000
+total tp = 1916.0 total fp =  8.0 total fn =  84.0
+avg fp = 1.000 avg fn = 1.037
+
+n = 40, d = 3, t = 16
+
+No errors in 833 / 1000 cases
+No fp in 930 / 1000 cases
+No fn in 864 / 1000 cases
+precision = 0.965782, recall = 0.922000
+total tp = 2766.0 total fp =  98.0 total fn =  234.0
+avg fp = 1.400 avg fn = 1.721
+
+n = 40, d = 4, t = 16
+
+No errors in 559 / 1000 cases
+No fp in 837 / 1000 cases
+No fn in 626 / 1000 cases
+precision = 0.914023, recall = 0.770750
+total tp = 3083.0 total fp =  290.0 total fn =  917.0
+avg fp = 1.779 avg fn = 2.452
+
+n = 40, d = 5, t = 16
+
+No errors in 238 / 1000 cases
+No fp in 686 / 1000 cases
+No fn in 389 / 1000 cases
+precision = 0.803067, recall = 0.597000
+total tp = 2985.0 total fp =  732.0 total fn =  2015.0
+avg fp = 2.331 avg fn = 3.298
+
+n = 40, d = 6, t = 16
+
+No errors in 49 / 1000 cases
+No fp in 549 / 1000 cases
+No fn in 229 / 1000 cases
+precision = 0.693738, recall = 0.491167
+total tp = 2947.0 total fp =  1301.0 total fn =  3053.0
+avg fp = 2.885 avg fn = 3.960
+
+n = 40, d = 7, t = 16
+
+No errors in 19 / 1000 cases
+No fp in 430 / 1000 cases
+No fn in 139 / 1000 cases
+precision = 0.606641, recall = 0.456714
+total tp = 3197.0 total fp =  2073.0 total fn =  3803.0
+avg fp = 3.637 avg fn = 4.417
+
+n = 40, d = 8, t = 16
+
+No errors in 12 / 1000 cases
+No fp in 310 / 1000 cases
+No fn in 72 / 1000 cases
+precision = 0.558427, recall = 0.445625
+total tp = 3565.0 total fp =  2819.0 total fn =  4435.0
+avg fp = 4.086 avg fn = 4.779
+
+n = 40, d = 9, t = 16
+
+No errors in 9 / 1000 cases
+No fp in 230 / 1000 cases
+No fn in 25 / 1000 cases
+precision = 0.536068, recall = 0.438444
+total tp = 3946.0 total fp =  3415.0 total fn =  5054.0
+avg fp = 4.435 avg fn = 5.184
+
+n = 40, d = 10, t = 16
+
+No errors in 2 / 1000 cases
+No fp in 174 / 1000 cases
+No fn in 3 / 1000 cases
+precision = 0.515485, recall = 0.421100
+total tp = 4211.0 total fp =  3958.0 total fn =  5789.0
+avg fp = 4.792 avg fn = 5.806
