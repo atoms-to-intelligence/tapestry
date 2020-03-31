@@ -75,7 +75,7 @@ class CS(COMP):
           sigma=0.001)[0]
     elif algo== 'NNOMP':
       #print('yp1')
-      answer=nnompcv.nnomp(self.M.T.astype('double'),0,results,0,30, cv=False)
+      answer=nnompcv.nnomp(self.M.T.astype('double'),0,results,0, 30, cv=False)
     elif algo=='NNOMPCV':
       temp_mat = (self.M.T).astype(float)
       mr = math.ceil(0.9*temp_mat.shape[1])
@@ -86,8 +86,10 @@ class CS(COMP):
       ycv = results[mr+1:m]
       #print('yo')
       answer = nnompcv.nnomp(Ar, Acv, yr, ycv, 30, cv=True)
-    elif algo == 'NNOMPLOOCV':
-      answer = self.decode_nnomp_loo_cv(results)
+    elif algo == 'NNOMP_loo_cv':
+      answer = self.decode_nnomp_multi_split_cv(results, 'loo_splits')
+    elif algo == 'NNOMP_random_cv':
+      answer = self.decode_nnomp_multi_split_cv(results, 'random_splits')
     else:
       raise ValueError('No such algorithm %s' % algo)
 
@@ -137,7 +139,39 @@ class CS(COMP):
 
   # Get num random splits with given fraction. Sensing matrix will have at
   # least frac fraction of rows
-  #def return_random_splits(self, y, num, frac=0.9):
+  def return_random_splits(self, y, num, frac):
+    mr = math.ceil(frac * self.t)
+    r = self.t - mr
+    # Following code only works for r > 1
+    assert r > 1
+    
+    train_Ms = []
+    test_Ms = []
+    train_ys = []
+    test_ys = []
+    M = self.M.T # Uggh
+    for i in range(num):
+      perm = np.random.permutation(range(self.t))
+      r_idx = perm[:r]
+      m_idx = perm[r:]
+
+      train_M = np.delete(M, r_idx, axis=0)
+      train_y = np.delete(y, r_idx, axis=0)
+
+      test_M = np.delete(M, m_idx, axis=0)
+      test_y = np.delete(y, m_idx, axis=0)
+
+      #print(train_M.shape)
+      #print(train_y.shape)
+      #print(test_M.shape)
+      #print(test_y.shape)
+
+      train_Ms.append(train_M)
+      train_ys.append(train_y)
+      test_Ms.append(test_M)
+      test_ys.append(test_y)
+
+    return train_Ms, train_ys, test_Ms, test_ys
 
   # Return splits for leave-one-out cross-validation
   def return_loo_cv_splits(self, y):
@@ -185,11 +219,15 @@ class CS(COMP):
   # Do leave one out splits
   # get best d from those splits
   # Run final nnomp algorithm using best d and entire matrix
-  def decode_nnomp_loo_cv(self, y):
-    splits = self.return_loo_cv_splits(y)
+  def decode_nnomp_multi_split_cv(self, y, method='random_splits'):
+    if method == 'random_splits':
+      splits = self.return_random_splits(y, 10, frac=0.8)
+    elif method == 'loo_splits':
+      splits = self.return_loo_cv_splits(y)
+
     best_d = self.get_d_nnomp_cv(splits)
     x = nnompcv.nnomp(self.M.T.astype('double'), 0, y, 0,
-        best_d, cv=False)
+        best_d + 1, cv=False)
     return x
     
 
@@ -267,7 +305,7 @@ class CSExpts:
     elif cross_validation:
       raise ValueError('No cross validation implemented for %s' % algo)
     if algo == 'OMP' or algo == 'lasso' or algo == 'NNOMP' or algo == 'NNOMPCV' \
-        or algo == 'NNOMPLOOCV':
+        or algo == 'NNOMP_loo_cv' or algo == 'NNOMP_random_cv':
       score, tp, fp, fn = cs.decode_lasso(y, algo)
     if algo == 'COMP':
       score, tp, fp, fn = cs.decode_comp_new(bool_y)
@@ -294,7 +332,7 @@ class CSExpts:
       avg_fn = 0
     else:
       avg_fn = self.total_fn / (num_expts - self.no_fn)
-    print('******', self.name, 'Statistics', '******')
+    #print('******', self.name, 'Statistics', '******')
     print('No errors in %d / %d cases' % (self.no_error, num_expts))
     print('No fp in %d / %d cases' % (self.no_fp, num_expts))
     print('No fn in %d / %d cases' % (self.no_fn, num_expts))
@@ -427,8 +465,12 @@ def do_expts_and_dump_stats():
           print(n, d, item )
 
 if __name__=='__main__':
-  do_many_expts(40, 2, 16, num_expts=1, M=optimized_M_2,
-      add_noise=True,algo='NNOMPLOOCV')
+  #do_many_expts(40, 2, 16, num_expts=100, M=optimized_M_2,
+  #    add_noise=True,algo='NNOMP_random_cv')
+  do_many_expts(40, 3, 16, num_expts=1000, M=optimized_M_2,
+      add_noise=True,algo='NNOMP_loo_cv')
+  #do_many_expts(40, 3, 16, num_expts=1000, M=optimized_M_2,
+  #    add_noise=True,algo='NNOMP')
 
 # Following code assumes the same Gaussian noise for each y
 #for noise in [0.0001, 0.0002, 0.0004, 0.0008, 0.001, 0.002, 0.004, 0.008, 0.01]:
