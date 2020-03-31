@@ -10,7 +10,7 @@ import json
 import pandas as pd
 import os
 
-np.set_printoptions(precision=2)
+np.set_printoptions(precision=3)
 
 # Use compressed sensing to solve 0.5*||Mx - y||^2 + l * ||x||_1
 class CS(COMP):
@@ -138,9 +138,9 @@ class CS(COMP):
     #return min_score
 
   # Get num random splits with given fraction. Sensing matrix will have at
-  # least frac fraction of rows
+  # most frac fraction of rows
   def return_random_splits(self, y, num, frac):
-    mr = math.ceil(frac * self.t)
+    mr = math.floor(frac * self.t)
     r = self.t - mr
     # Following code only works for r > 1
     assert r > 1
@@ -200,34 +200,47 @@ class CS(COMP):
   # Find best d by cross-validation using these splits
   #
   # Best d is the one found by majority of the splits
-  def get_d_nnomp_cv(self, splits, max_d=30):
+  def get_d_nnomp_cv(self, splits, max_d=30, resolve_method='voting'):
     train_Ms, train_ys, test_Ms, test_ys = splits
     counts = np.zeros(max_d + 1)
+    cum_error = np.zeros(max_d)
     for train_M, train_y, test_M, test_y in zip(train_Ms, train_ys, test_Ms,
         test_ys):
-      _, error, d = nnompcv.nnomp(train_M, test_M, train_y, test_y, 30, cv=True)
+      _, error, d, errors = nnompcv.nnomp(train_M, test_M, train_y, test_y, 30, cv=True)
       counts[d] += 1
+      #print('Errors: ', np.array(errors))
+      if errors:
+        cum_error += errors
 
-    for d, count in enumerate(counts):
-      if count > 0:
-        print('d = %d, count = %d' % (d, count))
+    #for d, count in enumerate(counts):
+    #  if count > 0:
+    #    print('d = %d, count = %d' % (d + 1, count))
 
-    best_d = np.argmax(counts)
-    print('Best d by majority voting amongs cross-validation splits:', best_d)
-    return best_d
+    best_d_maj = np.argmax(counts) + 1
+    #print('Best d by majority voting amongst cross-validation splits:',
+    #    best_d_maj)
+    best_d_error = np.argmin(cum_error) + 1
+    #print('Best d by min avg error amongst cross-validation splits:',
+    #    best_d_error)
+    if resolve_method == 'voting':
+      return best_d_maj
+    elif resolve_method == 'error':
+      return best_d_error
+    else:
+      raise ValueError('Invalid resolve method %s' % resolve_method)
 
   # Do leave one out splits
   # get best d from those splits
   # Run final nnomp algorithm using best d and entire matrix
   def decode_nnomp_multi_split_cv(self, y, method='random_splits'):
     if method == 'random_splits':
-      splits = self.return_random_splits(y, 10, frac=0.8)
+      splits = self.return_random_splits(y, 10, frac=0.7)
     elif method == 'loo_splits':
       splits = self.return_loo_cv_splits(y)
 
     best_d = self.get_d_nnomp_cv(splits)
     x = nnompcv.nnomp(self.M.T.astype('double'), 0, y, 0,
-        best_d + 1, cv=False)
+        best_d, cv=False)
     return x
     
 
@@ -465,10 +478,12 @@ def do_expts_and_dump_stats():
           print(n, d, item )
 
 if __name__=='__main__':
-  #do_many_expts(40, 2, 16, num_expts=100, M=optimized_M_2,
-  #    add_noise=True,algo='NNOMP_random_cv')
-  do_many_expts(40, 3, 16, num_expts=1000, M=optimized_M_2,
-      add_noise=True,algo='NNOMP_loo_cv')
+  #do_many_expts(40, 10, 16, num_expts=100, M=optimized_M_2,
+  #    add_noise=True,algo='COMP')
+  do_many_expts(40, 2, 16, num_expts=100, M=optimized_M_2,
+      add_noise=True,algo='NNOMP_random_cv')
+  #do_many_expts(40, 4, 16, num_expts=1000, M=optimized_M_2,
+  #    add_noise=True,algo='NNOMP_loo_cv')
   #do_many_expts(40, 3, 16, num_expts=1000, M=optimized_M_2,
   #    add_noise=True,algo='NNOMP')
 

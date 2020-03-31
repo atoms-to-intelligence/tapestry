@@ -13,6 +13,8 @@ def nnomp(A, Acv, y, ycv, d, cv=False):
   epscv = np.linalg.norm(ycv)
   minepscv = math.inf
   minx = x1
+  min_i = 0
+  errors = []
   for i in range(d):
     a = np.matmul(Au,r)
     m = np.amax(a)
@@ -24,12 +26,21 @@ def nnomp(A, Acv, y, ycv, d, cv=False):
       if(cv):
         rcv = ycv - np.matmul(Acv, x1)
         epscv = np.linalg.norm(rcv)
+        errors.append(epscv)
         if(epscv < minepscv):
           minepscv = epscv
           minx = x1
           min_i = i
   if(cv):
-    return minx, minepscv, min_i + 1
+    # Propagate error to higher values of d
+    l = len(errors)
+    if l == 0:
+      errors = [0] * d
+    elif l < d:
+      errors.extend([errors[-1]] * (d - l))
+      assert len(errors) == d
+
+    return minx, minepscv, min_i, errors
   else:
     return x1
 
