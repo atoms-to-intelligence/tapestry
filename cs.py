@@ -296,3 +296,7 @@ class CS(COMP):
   def pickle_dump(self, filename):
     pass
 
+if __name__ == '__main__':
+  raise ValueError('Running experiments has been moved to cs_expts.py. '
+      'Either use that or sel_matrix.py')
+

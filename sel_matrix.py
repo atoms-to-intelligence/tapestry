@@ -1,4 +1,4 @@
-from cs import *
+from cs_expts import *
 import pickle
 
 import json
@@ -16,22 +16,23 @@ def find_best_matrix(n, d, t, Ms, num_expts=1000):
   for M in Ms:
     item = do_many_expts(n, d, t, num_expts, xs, M,
         cross_validation=False,
-        add_noise=True)
-    #print(item)
+        add_noise=True,
+        algo='NNOMP_random_cv',
+        mr=11)
     stats.append(item)
 
   return stats
 
-n = 60
+n = 40
 d = 2
-t = 24
+t = 16
 #Ms = [np.random.binomial(1, 0.5, size=(t, n)) for i in range(10)]
 #Ms = [optimized_M for i in range(10)]
 Ms = []
-Ms.append(optimized_M_3)
+Ms.append(optimized_M_2)
 #Ms.append(optimized_M_4)
 ss = []
-for d in range(1,3):
+for d in range(1, 11):
   stats = find_best_matrix(n, d, t, Ms, num_expts=1000)
   ss.extend(stats)
   #for stat, M in zip(stats, Ms):
