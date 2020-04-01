@@ -73,8 +73,8 @@ class CS(COMP):
       answer = pylops.optimization.sparsity.OMP(temp_mat, results, 10000,
           sigma=0.001)[0]
     elif algo== 'NNOMP':
-      #print('yp1')
-      answer=nnompcv.nnomp(self.M.T.astype('float'),0,results,0, 30, cv=False)
+      # Max d that can be detected by NNOMP is equal to number of rows
+      answer=nnompcv.nnomp(self.M.T.astype('float'),0,results,0, self.t, cv=False)
     elif algo=='NNOMPCV':
       temp_mat = (self.M.T).astype(float)
       mr = math.ceil(0.9*temp_mat.shape[1])
@@ -84,13 +84,19 @@ class CS(COMP):
       yr = results[0:mr]
       ycv = results[mr+1:m]
       #print('yo')
-      answer = nnompcv.nnomp(Ar, Acv, yr, ycv, 30, cv=True)
+      # Max d that can be detected by NNOMP is equal to number of rows
+      answer = nnompcv.nnomp(Ar, Acv, yr, ycv, self.t, cv=True)
     elif algo == 'NNOMP_loo_cv':
       answer = self.decode_nnomp_multi_split_cv(results, 'loo_splits')
     elif algo == 'NNOMP_random_cv':
-      answer = self.decode_nnomp_multi_split_cv(results, 'random_splits')
+      # Skip cross-validation for really small cases
+      if self.t < 4:
+        # Max d that can be detected by NNOMP is equal to number of rows
+        answer=nnompcv.nnomp(self.M.T.astype('float'),0,results,0, self.t, cv=False)
+      else:
+        answer = self.decode_nnomp_multi_split_cv(results, 'random_splits')
     elif algo.startswith('combined_COMP_'):
-      print('Doing ', algo)
+      #print('Doing ', algo)
       l = len('combined_COMP_')
       secondary_algo = algo[l:]
       answer = self.decode_comp_combined(results, secondary_algo)
@@ -207,13 +213,14 @@ class CS(COMP):
   # Find best d by cross-validation using these splits
   #
   # Best d is the one found by majority of the splits
-  def get_d_nnomp_cv(self, splits, max_d=30, resolve_method='voting'):
+  def get_d_nnomp_cv(self, splits, max_d, resolve_method='voting'):
     train_Ms, train_ys, test_Ms, test_ys = splits
     counts = np.zeros(max_d + 1)
     cum_error = np.zeros(max_d)
     for train_M, train_y, test_M, test_y in zip(train_Ms, train_ys, test_Ms,
         test_ys):
-      _, error, d, errors = nnompcv.nnomp(train_M, test_M, train_y, test_y, 30, cv=True)
+      _, error, d, errors = nnompcv.nnomp(train_M, test_M, train_y, test_y,
+          max_d, cv=True)
       counts[d] += 1
       #print('Errors: ', np.array(errors))
       if errors:
@@ -245,7 +252,7 @@ class CS(COMP):
     elif method == 'loo_splits':
       splits = self.return_loo_cv_splits(y)
 
-    best_d = self.get_d_nnomp_cv(splits)
+    best_d = self.get_d_nnomp_cv(splits, max_d=self.t)
     x = nnompcv.nnomp(self.M.T.astype('float'), 0, y, 0,
         best_d, cv=False)
     return x

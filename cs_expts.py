@@ -17,7 +17,6 @@ class CSExpts:
   # Find results using qPCR
   def do_single_expt(self, i, num_expts, cs, x, cross_validation=True, add_noise=True,
       algo='OMP', noise_magnitude=None):
-
     y, sigval = cs.get_quantitative_results(cs.conc, add_noise=add_noise,
         noise_magnitude=noise_magnitude)
     bool_y = (y > 0).astype(np.int32)
@@ -92,6 +91,7 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
     algo='OMP',
     noise_magnitude=None,
     mr=None):
+
   # Test width. Max number of parallel tests available.
   #t = 12
 
@@ -111,8 +111,13 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
   if xs is not None:
     assert num_expts == len(xs)
 
-  #cv_expts = CSExpts('CV')
-  nocv_expts = CSExpts('No CV')
+  if isinstance(algo, list):
+    expts = [CSExpts(item) for item in algo]
+    ret_list = True
+  else:
+    expts = [CSExpts(algo)]
+    ret_list = False
+
   if mr is None:
     prntstr = ('\nn = %d, d = %d, t = %d\n' % (n, d, t))
   else:
@@ -126,29 +131,36 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
         arr = create_infection_array_with_num_cases(n, d)
       #cs = CS(n, t, s, d, l, x, optimized_M)
       cs = CS(n, t, s, d, l, arr, M, mr)
-      nocv_expts.do_single_expt(i, num_expts, cs, cs.conc,
-          algo=algo,
-          cross_validation=cross_validation,
-          add_noise=add_noise,
-          noise_magnitude=noise_magnitude)
-      #cv_expts.do_single_expt(i, cs, cs.conc, cross_validation=True)
+      for expt, alg in zip(expts, algo):
+        expt.do_single_expt(i, num_expts, cs, cs.conc,
+            algo=alg,
+            cross_validation=cross_validation,
+            add_noise=add_noise,
+            noise_magnitude=noise_magnitude)
     print('')
-    nocv_expts.print_stats(num_expts)
+    for expt in expts:
+      expt.print_stats(num_expts)
   except KeyboardInterrupt:
-    nocv_expts.print_stats(i)
+    for expt in expts:
+      expt.print_stats(i)
     raise
 
-  nocv_expts.n = n
-  nocv_expts.d = d
-  nocv_expts.t = t
-  nocv_expts.mr = mr
-  #cv_expts.print_stats(num_expts)
-  stat = nocv_expts.return_stats(num_expts)
-  stat['n'] = n
-  stat['d'] = d
-  stat['t'] = t
-  #return stat
-  return nocv_expts
+  stats = []
+  for expt in expts:
+    expt.n = n
+    expt.d = d
+    expt.t = t
+    expt.mr = mr
+    stat = expt.return_stats(num_expts)
+    stat['n'] = n
+    stat['d'] = d
+    stat['t'] = t
+    stats.append(stat)
+
+  if ret_list:
+    return expts, stats
+  else:
+    return expts[0], stats[0]
 
 def dump_to_file(filename, stats):
   df = pd.DataFrame.from_dict(stats)
@@ -216,21 +228,23 @@ def run_many_parallel_expts():
   n = 40
   t = 16
   matrix = optimized_M_2
-  mr = 11
-  expts = Parallel(n_jobs=1)\
+  retvals = Parallel(n_jobs=10)\
   (\
       delayed(do_many_expts)\
       (
         n, d, t, num_expts=num_expts, M=matrix,\
-        add_noise=True,algo='NNOMP_random_cv', mr=mr \
+        add_noise=True,algo=['combined_COMP_NNOMP_random_cv',\
+        'NNOMP_random_cv'], mr=None \
       )\
       for d in range(1, 5)\
   )
 
-  for expt in expts:
-    prntstr = ('\nn = %d, d = %d, t = %d\n' % (expt.n, expt.d, expt.t))
-    print(prntstr)
-    expt.print_stats(num_expts)
+  for item in retvals:
+    expts, stats = item
+    for expt, stat in zip(expts, stats):
+      prntstr = ('\nn = %d, d = %d, t = %d\n' % (expt.n, expt.d, expt.t))
+      print(prntstr)
+      expt.print_stats(num_expts, header=True)
 
 def run_many_parallel_expts_mr():
   num_expts = 1000
@@ -326,11 +340,11 @@ def large_test_decode_comp_combined(num_expts):
   without_comp.print_stats(num_expts, header=True)
 
 if __name__=='__main__':
-  large_test_decode_comp_combined(100)
+  #large_test_decode_comp_combined(1000)
   #mr = None
   #do_many_expts(40, 2, 16, num_expts=10, M=optimized_M_2,
   #    add_noise=True,algo='combined_COMP_NNOMP_random_cv', mr=mr)
-  #run_many_parallel_expts()
+  run_many_parallel_expts()
   #for mr in range(8, 15):
   #  do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M_2,
   #      add_noise=True,algo='NNOMP_random_cv', mr=mr)
