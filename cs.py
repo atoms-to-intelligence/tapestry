@@ -90,6 +90,7 @@ class CS(COMP):
     elif algo == 'NNOMP_random_cv':
       answer = self.decode_nnomp_multi_split_cv(results, 'random_splits')
     elif algo.startswith('combined_COMP_'):
+      print('Doing ', algo)
       l = len('combined_COMP_')
       secondary_algo = algo[l:]
       answer = self.decode_comp_combined(results, secondary_algo)
@@ -293,31 +294,34 @@ class CS(COMP):
 
   # Filter out those entries of x which are definitely 0 using COMP.
   # Remove corresponding columns from M.
-  def decode_comp_combined(self, y, secondary_algo):
+  def decode_comp_combined(self, y, secondary_algo, test=False):
+    # This assertion is needed because mr depends on number of rows.
+    # Since number of rows will change for the internal CS, use frac instead
     assert self.mr == None
+
     bool_y = (y > 0).astype(np.int32)
     infected_comp, _score, _tp, _fp, _fn = self.decode_comp_new(bool_y)
 
     # Find the indices of 1's above. These will be retained. Rest will be
     # discarded
-    print('Comp output: ', infected_comp)
+    #print('Comp output: ', infected_comp)
     non_zero_cols,  = np.nonzero(infected_comp)
     non_zero_rows,  = np.nonzero(y)
-    print('Indices of Non-zero columns:', non_zero_cols)
-    print('Indices of Non-zero rows:', non_zero_rows)
+    #print('Indices of Non-zero columns:', non_zero_cols)
+    #print('Indices of Non-zero rows:', non_zero_rows)
 
     A = self.M.T
     A = np.take(A, non_zero_cols, axis=1)
     A = np.take(A, non_zero_rows, axis=0)
-    print('Shape of remaining A:', A.shape)
-    print('Remaining A: ', A)
+    #print('Shape of remaining A:', A.shape)
+    #print('Remaining A: ', A)
 
     y = y[non_zero_rows]
-    print('Remaining y:', y)
+    #print('Remaining y:', y)
     
     x = self.conc
     x = x[non_zero_cols]
-    print('Remaining x:', x)
+    #print('Remaining x:', x)
     arr = (x>0).astype(np.int32)
     # Now solve using this new A and y
 
@@ -341,7 +345,10 @@ class CS(COMP):
       infected[idx] = val
 
     # tp, fp and fn will be correct for the internal algo
-    return infected, score, tp, fp, fn
+    if test:
+      return infected, score, tp, fp, fn
+    else:
+      return infected
 
   def decode_qp(self, results):
     pass

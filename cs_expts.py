@@ -35,6 +35,10 @@ class CSExpts:
     sys.stdout.write('\riter = %d / %d score: %.2f tp = %d fp = %d fn = %d' %
         (i, num_expts, score, tp, fp, fn))
     sys.stdout.flush()
+
+    self.add_stats(tp, fp, fn)
+
+  def add_stats(self, tp, fp, fn):
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -46,7 +50,7 @@ class CSExpts:
     self.total_fp += fp
     self.total_fn += fn
 
-  def print_stats(self, num_expts):
+  def print_stats(self, num_expts, header=False):
     precision = self.total_tp / float(self.total_tp + self.total_fp)
     recall = self.total_tp / float(self.total_tp + self.total_fn)
     if num_expts == self.no_fp:
@@ -57,7 +61,9 @@ class CSExpts:
       avg_fn = 0
     else:
       avg_fn = self.total_fn / (num_expts - self.no_fn)
-    #print('******', self.name, 'Statistics', '******')
+
+    if header:
+      print('******', self.name, 'Statistics', '******')
     print('No errors in %d / %d cases' % (self.no_error, num_expts))
     print('No fp in %d / %d cases' % (self.no_fp, num_expts))
     print('No fn in %d / %d cases' % (self.no_fn, num_expts))
@@ -115,11 +121,11 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
   try:
     for i in range(num_expts):
       if xs is not None:
-        x = xs[i]
+        arr = xs[i]
       else:
-        x = create_infection_array_with_num_cases(n, d)
+        arr = create_infection_array_with_num_cases(n, d)
       #cs = CS(n, t, s, d, l, x, optimized_M)
-      cs = CS(n, t, s, d, l, x, M, mr)
+      cs = CS(n, t, s, d, l, arr, M, mr)
       nocv_expts.do_single_expt(i, num_expts, cs, cs.conc,
           algo=algo,
           cross_validation=cross_validation,
@@ -244,7 +250,7 @@ def run_many_parallel_expts_mr():
     expt.print_stats(num_expts)
 
 
-def test_decode_comp_combined():
+def small_test_decode_comp_combined():
   A = np.array(
       [
         [1, 0, 0, 1, 0, 0],
@@ -275,15 +281,55 @@ def test_decode_comp_combined():
   print(y)
   print(results)
   assert np.all(y == results)
+
   infected, score, tp, fp, fn = cs.decode_comp_combined(y, 'NNOMP')
   print('infected:', infected)
   print('tp: %d, fp: %d, fn: %d' % (tp, fp, fn))
 
+  infected, score, tp, fp, fn = cs.decode_lasso(y, 'NNOMP')
+  print('without comp infected:', infected)
+  print('without comp tp: %d, fp: %d, fn: %d' % (tp, fp, fn))
+
+
+def large_test_decode_comp_combined(num_expts):
+  A = optimized_M_2
+  n = A.shape[1]
+  t = A.shape[0]
+  d = 2
+  s = 0.5
+  l = 0.1
+  mr = None
+
+  algo = 'NNOMP_random_cv'
+  with_comp = CSExpts('With COMP and %s' % algo)
+  without_comp = CSExpts('Only %s' % algo)
+  for i in range(num_expts):
+    arr = create_infection_array_with_num_cases(n, d)
+    cs = CS(n, t, s, d, l, arr, A, mr)
+    y, _ = cs.get_quantitative_results(cs.conc, add_noise=True)
+    #print(y)
+
+    #infected, score, tp, fp, fn = cs.decode_comp_combined(y, 'NNOMP_random_cv')
+    infected, score, tp, fp, fn = cs.decode_comp_combined(y, algo,
+        test=True)
+    with_comp.add_stats(tp, fp, fn)
+    #print('infected:', infected)
+    #print('score %.4f, tp: %d, fp: %d, fn: %d' % (score, tp, fp, fn))
+
+    #infected, score, tp, fp, fn = cs.decode_lasso(y, 'NNOMP_random_cv')
+    infected, score, tp, fp, fn = cs.decode_lasso(y, algo)
+    without_comp.add_stats(tp, fp, fn)
+    #print('without comp infected:', infected)
+    #print('without comp score %.4f, tp: %d, fp: %d, fn: %d' % (score, tp, fp, fn))
+
+  with_comp.print_stats(num_expts, header=True)
+  without_comp.print_stats(num_expts, header=True)
 
 if __name__=='__main__':
-  test_decode_comp_combined()
-  #do_many_expts(400, 5, 64, num_expts=100, M=optimized_M_5,
-  #    add_noise=True,algo='NNOMP_random_cv', mr=45)
+  large_test_decode_comp_combined(100)
+  #mr = None
+  #do_many_expts(40, 2, 16, num_expts=10, M=optimized_M_2,
+  #    add_noise=True,algo='combined_COMP_NNOMP_random_cv', mr=mr)
   #run_many_parallel_expts()
   #for mr in range(8, 15):
   #  do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M_2,
