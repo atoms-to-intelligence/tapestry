@@ -14,7 +14,7 @@ def find_best_matrix(n, d, t, Ms, num_expts=1000):
   xs = [create_infection_array_with_num_cases(n, d) for i in range(num_expts)]
   stats = []
   for M in Ms:
-    item = do_many_expts(n, d, t, num_expts, xs, M,
+    _, item = do_many_expts(n, d, t, num_expts, xs, M,
         cross_validation=False,
         add_noise=True,
         algo='NNOMP_random_cv',
