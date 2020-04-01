@@ -294,6 +294,7 @@ class CS(COMP):
   # Filter out those entries of x which are definitely 0 using COMP.
   # Remove corresponding columns from M.
   def decode_comp_combined(self, y, secondary_algo):
+    assert self.mr == None
     bool_y = (y > 0).astype(np.int32)
     infected_comp, _score, _tp, _fp, _fn = self.decode_comp_new(bool_y)
 
@@ -306,14 +307,41 @@ class CS(COMP):
     print('Indices of Non-zero rows:', non_zero_rows)
 
     A = self.M.T
-    A_cols_deleted = np.take(A, non_zero_cols, axis=1)
-    A_rows_cols_deleted = np.take(A_cols_deleted, non_zero_rows, axis=0)
-    print('Shape of remaining A:', A_rows_cols_deleted.shape)
-    print('Remaining A: ', A_rows_cols_deleted)
+    A = np.take(A, non_zero_cols, axis=1)
+    A = np.take(A, non_zero_rows, axis=0)
+    print('Shape of remaining A:', A.shape)
+    print('Remaining A: ', A)
 
-    y_rows_deleted = y[non_zero_rows]
-    print('Remaining y:', y_rows_deleted)
-    return non_zero_cols
+    y = y[non_zero_rows]
+    print('Remaining y:', y)
+    
+    x = self.conc
+    x = x[non_zero_cols]
+    print('Remaining x:', x)
+    arr = (x>0).astype(np.int32)
+    # Now solve using this new A and y
+
+    # parameters d and s do not matter. They are not used in the algorithm
+    n = A.shape[1]
+    t = A.shape[0]
+    d = self.d
+    s = self.s
+    l = 0.1
+
+    # Create another CS class to run the secondary algorithm
+    # Better to set mr parameter to None since it depends on number of rows
+    # and will change for this internal CS object. frac will be used instead
+    # for deciding splits
+    _cs = CS(n, t, s, d, l, arr, A, mr=None)
+    _cs.conc = x
+
+    infected_internal, score, tp, fp, fn = _cs.decode_lasso(y, secondary_algo)
+    infected = np.zeros(self.n)
+    for val, idx in zip(infected_internal, non_zero_cols):
+      infected[idx] = val
+
+    # tp, fp and fn will be correct for the internal algo
+    return infected, score, tp, fp, fn
 
   def decode_qp(self, results):
     pass

@@ -253,7 +253,8 @@ def test_decode_comp_combined():
         [0, 0, 0, 0, 1, 1],
       ])
 
-  x = np.array([3, 0, 2, 9, 0, 0])
+  x = np.array([3, 0, 2, 9, 1, 0])
+  arr = (x > 0).astype(np.int32)
   y = np.matmul(A, x)
 
   print('A = ')
@@ -267,13 +268,16 @@ def test_decode_comp_combined():
   s = 0.5
   l = 0.1
   mr = None
-  cs = CS(n, t, s, d, l, x, A, mr)
-  results, _ = cs.get_quantitative_results(x)
+  cs = CS(n, t, s, d, l, arr, A, mr)
+  # conc is computed from arr by CS. Set it here manually for testing
+  cs.conc = x 
+  results, _ = cs.get_quantitative_results(x, add_noise=False)
   print(y)
   print(results)
   assert np.all(y == results)
-  non_zero_cols = cs.decode_comp_combined(y, 'none')
-  print('Remaining x:', x[non_zero_cols])
+  infected, score, tp, fp, fn = cs.decode_comp_combined(y, 'NNOMP')
+  print('infected:', infected)
+  print('tp: %d, fp: %d, fn: %d' % (tp, fp, fn))
 
 
 if __name__=='__main__':
