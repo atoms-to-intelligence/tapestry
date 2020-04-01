@@ -4,7 +4,6 @@ import json
 import pandas as pd
 import os
 
-
 class CSExpts:
   def __init__(self, name):
     self.name = name
@@ -28,11 +27,10 @@ class CSExpts:
       l = cs.do_cross_validation_get_lambda(y, sigval)
     elif cross_validation:
       raise ValueError('No cross validation implemented for %s' % algo)
-    if algo == 'OMP' or algo == 'lasso' or algo == 'NNOMP' or algo == 'NNOMPCV' \
-        or algo == 'NNOMP_loo_cv' or algo == 'NNOMP_random_cv':
-      score, tp, fp, fn = cs.decode_lasso(y, algo)
     if algo == 'COMP':
-      score, tp, fp, fn = cs.decode_comp_new(bool_y)
+      infected, score, tp, fp, fn = cs.decode_comp_new(bool_y)
+    else:
+      infected, score, tp, fp, fn = cs.decode_lasso(y, algo)
 
     sys.stdout.write('\riter = %d / %d score: %.2f tp = %d fp = %d fn = %d' %
         (i, num_expts, score, tp, fp, fn))
@@ -246,10 +244,43 @@ def run_many_parallel_expts_mr():
     expt.print_stats(num_expts)
 
 
+def test_decode_comp_combined():
+  A = np.array(
+      [
+        [1, 0, 0, 1, 0, 0],
+        [0, 1, 0, 0, 0, 0],
+        [0, 0, 1, 1, 0, 0],
+        [0, 0, 0, 0, 1, 1],
+      ])
+
+  x = np.array([3, 0, 2, 9, 0, 0])
+  y = np.matmul(A, x)
+
+  print('A = ')
+  print(A)
+  print('x = ', x)
+  print('y = ', y)
+
+  n = A.shape[1]
+  t = A.shape[0]
+  d = 1
+  s = 0.5
+  l = 0.1
+  mr = None
+  cs = CS(n, t, s, d, l, x, A, mr)
+  results, _ = cs.get_quantitative_results(x)
+  print(y)
+  print(results)
+  assert np.all(y == results)
+  non_zero_cols = cs.decode_comp_combined(y, 'none')
+  print('Remaining x:', x[non_zero_cols])
+
+
 if __name__=='__main__':
+  test_decode_comp_combined()
   #do_many_expts(400, 5, 64, num_expts=100, M=optimized_M_5,
   #    add_noise=True,algo='NNOMP_random_cv', mr=45)
-  run_many_parallel_expts()
+  #run_many_parallel_expts()
   #for mr in range(8, 15):
   #  do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M_2,
   #      add_noise=True,algo='NNOMP_random_cv', mr=mr)

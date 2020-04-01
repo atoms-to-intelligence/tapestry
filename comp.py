@@ -61,7 +61,7 @@ class COMP:
     fp = sum(fpos)
     fn = sum(fneg)
     
-    return 0., tp, fp, fn
+    return infected, 0., tp, fp, fn
 
 if __name__ == '__main__':
   # Test width. Max number of parallel tests available.

@@ -89,6 +89,10 @@ class CS(COMP):
       answer = self.decode_nnomp_multi_split_cv(results, 'loo_splits')
     elif algo == 'NNOMP_random_cv':
       answer = self.decode_nnomp_multi_split_cv(results, 'random_splits')
+    elif algo.startswith('combined_COMP_'):
+      l = len('combined_COMP_')
+      secondary_algo = algo[l:]
+      answer = self.decode_comp_combined(results, secondary_algo)
     else:
       raise ValueError('No such algorithm %s' % algo)
 
@@ -104,7 +108,7 @@ class CS(COMP):
     fp = sum(fpos)
     fn = sum(fneg)
     
-    return score, tp, fp, fn
+    return infected, score, tp, fp, fn
 
   def decode_lasso_for_cv(self, train_Ms, train_ys, test_Ms, test_ys,
       algo='lasso', l=None, sigma=None):
@@ -286,6 +290,30 @@ class CS(COMP):
     #print('scores = ', scores)
     print('Choosing lambda = %.4f' % self.l, 'score = %.4f' % score)
     return self.l
+
+  # Filter out those entries of x which are definitely 0 using COMP.
+  # Remove corresponding columns from M.
+  def decode_comp_combined(self, y, secondary_algo):
+    bool_y = (y > 0).astype(np.int32)
+    infected_comp, _score, _tp, _fp, _fn = self.decode_comp_new(bool_y)
+
+    # Find the indices of 1's above. These will be retained. Rest will be
+    # discarded
+    print('Comp output: ', infected_comp)
+    non_zero_cols,  = np.nonzero(infected_comp)
+    non_zero_rows,  = np.nonzero(y)
+    print('Indices of Non-zero columns:', non_zero_cols)
+    print('Indices of Non-zero rows:', non_zero_rows)
+
+    A = self.M.T
+    A_cols_deleted = np.take(A, non_zero_cols, axis=1)
+    A_rows_cols_deleted = np.take(A_cols_deleted, non_zero_rows, axis=0)
+    print('Shape of remaining A:', A_rows_cols_deleted.shape)
+    print('Remaining A: ', A_rows_cols_deleted)
+
+    y_rows_deleted = y[non_zero_rows]
+    print('Remaining y:', y_rows_deleted)
+    return non_zero_cols
 
   def decode_qp(self, results):
     pass
