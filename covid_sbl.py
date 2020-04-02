@@ -112,31 +112,33 @@ A = np.array([[0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0
 )
 
 for kk in range(nsignals):
-	x = np.zeros(n)
-	indices = np.random.permutation(n)
-	x[indices[0:s]] = np.random.rand(s)
-	
-	# A = np.random.rand(m, n)
-	# A[A<0.5] = 0
-	# A[A>=0.5] = 1
+  x = np.zeros(n)
+  indices = np.random.permutation(n)
+  x[indices[0:s]] = np.random.rand(s)
+  
+  # A = np.random.rand(m, n)
+  # A[A<0.5] = 0
+  # A[A>=0.5] = 1
 
-	Ax = np.matmul(A, x)
-	#sigval = 0.01 * np.median(Ax[Ax>0])
-	#y = Ax + np.random.normal(0, sigval, m)
-	y = Ax * (1 + np.random.normal(0, 0.01, m))
-	sigval = 0.01 * np.linalg.norm(y, 2)
+  Ax = np.matmul(A, x)
+  #sigval = 0.01 * np.median(Ax[Ax>0])
+  #y = Ax + np.random.normal(0, sigval, m)
+  y = Ax * (1 + np.random.normal(0, 0.01, m))
+  sigval = 0.01 * np.linalg.norm(y, 2)
 
-	tau = 0.01*min(x[x>0])
+  tau = 0.01*min(x[x>0])
 
-	x_est = sbl.sbl(A, y, sigval, tau)
+  x_est = sbl.sbl(A, y, sigval, tau)
 
-	tp = np.count_nonzero(np.bitwise_and(x_est>0, x>0))
-	pp = np.count_nonzero(x_est>0)
-	recall[kk] = tp/s
-	if pp>0:
-		precision[kk] = tp/pp
-	else:
-		precision[kk] = 0
+  tp = np.count_nonzero(np.bitwise_and(x_est>0, x>0))
+  pp = np.count_nonzero(x_est>0)
+  recall[kk] = tp/s
+  if pp>0:
+    precision[kk] = tp/pp
+  else:
+    precision[kk] = 0
 
 
 print("avg recall : % 5.2f, avg precision : % 5.2f" %(np.mean(recall), np.mean(precision[precision>0])))
+print(precision)
+print(recall)
