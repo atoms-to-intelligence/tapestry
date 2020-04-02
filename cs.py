@@ -8,6 +8,8 @@ from comp import create_infection_array_with_num_cases, COMP
 from matrices import *
 import nnompcv
 
+import config
+
 np.set_printoptions(precision=3)
 
 # Use compressed sensing to solve 0.5*||Mx - y||^2 + l * ||x||_1
@@ -100,6 +102,8 @@ class CS(COMP):
       l = len('combined_COMP_')
       secondary_algo = algo[l:]
       answer = self.decode_comp_combined(results, secondary_algo)
+    elif algo == 'RBL':
+      pass
     else:
       raise ValueError('No such algorithm %s' % algo)
 
@@ -253,6 +257,8 @@ class CS(COMP):
       splits = self.return_loo_cv_splits(y)
 
     best_d = self.get_d_nnomp_cv(splits, max_d=self.t)
+    if config.prefer_recall:
+      best_d = 2 * best_d
     x = nnompcv.nnomp(self.M.T.astype('float'), 0, y, 0,
         best_d, cv=False)
     return x
