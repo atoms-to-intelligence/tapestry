@@ -103,7 +103,8 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
 
   # Test assignment probability. Probability that a person gets assigned to a
   # test
-  s = 500. / 1000
+  s = min(1 / d, 0.5)
+  #s = 0.5
 
   # lambda for regularization
   l = 1000.
@@ -112,10 +113,13 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
     assert num_expts == len(xs)
 
   if isinstance(algo, list):
+    print('list')
     expts = [CSExpts(item) for item in algo]
     ret_list = True
   else:
+    print('str')
     expts = [CSExpts(algo)]
+    algo = [algo]
     ret_list = False
 
   if mr is None:
@@ -224,27 +228,43 @@ def do_expts_and_dump_stats():
           print(n, d, item )
 
 def run_many_parallel_expts():
-  num_expts = 10
-  n = 40
-  t = 16
-  matrix = optimized_M_2
+  num_expts = 100
+  n = 200
+  t = 46
+  #matrix = np.random.binomial(1, 0.5, size=(t, n))
+  matrix = None
+  #algos = ['combined_COMP_NNOMP_random_cv',
+  #    'NNOMP_random_cv']
+  algos = ['combined_COMP_NNOMP_random_cv', 'NNOMP_random_cv']
+  #algos = ['combined_COMP_NNOMP_random_cv',
+  #    'NNOMP_random_cv']
+  add_noise = True
+  d_range = range(1, 11)
   retvals = Parallel(n_jobs=10)\
   (\
       delayed(do_many_expts)\
       (
         n, d, t, num_expts=num_expts, M=matrix,\
-        add_noise=True,algo=['combined_COMP_NNOMP_random_cv',\
-        'NNOMP_random_cv'], mr=None \
+        add_noise=add_noise,algo=algos, mr=None \
       )\
-      for d in range(1, 5)\
+      for d in d_range\
   )
 
+  l = len(algos)
+  statlist = [[] for i in range(l)]
+  idx = range(l)
   for item in retvals:
     expts, stats = item
-    for expt, stat in zip(expts, stats):
-      prntstr = ('\nn = %d, d = %d, t = %d\n' % (expt.n, expt.d, expt.t))
-      print(prntstr)
-      expt.print_stats(num_expts, header=True)
+    for i, expt, stat in zip(idx, expts, stats):
+      statlist[i].append(stat)
+
+  print('\nn = %d, t = %d\n' % (expt.n, expt.t))
+  for i, algo in enumerate(algos):
+    print('\n' + algo + '\n')
+    print('\td\tPrecision\tRecall\n')
+    for stat in statlist[i]:
+      print('\t%d\t%.3f\t\t%.3f' % (stat['d'], stat['precision'],
+        stat['recall']))
 
 def run_many_parallel_expts_mr():
   num_expts = 1000
@@ -342,7 +362,7 @@ def large_test_decode_comp_combined(num_expts):
 if __name__=='__main__':
   #large_test_decode_comp_combined(1000)
   #mr = None
-  #do_many_expts(40, 2, 16, num_expts=10, M=optimized_M_2,
+  #do_many_expts(200, 6, 46, num_expts=100, M=None,
   #    add_noise=True,algo='combined_COMP_NNOMP_random_cv', mr=mr)
   run_many_parallel_expts()
   #for mr in range(8, 15):
