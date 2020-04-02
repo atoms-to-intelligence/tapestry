@@ -7,6 +7,7 @@ from joblib import Parallel, delayed
 from comp import create_infection_array_with_num_cases, COMP
 from matrices import *
 import nnompcv
+import sbl
 
 import config
 
@@ -52,6 +53,8 @@ class CS(COMP):
 
   # Initial concentration of RNA in each sample
   def create_conc_matrix_from_infection_array(self, arr):
+    # Fix tau to 0.01 * minimum value we expect in x
+    self.tau = 0.01 * 1 / 32768.
     #conc = 1 + np.random.poisson(lam=5, size=self.n)
     conc = np.random.randint(low=1, high=32769, size=self.n) / 32768.
     #conc = np.random.randint(low=1, high=11, size=self.n) / 10.
@@ -102,8 +105,12 @@ class CS(COMP):
       l = len('combined_COMP_')
       secondary_algo = algo[l:]
       answer = self.decode_comp_combined(results, secondary_algo)
-    elif algo == 'RBL':
-      pass
+    elif algo == 'SBL':
+      A = self.M.T
+      y = results
+      sigval = 0.01 * np.linalg.norm(y, 2)
+      x = sbl.sbl(A, y, sigval, self.tau)
+      answer = (x > 0).astype(np.int32)
     else:
       raise ValueError('No such algorithm %s' % algo)
 
@@ -177,11 +184,6 @@ class CS(COMP):
 
       test_M = np.delete(M, m_idx, axis=0)
       test_y = np.delete(y, m_idx, axis=0)
-
-      #print(train_M.shape)
-      #print(train_y.shape)
-      #print(test_M.shape)
-      #print(test_y.shape)
 
       train_Ms.append(train_M)
       train_ys.append(train_y)
