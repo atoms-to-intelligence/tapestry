@@ -228,14 +228,18 @@ def do_expts_and_dump_stats():
           print(n, d, item )
 
 def run_many_parallel_expts():
-  num_expts = 100
-  n = 200
+  num_expts = 1000
+  n = 300
   t = 46
   #matrix = np.random.binomial(1, 0.5, size=(t, n))
-  matrix = None
+  #matrix = optimized_M_16_64_1
+  matrix = optimized_M_46_300_1
+  #matrix = None
+
   #algos = ['combined_COMP_NNOMP_random_cv',
   #    'NNOMP_random_cv']
-  algos = ['combined_COMP_NNOMP_random_cv', 'NNOMP_random_cv']
+  algos = [ 'combined_COMP_NNOMP_random_cv', ]
+  #algos = ['combined_COMP_NNOMP_random_cv', 'SBL']
   #algos = ['combined_COMP_NNOMP_random_cv',
   #    'NNOMP_random_cv']
   add_noise = True
@@ -261,10 +265,11 @@ def run_many_parallel_expts():
   print('\nn = %d, t = %d\n' % (expt.n, expt.t))
   for i, algo in enumerate(algos):
     print('\n' + algo + '\n')
-    print('\td\tPrecision\tRecall\n')
+    print('\td\tPrecision\tRecall\ttotal_tests\n')
     for stat in statlist[i]:
-      print('\t%d\t%.3f\t\t%.3f' % (stat['d'], stat['precision'],
-        stat['recall']))
+      total_tests = t + stat['d'] / stat['precision']
+      print('\t%d\t%.3f\t\t%.3f\t%.1f' % (stat['d'], stat['precision'],
+        stat['recall'], total_tests))
 
 def run_many_parallel_expts_mr():
   num_expts = 1000
