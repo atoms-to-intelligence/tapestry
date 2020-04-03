@@ -1,7 +1,7 @@
 import numpy as np
 import math
 
-def sbl(A, y, sigval, tau):
+def sbl(A, y, sigval, tau, eps=1e-4):
   
   [m,n] = A.shape
   
@@ -26,7 +26,7 @@ def sbl(A, y, sigval, tau):
     mu_old = np.ones(red_n)
     mu = np.zeros(red_n)
 
-    while np.linalg.norm(mu_old - mu, 2) / np.linalg.norm(mu, 2) > 1e-4:
+    while np.sum(mu) == 0 or np.linalg.norm(mu_old - mu, 2) / np.linalg.norm(mu, 2) > eps:
       mu_old = mu;
       inv_Sigma = np.matmul(np.transpose(red_A), red_A) / (sigval*sigval) + inv_Gamma
       Sigma = np.linalg.inv(inv_Sigma)
