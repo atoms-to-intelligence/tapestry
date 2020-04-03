@@ -13,6 +13,7 @@ class CSExpts:
     self.total_tp = 0
     self.total_fp = 0
     self.total_fn = 0
+    self.uncon_negs = 0
 
   # Find results using qPCR
   def do_single_expt(self, i, num_expts, cs, x, cross_validation=True, add_noise=True,
@@ -29,15 +30,16 @@ class CSExpts:
     if algo == 'COMP':
       infected, score, tp, fp, fn = cs.decode_comp_new(bool_y)
     else:
-      infected, score, tp, fp, fn = cs.decode_lasso(y, algo)
+      infected, prob1, prob0, score, tp, fp, fn, uncon_negs = cs.decode_lasso(y, algo,
+          config.prefer_recall)
 
     sys.stdout.write('\riter = %d / %d score: %.2f tp = %d fp = %d fn = %d' %
         (i, num_expts, score, tp, fp, fn))
     sys.stdout.flush()
 
-    self.add_stats(tp, fp, fn)
+    self.add_stats(tp, fp, fn, uncon_negs)
 
-  def add_stats(self, tp, fp, fn):
+  def add_stats(self, tp, fp, fn, uncon_negs):
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -48,6 +50,7 @@ class CSExpts:
     self.total_tp += tp
     self.total_fp += fp
     self.total_fn += fn
+    self.uncon_negs += uncon_negs
 
   def print_stats(self, num_expts, header=False):
     precision = self.total_tp / float(self.total_tp + self.total_fp)
@@ -67,7 +70,8 @@ class CSExpts:
     print('No fp in %d / %d cases' % (self.no_fp, num_expts))
     print('No fn in %d / %d cases' % (self.no_fn, num_expts))
     print('precision = %.6f, recall = %.6f' % (precision, recall))
-    print('total tp =', self.total_tp, 'total fp = ', self.total_fp, 'total fn = ', self.total_fn)
+    print('total tp =', self.total_tp, 'total fp = ', self.total_fp,
+        'total fn = ', self.total_fn, 'unconfident negs = ', self.uncon_negs)
     print('avg fp = %.3f' % avg_fp, 'avg fn = %.3f' % avg_fn)
 
   def return_stats(self, num_expts):
@@ -113,11 +117,11 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
     assert num_expts == len(xs)
 
   if isinstance(algo, list):
-    print('list')
+    #print('list')
     expts = [CSExpts(item) for item in algo]
     ret_list = True
   else:
-    print('str')
+    #print('str')
     expts = [CSExpts(algo)]
     algo = [algo]
     ret_list = False
@@ -229,11 +233,11 @@ def do_expts_and_dump_stats():
 
 def run_many_parallel_expts():
   num_expts = 1000
-  n = 300
-  t = 46
+  n = 40
+  t = 16
   #matrix = np.random.binomial(1, 0.5, size=(t, n))
   #matrix = optimized_M_16_64_1
-  matrix = optimized_M_46_300_1
+  matrix = optimized_M_2
   #matrix = None
 
   #algos = ['combined_COMP_NNOMP_random_cv',

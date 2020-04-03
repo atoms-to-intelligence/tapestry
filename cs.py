@@ -64,7 +64,9 @@ class CS(COMP):
   # Solve the CS problem using Lasso
   #
   # y is results
-  def decode_lasso(self, results, algo='lasso'):
+  def decode_lasso(self, results, algo='lasso', prefer_recall=False):
+    prob1 = None
+    prob0 = None
     if algo == 'lasso':
       #lasso = LassoLars(alpha=self.l)
       lasso = Lasso(alpha=self.l, max_iter=10000)
@@ -92,30 +94,46 @@ class CS(COMP):
       # Max d that can be detected by NNOMP is equal to number of rows
       answer = nnompcv.nnomp(Ar, Acv, yr, ycv, self.t, cv=True)
     elif algo == 'NNOMP_loo_cv':
-      answer = self.decode_nnomp_multi_split_cv(results, 'loo_splits')
+      answer, prob1, prob0 = self.decode_nnomp_multi_split_cv(results, 'loo_splits')
     elif algo == 'NNOMP_random_cv':
       # Skip cross-validation for really small cases
       if self.t < 4:
         # Max d that can be detected by NNOMP is equal to number of rows
-        answer=nnompcv.nnomp(self.M.T.astype('float'),0,results,0, self.t, cv=False)
+        answer = nnompcv.nnomp(self.M.T.astype('float'),0,results,0, self.t, cv=False)
       else:
-        answer = self.decode_nnomp_multi_split_cv(results, 'random_splits')
+        answer, prob1, prob0 = self.decode_nnomp_multi_split_cv(results, 'random_splits')
     elif algo.startswith('combined_COMP_'):
       #print('Doing ', algo)
       l = len('combined_COMP_')
       secondary_algo = algo[l:]
-      answer = self.decode_comp_combined(results, secondary_algo)
+      answer, prob1, prob0 = self.decode_comp_combined(results, secondary_algo)
     elif algo == 'SBL':
       A = self.M.T
       y = results
       sigval = 0.01 * np.linalg.norm(y, 2)
-      x = sbl.sbl(A, y, sigval, self.tau)
-      answer = (x > 0).astype(np.int32)
+      answer = sbl.sbl(A, y, sigval, self.tau)
     else:
       raise ValueError('No such algorithm %s' % algo)
 
     score = math.sqrt(np.linalg.norm(answer - self.conc) / self.d)
     infected = (answer != 0.).astype(np.int32)
+
+    if prob1 is None:
+      assert prob0 is None
+      prob1 = np.array(infected)
+      prob0 = np.array(1 - infected)
+    
+    num_unconfident_negatives = 0
+    if prefer_recall:
+      # Report the unconfident -ves as +ve
+      negatives = (infected == 0).astype(np.int32)
+      unconfident_negatives = negatives * (prob0 < 0.6).astype(np.int32)
+      num_unconfident_negatives = np.sum(unconfident_negatives)
+      infected = infected + unconfident_negatives
+      #print('prob0:', prob0)
+      #print('prob1:', prob1)
+      #print('negatives: ', negatives)
+      #print('unconfident_negatives: ', unconfident_negatives)
 
     # Compute stats
     tpos = (infected * self.arr)
@@ -126,7 +144,7 @@ class CS(COMP):
     fp = sum(fpos)
     fn = sum(fneg)
     
-    return infected, score, tp, fp, fn
+    return infected, prob1, prob0, score, tp, fp, fn, num_unconfident_negatives
 
   def decode_lasso_for_cv(self, train_Ms, train_ys, test_Ms, test_ys,
       algo='lasso', l=None, sigma=None):
@@ -223,29 +241,30 @@ class CS(COMP):
     train_Ms, train_ys, test_Ms, test_ys = splits
     counts = np.zeros(max_d + 1)
     cum_error = np.zeros(max_d)
+    # Keeps count of number of times each sample was declared as +ve
+    x_ones = np.zeros(self.n)
+    num_splits = len(train_Ms)
     for train_M, train_y, test_M, test_y in zip(train_Ms, train_ys, test_Ms,
         test_ys):
-      _, error, d, errors = nnompcv.nnomp(train_M, test_M, train_y, test_y,
+      x, error, d, errors = nnompcv.nnomp(train_M, test_M, train_y, test_y,
           max_d, cv=True)
+      answer = (x > 0).astype(np.int32)
+      x_ones += answer
       counts[d] += 1
       #print('Errors: ', np.array(errors))
       if errors:
         cum_error += errors
 
-    #for d, count in enumerate(counts):
-    #  if count > 0:
-    #    print('d = %d, count = %d' % (d + 1, count))
-
     best_d_maj = np.argmax(counts) + 1
-    #print('Best d by majority voting amongst cross-validation splits:',
-    #    best_d_maj)
     best_d_error = np.argmin(cum_error) + 1
-    #print('Best d by min avg error amongst cross-validation splits:',
-    #    best_d_error)
+    prob_of_one = x_ones / num_splits
+    prob_of_zero = 1 - prob_of_one
+    #print('prob of one:', prob_of_one)
+    #print('prob of zero:', prob_of_zero)
     if resolve_method == 'voting':
-      return best_d_maj
+      return best_d_maj, prob_of_one, prob_of_zero
     elif resolve_method == 'error':
-      return best_d_error
+      return best_d_error, prob_of_one, prob_of_zero
     else:
       raise ValueError('Invalid resolve method %s' % resolve_method)
 
@@ -258,12 +277,12 @@ class CS(COMP):
     elif method == 'loo_splits':
       splits = self.return_loo_cv_splits(y)
 
-    best_d = self.get_d_nnomp_cv(splits, max_d=self.t)
-    if config.prefer_recall:
-      best_d = 2 * best_d
+    best_d, prob1, prob0 = self.get_d_nnomp_cv(splits, max_d=self.t)
+    #if config.prefer_recall:
+    #  best_d = 2 * best_d
     x = nnompcv.nnomp(self.M.T.astype('float'), 0, y, 0,
         best_d, cv=False)
-    return x
+    return x, prob1, prob0
     
 
   def do_cross_validation_get_lambda(self, y, sigval):
@@ -354,16 +373,22 @@ class CS(COMP):
     _cs = CS(n, t, s, d, l, arr, A, mr=None)
     _cs.conc = x
 
-    infected_internal, score, tp, fp, fn = _cs.decode_lasso(y, secondary_algo)
+    infected_internal, prob1, prob0, score, tp, fp, fn, _ = _cs.decode_lasso(y, secondary_algo)
     infected = np.zeros(self.n)
     for val, idx in zip(infected_internal, non_zero_cols):
       infected[idx] = val
 
+    prob1_new = np.zeros(self.n)
+    prob0_new = np.ones(self.n)
+    for p1, p0, idx in zip(prob1, prob0, non_zero_cols):
+      prob1_new[idx] = p1
+      prob0_new[idx] = p0
+
     # tp, fp and fn will be correct for the internal algo
     if test:
-      return infected, score, tp, fp, fn
+      return infected, prob1_new, prob0_new, score, tp, fp, fn
     else:
-      return infected
+      return infected, prob1_new, prob0_new
 
   def decode_qp(self, results):
     pass
