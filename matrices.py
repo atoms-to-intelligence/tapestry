@@ -1,5 +1,7 @@
 import numpy as np
 import sys
+import math
+from matrices1 import *
 
 optimized_M_1 = np.array([[0., 1., 0., 1., 0., 1., 1., 0., 0., 0., 1., 1., 0., 1., 1., 0., 0., 0.,       0., 0., 0., 1., 0., 1., 0., 0., 1., 0., 1., 0., 0., 0., 0., 0., 1., 1.,         0., 1., 1., 0.],
         [1., 0., 0., 1., 0., 0., 0., 1., 0., 1., 0., 0., 1., 1., 0., 0., 0., 1.,         1., 1., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 1., 1.,         1., 1., 0., 0.],
@@ -4663,6 +4665,22 @@ optimized_M_46_300_1 = np.array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.
          0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.,
          0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.]])
 
+
+def int_coded_matrix(t, n):
+  #assert t == math.log(n + 1, 2)
+  M = np.zeros(shape=(t, n + 1))
+  step = 1
+  for i in range(t):
+    for j in range(n + 1):
+      if (j // step) % 2 == 0:
+        M[i][j] = 0
+      else:
+        M[i][j] = 1
+    step = step * 2
+  return M[:, 1:]
+      
+int_coded_M_6_63 = int_coded_matrix(6, 63)
+
 if __name__ == '__main__':
   def convert_matlab_format(M, f):
     f.write('[ ')
@@ -4672,6 +4690,8 @@ if __name__ == '__main__':
       f.write(';\n')
     f.write(']')
 
+  #int_coded_matrix(4, 15)
+  print(int_coded_M_6_63.shape)
   # Uncomment following code if you want to convert these matrices to matlab
 
   #mat = np.array([[1, 2, 3, 4], [3, 4, 5, 6], [10, 11, 12, 13]])
