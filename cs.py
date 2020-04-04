@@ -46,9 +46,17 @@ class CS(COMP):
         error = np.random.normal(0., sigval)
 
 
-      # print('y = ', y)
+      #print('y = ', y)
       # print('adding error:', error)
       y = y + error
+      if config.bit_flip_prob > 0 :
+        print('before flip y = ', y)
+        mask = (y > 0).astype(np.int32)
+        flip = np.random.binomial(1, config.bit_flip_prob, self.t)
+        flip = flip * mask
+        y = y * (1 - flip)
+        print('after flip y = ', y)
+
     return y, sigval
 
   # Initial concentration of RNA in each sample
@@ -65,6 +73,14 @@ class CS(COMP):
   #
   # y is results
   def decode_lasso(self, results, algo='lasso', prefer_recall=False):
+    determined = 0
+    overdetermined = 0
+    # Add check if system is determined or overdetermined
+    if self.t == self.n:
+      determined = 1
+    elif self.t > self.n:
+      overdetermined = 1
+
     prob1 = None
     prob0 = None
     if algo == 'lasso':
@@ -97,7 +113,10 @@ class CS(COMP):
       answer, prob1, prob0 = self.decode_nnomp_multi_split_cv(results, 'loo_splits')
     elif algo == 'NNOMP_random_cv':
       # Skip cross-validation for really small cases
-      if self.t < 4:
+      if np.sum(results) == 0:
+        answer = np.zeros(self.n)
+      elif self.t < 4:
+
         # Max d that can be detected by NNOMP is equal to number of rows
         answer = nnompcv.nnomp(self.M.T.astype('float'),0,results,0, self.t, cv=False)
       else:
@@ -106,7 +125,7 @@ class CS(COMP):
       #print('Doing ', algo)
       l = len('combined_COMP_')
       secondary_algo = algo[l:]
-      answer, prob1, prob0 = self.decode_comp_combined(results, secondary_algo)
+      answer, prob1, prob0, determined, overdetermined = self.decode_comp_combined(results, secondary_algo)
     elif algo == 'SBL':
       A = self.M.T
       y = results
@@ -144,7 +163,8 @@ class CS(COMP):
     fp = sum(fpos)
     fn = sum(fneg)
     
-    return infected, prob1, prob0, score, tp, fp, fn, num_unconfident_negatives
+    return infected, prob1, prob0, score, tp, fp, fn,\
+        num_unconfident_negatives, determined, overdetermined
 
   def decode_lasso_for_cv(self, train_Ms, train_ys, test_Ms, test_ys,
       algo='lasso', l=None, sigma=None):
@@ -278,8 +298,8 @@ class CS(COMP):
       splits = self.return_loo_cv_splits(y)
 
     best_d, prob1, prob0 = self.get_d_nnomp_cv(splits, max_d=self.t)
-    #if config.prefer_recall:
-    #  best_d = 2 * best_d
+    if config.prefer_recall:
+      best_d = 2 * best_d
     x = nnompcv.nnomp(self.M.T.astype('float'), 0, y, 0,
         best_d, cv=False)
     return x, prob1, prob0
@@ -373,7 +393,8 @@ class CS(COMP):
     _cs = CS(n, t, s, d, l, arr, A, mr=None)
     _cs.conc = x
 
-    infected_internal, prob1, prob0, score, tp, fp, fn, _ = _cs.decode_lasso(y, secondary_algo)
+    infected_internal, prob1, prob0, score, tp, fp, fn, _, determined,\
+        overdetermined = _cs.decode_lasso(y, secondary_algo)
     infected = np.zeros(self.n)
     for val, idx in zip(infected_internal, non_zero_cols):
       infected[idx] = val
@@ -388,7 +409,7 @@ class CS(COMP):
     if test:
       return infected, prob1_new, prob0_new, score, tp, fp, fn
     else:
-      return infected, prob1_new, prob0_new
+      return infected, prob1_new, prob0_new, determined, overdetermined
 
   def decode_qp(self, results):
     pass

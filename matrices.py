@@ -4723,6 +4723,8 @@ if __name__ == '__main__':
     col_sums = np.sum(M, axis=0)
     row_sparsity = np.max(row_sums)
     col_sparsity = np.max(col_sums)
+    col_in_at_least = np.min(col_sums)
     total_sparsity = np.sum(row_sums)
-    print(m, 'Row sparsity: ', row_sparsity, 'Col sparsity: ', col_sparsity, 'Total sparsity: ', total_sparsity)
+    print(m, 'Row sparsity: ', row_sparsity, 'Col sparsity: ', col_sparsity,
+        'Col in at least x rows', col_in_at_least, 'Total sparsity: ', total_sparsity)
     #print(max(sums))
