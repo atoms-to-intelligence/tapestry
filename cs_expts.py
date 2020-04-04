@@ -29,9 +29,10 @@ class CSExpts:
       raise ValueError('No cross validation implemented for %s' % algo)
     if algo == 'COMP':
       infected, score, tp, fp, fn = cs.decode_comp_new(bool_y)
+      uncon_negs = 0
     else:
       infected, prob1, prob0, score, tp, fp, fn, uncon_negs = cs.decode_lasso(y, algo,
-          config.prefer_recall)
+          prefer_recall=False)
 
     sys.stdout.write('\riter = %d / %d score: %.2f tp = %d fp = %d fn = %d' %
         (i, num_expts, score, tp, fp, fn))
@@ -111,7 +112,7 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
   #s = 0.5
 
   # lambda for regularization
-  l = 1000.
+  l = 0.01
 
   if xs is not None:
     assert num_expts == len(xs)
@@ -232,17 +233,19 @@ def do_expts_and_dump_stats():
           print(n, d, item )
 
 def run_many_parallel_expts():
-  num_expts = 1000
-  n = 40
-  t = 16
+  num_expts = 100
+  n = 500
+  t = 46
   #matrix = np.random.binomial(1, 0.5, size=(t, n))
   #matrix = optimized_M_16_64_1
-  matrix = optimized_M_2
+  matrix = optimized_M_46_500_1
   #matrix = None
 
+  algos = ['combined_COMP_NNOMP_random_cv']
+  #algos = ['combined_COMP_NNOMP_random_cv']
   #algos = ['combined_COMP_NNOMP_random_cv',
   #    'NNOMP_random_cv']
-  algos = [ 'combined_COMP_NNOMP_random_cv', ]
+  #algos = [ 'NNOMP', ]
   #algos = ['combined_COMP_NNOMP_random_cv', 'SBL']
   #algos = ['combined_COMP_NNOMP_random_cv',
   #    'NNOMP_random_cv']
@@ -340,7 +343,7 @@ def large_test_decode_comp_combined(num_expts):
   t = A.shape[0]
   d = 2
   s = 0.5
-  l = 0.1
+  l = 0.01
   mr = None
 
   algo = 'NNOMP_random_cv'
