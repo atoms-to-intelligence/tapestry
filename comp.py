@@ -61,7 +61,39 @@ class COMP:
     fp = sum(fpos)
     fn = sum(fneg)
     
-    return infected, 0., tp, fp, fn
+    infected_dd = self.get_infected_dd(infected, infections)
+    assert np.all(infected_dd - infected <= 0)
+
+    surep = np.sum(infected_dd)
+    unsurep = np.sum(infected * (1 - infected_dd))
+
+    assert surep + unsurep == tp + fp
+    assert surep <= tp
+    assert unsurep >= fp
+
+    return infected, infected_dd, 0., tp, fp, fn, surep, unsurep
+
+  # Ax = y
+  # x -> infected
+  # y -> infections/results
+  # A -> matrix
+  def get_infected_dd(self, x, y):
+    assert len(x) == self.n
+    assert len(y) == self.t
+    #non_zero_cols,  = np.nonzero(x)
+    #non_zero_rows,  = np.nonzero(y)
+
+    A = self.M.T
+    #A = np.take(A, non_zero_cols, axis=1)
+    #A = np.take(A, non_zero_rows, axis=0)
+    
+    dd = np.zeros(self.n)
+    for row in A:
+      row = row * x
+      if sum(row) == 1:
+        non_zero_col,  = np.nonzero(row)
+        dd[non_zero_col[0]] = 1
+    return dd
 
 if __name__ == '__main__':
   # Test width. Max number of parallel tests available.
