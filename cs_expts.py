@@ -19,6 +19,7 @@ class CSExpts:
     self.surep = 0
     self.unsurep = 0
     self.num_expts_2_stage = 0
+    self.wrongly_undetected = 0
 
   # Find results using qPCR
   def do_single_expt(self, i, num_expts, cs, x, cross_validation=True, add_noise=True,
@@ -37,19 +38,21 @@ class CSExpts:
       uncon_negs = 0
       determined = 0
       overdetermined = 0
+      wrongly_undetected = 0
     else:
-      infected, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\
-          overdetermined = cs.decode_lasso(y, algo,
+      infected, infected_dd, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\
+          overdetermined, surep, unsurep, wrongly_undetected = cs.decode_lasso(y, algo,
           prefer_recall=False)
 
     sys.stdout.write('\riter = %d / %d score: %.2f tp = %d fp = %d fn = %d' %
         (i, num_expts, score, tp, fp, fn))
     sys.stdout.flush()
 
-    self.add_stats(tp, fp, fn, uncon_negs, determined, overdetermined, surep, unsurep)
+    self.add_stats(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
+        unsurep, wrongly_undetected)
 
   def add_stats(self, tp, fp, fn, uncon_negs, determined, overdetermined,
-      surep, unsurep):
+      surep, unsurep, wrongly_undetected):
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -66,6 +69,7 @@ class CSExpts:
     self.surep += surep
     self.unsurep += unsurep
     self.num_expts_2_stage += (unsurep > 0)
+    self.wrongly_undetected += wrongly_undetected
 
   def print_stats(self, num_expts, header=False):
     precision = self.total_tp / float(self.total_tp + self.total_fp)
@@ -303,8 +307,8 @@ def run_many_parallel_expts():
   algos = []
   algos.extend(['COMP'])
   #algos.extend(['combined_COMP_NNOMP_random_cv'])
-  #algos.append('NNOMP')
-  #algos.append('SBL')
+  algos.append('NNOMP')
+  algos.append('SBL')
   #algos.append('combined_COMP_SBL')
   #algos.append('combined_COMP_NNOMP')
   #algos.append('NNOMP_random_cv')
@@ -348,12 +352,12 @@ def run_many_parallel_expts():
   for i, algo in enumerate(algos):
     print('\n' + algo + '\n')
     #print('\td\tPrecision\tRecall\ttotal_tests\tnum_determined\tnum_overdetermined\n')
-    print('\td\tPrecision\tRecall\tsurep\tunsurep\tavg_tests\tnum_expts_2_stage')
+    print('\td\tPrecision\tRecall\tsurep\tunsurep\tavg_tests\t2_stage\tWrongly_undetected')
     for expt in explist[i]:
       total_tests = t + expt.d / expt.precision
-      print('\t%d\t%.3f\t\t%.3f\t%3.1f\t%3.1f\t%3.1f\t\t%3d' % (expt.d, expt.precision,
+      print('\t%d\t%.3f\t\t%.3f\t%3.1f\t%3.1f\t%3.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
         expt.recall, expt.avg_surep, expt.avg_unsurep, expt.t +
-        expt.avg_unsurep, expt.num_expts_2_stage))
+        expt.avg_unsurep, expt.num_expts_2_stage, expt.wrongly_undetected))
       #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
       #  expt.recall, total_tests, expt.determined, expt.overdetermined))
 
