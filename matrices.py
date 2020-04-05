@@ -4681,15 +4681,15 @@ def int_coded_matrix(t, n):
       
 int_coded_M_6_63 = int_coded_matrix(6, 63)
 
-if __name__ == '__main__':
-  def convert_matlab_format(M, f):
-    f.write('[ ')
-    for row in M:
-      for item in row:
-        f.write(str(item) + ' ')
-      f.write(';\n')
-    f.write(']')
+def convert_matlab_format(M, f):
+  f.write('[ ')
+  for row in M:
+    for item in row:
+      f.write('%d ' % item)
+    f.write(';\n')
+  f.write(']')
 
+if __name__ == '__main__':
   #int_coded_matrix(4, 15)
   print(int_coded_M_6_63.shape)
   # Uncomment following code if you want to convert these matrices to matlab

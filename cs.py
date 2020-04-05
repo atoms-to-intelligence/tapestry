@@ -154,6 +154,17 @@ class CS(COMP):
       #print('negatives: ', negatives)
       #print('unconfident_negatives: ', unconfident_negatives)
 
+    # Get definite defects
+    y = results
+    bool_y = (y > 0).astype(np.int32)
+    _infected_comp, infected_dd, _score, _tp, _fp, _fn, surep, unsurep = self.decode_comp_new(bool_y)
+
+    # Compare definite defects with ours to detect if our algorithm doesn't
+    # detect something that should definitely have been detected
+    wrongly_undetected = np.sum(infected_dd - infected_dd * infected)
+
+    infected = (infected + infected_dd > 0).astype(np.int32)
+
     # Compute stats
     tpos = (infected * self.arr)
     fneg = (1 - infected) * self.arr
@@ -163,14 +174,6 @@ class CS(COMP):
     fp = sum(fpos)
     fn = sum(fneg)
     
-    # Get definite defects
-    y = results
-    bool_y = (y > 0).astype(np.int32)
-    _infected_comp, infected_dd, _score, _tp, _fp, _fn, surep, unsurep = self.decode_comp_new(bool_y)
-
-    # Compare definite defects with ours to detect if our algorithm doesn't
-    # detect something that should definitely have been detected
-    wrongly_undetected = np.sum(infected_dd - infected_dd * infected)
     return infected, infected_dd, prob1, prob0, score, tp, fp, fn,\
         num_unconfident_negatives, determined, overdetermined, surep,\
         unsurep, wrongly_undetected
@@ -407,8 +410,8 @@ class CS(COMP):
     _cs = CS(n, t, s, d, l, arr, A, mr=None)
     _cs.conc = x
 
-    infected_internal, prob1, prob0, score, tp, fp, fn, _, determined,\
-        overdetermined = _cs.decode_lasso(y, secondary_algo)
+    infected_internal, infected_dd, prob1, prob0, score, tp, fp, fn, _, determined,\
+        overdetermined, surep, unsurep, wrongly_undetected = _cs.decode_lasso(y, secondary_algo)
     infected = np.zeros(self.n)
     for val, idx in zip(infected_internal, non_zero_cols):
       infected[idx] = val

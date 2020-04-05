@@ -305,10 +305,10 @@ def run_many_parallel_expts():
   #matrix = optimized_M_16_96_1
 
   algos = []
-  algos.extend(['COMP'])
-  #algos.extend(['combined_COMP_NNOMP_random_cv'])
-  algos.append('NNOMP')
-  algos.append('SBL')
+  #algos.extend(['COMP'])
+  algos.extend(['combined_COMP_NNOMP_random_cv'])
+  #algos.append('NNOMP')
+  #algos.append('SBL')
   #algos.append('combined_COMP_SBL')
   #algos.append('combined_COMP_NNOMP')
   #algos.append('NNOMP_random_cv')
@@ -319,7 +319,7 @@ def run_many_parallel_expts():
   #algos = ['combined_COMP_NNOMP_random_cv',
   #    'NNOMP_random_cv']
   add_noise = True
-  d_range = range(1, 16)
+  d_range = range(1, 11)
   retvals = Parallel(n_jobs=16)\
   (\
       delayed(do_many_expts)\
