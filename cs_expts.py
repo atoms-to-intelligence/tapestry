@@ -248,30 +248,69 @@ def do_expts_and_dump_stats():
         if item['precision'] > 0.999 and item['recall'] > 0.9999:
           print(n, d, item )
 
+# This doesn't work since if p is very small you always find a col
+# with no 1's
+def get_small_random_matrix_bernoulli(t, n, p):
+  zero = True
+  while zero:
+    zeros = 0
+    matrix = np.random.binomial(1, p, size=(t, n))
+    colsums = np.sum(matrix, axis = 0)
+    for i, val in enumerate(colsums):
+      if val == 0:
+        print('col %d is 0' %i )
+        zeros += 1
+    if zeros == 0:
+      zero = False
+  return matrix
+
+def get_small_random_matrix(t, n, col_sparsity):
+  matrix = np.zeros((t, n))
+  for col in range(n):
+    ones = np.random.choice(range(t), size=col_sparsity, replace=False)
+    matrix[ones, col] = 1
+  return matrix
+  #colsums = np.sum(matrix, axis = 0)
+  #np.set_printoptions(threshold=50000)
+  #for i, val in enumerate(colsums):
+  #  print(i, val)
+  #  if val == 0:
+  #    print('col %d is 0' %i )
+  #print(matrix)    
+
 def run_many_parallel_expts():
-  num_expts = 100
+  num_expts = 1000
   n = 96
-  t = 16
-  #matrix = np.random.binomial(1, 0.5, size=(t, n))
+  t = 46
+  #matrix = get_small_random_matrix_bernoulli(t, n, p=0.1)
+  #matrix = np.random.binomial(1, 0.1, size=(t, n))
+  #matrix = get_small_random_matrix(t, n, 6)
+  #assert matrix is not None
+  matrix = optimized_M_46_96_1
+
+  #sys.exit(1)
+
   #matrix = optimized_M_16_64_1
   #matrix = optimized_M_46_500_1
-  matrix = None
+  #matrix = optimized_M_16_96_1
 
-  #algos = []
-  algos = ['COMP']
-  algos.append('NNOMP')
-  algos.append('NNOMP_random_cv')
-  #algos.extend(['combined_COMP_NNOMP_random_cv'])
+  algos = []
+  algos.extend(['COMP'])
   algos.extend(['combined_COMP_NNOMP_random_cv'])
+  algos.append('NNOMP')
+  #algos.append('SBL')
+  #algos.append('combined_COMP_SBL')
+  algos.append('combined_COMP_NNOMP')
+  algos.append('NNOMP_random_cv')
   #algos = ['combined_COMP_NNOMP_random_cv',
   #    'NNOMP_random_cv']
   #algos = [ 'NNOMP', ]
   #algos = ['combined_COMP_NNOMP_random_cv', 'SBL']
   #algos = ['combined_COMP_NNOMP_random_cv',
   #    'NNOMP_random_cv']
-  add_noise = False
-  d_range = range(1, 11)
-  retvals = Parallel(n_jobs=10)\
+  add_noise = True
+  d_range = range(1, 16)
+  retvals = Parallel(n_jobs=16)\
   (\
       delayed(do_many_expts)\
       (
@@ -302,14 +341,17 @@ def run_many_parallel_expts():
 
   for i, algo in enumerate(algos):
     print('\n' + algo + '\n')
-    print('\td\tPrecision\tRecall\ttotal_tests\tnum_determined\tnum_overdetermined\n')
+    #print('\td\tPrecision\tRecall\ttotal_tests\tnum_determined\tnum_overdetermined\n')
+    print('\td\tPrecision\tRecall')
     for expt in explist[i]:
       total_tests = t + expt.d / expt.precision
-      print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
-        expt.recall, total_tests, expt.determined, expt.overdetermined))
+      print('\t%d\t%.3f\t\t%.3f' % (expt.d, expt.precision,
+        expt.recall, ))
+      #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
+      #  expt.recall, total_tests, expt.determined, expt.overdetermined))
 
 def run_many_parallel_expts_mr():
-  num_expts = 1000
+  num_expts = 100
   expts = Parallel(n_jobs=4)\
   (\
       delayed(do_many_expts)\

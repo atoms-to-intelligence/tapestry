@@ -367,6 +367,9 @@ class CS(COMP):
     A = self.M.T
     A = np.take(A, non_zero_cols, axis=1)
     A = np.take(A, non_zero_rows, axis=0)
+    #print('y: ', y)
+    #print('Non-zero rows:', non_zero_rows)
+    #print('Non-zero rows len:', non_zero_rows.shape)
     #print('Shape of remaining A:', A.shape)
     #print('Remaining A: ', A)
 
@@ -386,6 +389,8 @@ class CS(COMP):
     s = self.s
     l = 0.1
 
+    #print('combined COMP A.shape', A.shape)
+    #print('combined COMP A:', A.shape)
     # Create another CS class to run the secondary algorithm
     # Better to set mr parameter to None since it depends on number of rows
     # and will change for this internal CS object. frac will be used instead
