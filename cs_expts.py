@@ -16,7 +16,8 @@ class CSExpts:
     self.uncon_negs = 0
     self.determined = 0
     self.overdetermined = 0
-    self.num_extra_tests = 0
+    self.surep = 0
+    self.unsurep = 0
     self.num_expts_2_stage = 0
 
   # Find results using qPCR
@@ -45,10 +46,10 @@ class CSExpts:
         (i, num_expts, score, tp, fp, fn))
     sys.stdout.flush()
 
-    self.add_stats(tp, fp, fn, uncon_negs, determined, overdetermined, unsurep)
+    self.add_stats(tp, fp, fn, uncon_negs, determined, overdetermined, surep, unsurep)
 
   def add_stats(self, tp, fp, fn, uncon_negs, determined, overdetermined,
-      unsurep):
+      surep, unsurep):
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -62,7 +63,8 @@ class CSExpts:
     self.uncon_negs += uncon_negs
     self.determined += determined
     self.overdetermined += overdetermined
-    self.num_extra_tests += unsurep
+    self.surep += surep
+    self.unsurep += unsurep
     self.num_expts_2_stage += (unsurep > 0)
 
   def print_stats(self, num_expts, header=False):
@@ -105,7 +107,8 @@ class CSExpts:
     self.precision = precision
     self.recall = recall
     self.expts = num_expts
-    self.avg_extra_tests = self.num_extra_tests / num_expts
+    self.avg_unsurep = self.unsurep / num_expts
+    self.avg_surep = self.surep / num_expts
 
     return stats
 
@@ -345,11 +348,12 @@ def run_many_parallel_expts():
   for i, algo in enumerate(algos):
     print('\n' + algo + '\n')
     #print('\td\tPrecision\tRecall\ttotal_tests\tnum_determined\tnum_overdetermined\n')
-    print('\td\tPrecision\tRecall\tavg_tests\tnum_expts_2_stage')
+    print('\td\tPrecision\tRecall\tsurep\tunsurep\tavg_tests\tnum_expts_2_stage')
     for expt in explist[i]:
       total_tests = t + expt.d / expt.precision
-      print('\t%d\t%.3f\t\t%.3f\t%3.1f\t\t%3d' % (expt.d, expt.precision,
-        expt.recall, expt.t + expt.avg_extra_tests, expt.num_expts_2_stage))
+      print('\t%d\t%.3f\t\t%.3f\t%3.1f\t%3.1f\t%3.1f\t\t%3d' % (expt.d, expt.precision,
+        expt.recall, expt.avg_surep, expt.avg_unsurep, expt.t +
+        expt.avg_unsurep, expt.num_expts_2_stage))
       #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
       #  expt.recall, total_tests, expt.determined, expt.overdetermined))
 
