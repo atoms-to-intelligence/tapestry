@@ -131,7 +131,9 @@ class CS(COMP):
     elif algo == 'SBL':
       A = self.M.T
       y = results
-      sigval = 0.01 * np.linalg.norm(y, 2)
+      # This sigval computation was not correct
+      #sigval = 0.01 * np.linalg.norm(y, 2)
+      sigval = 0.01 * np.mean(y)
       answer = sbl.sbl(A, y, sigval, self.tau)
     else:
       raise ValueError('No such algorithm %s' % algo)
