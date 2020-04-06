@@ -290,14 +290,14 @@ def get_small_random_matrix(t, n, col_sparsity):
 
 def run_many_parallel_expts():
   num_expts = 1000
-  n = 192
-  t = 46
+  n = 960
+  t = 94
   #matrix = get_small_random_matrix_bernoulli(t, n, p=0.1)
   #matrix = np.random.binomial(1, 0.1, size=(t, n))
   #matrix = get_small_random_matrix(t, n, 6)
   #assert matrix is not None
-  matrix = optimized_M_46_192_1
-
+  matrix = optimized_M_94_960_1
+  
   #sys.exit(1)
 
   #matrix = optimized_M_16_64_1
@@ -320,7 +320,7 @@ def run_many_parallel_expts():
   #    'NNOMP_random_cv']
   add_noise = True
   d_range = range(1, 11)
-  retvals = Parallel(n_jobs=16)\
+  retvals = Parallel(n_jobs=len(d_range), backend='multiprocessing')\
   (\
       delayed(do_many_expts)\
       (
@@ -352,12 +352,13 @@ def run_many_parallel_expts():
   for i, algo in enumerate(algos):
     print('\n' + algo + '\n')
     #print('\td\tPrecision\tRecall\ttotal_tests\tnum_determined\tnum_overdetermined\n')
-    print('\td\tPrecision\tRecall\tsurep\tunsurep  avg_tests  2_stage\tWrongly_undetected')
+    #print('\td\tPrecision\tRecall\tsurep\tunsurep  avg_tests  2_stage\tWrongly_undetected')
+    print('\td\tPrecision\tRecall\tsurep\tunsurep  avg_tests  2_stage')
     for expt in explist[i]:
       total_tests = t + expt.d / expt.precision
-      print('\t%d\t%.3f\t\t%.3f\t%4.1f\t%5.1f\t%7.1f\t%8d\t\t%3d' % (expt.d, expt.precision,
+      print('\t%d\t%.3f\t\t%.3f\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
         expt.recall, expt.avg_surep, expt.avg_unsurep, expt.t +
-        expt.avg_unsurep, expt.num_expts_2_stage, expt.wrongly_undetected))
+        expt.avg_unsurep, expt.num_expts_2_stage, ))
       #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
       #  expt.recall, total_tests, expt.determined, expt.overdetermined))
 

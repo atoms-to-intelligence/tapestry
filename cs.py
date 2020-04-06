@@ -18,6 +18,8 @@ class CS(COMP):
   def __init__(self, n, t, s, d, l, arr, M=None, mr=None):
     super().__init__(n, t, s, d, arr)
     if M is not None:
+      assert n == M.shape[1]
+      assert t == M.shape[0]
       self.M = M.T
       #print(self.M.shape)
     self.create_conc_matrix_from_infection_array(arr)
