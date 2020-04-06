@@ -1,6 +1,8 @@
 import numpy as np
 import sys
 import math
+import os
+
 from matrices1 import *
 
 optimized_M_1 = np.array([[0., 1., 0., 1., 0., 1., 1., 0., 0., 0., 1., 1., 0., 1., 1., 0., 0., 0.,       0., 0., 0., 1., 0., 1., 0., 0., 1., 0., 1., 0., 0., 0., 0., 0., 1., 1.,         0., 1., 1., 0.],
@@ -4689,6 +4691,13 @@ def convert_matlab_format(M, f):
     f.write(';\n')
   f.write(']')
 
+def load_from_matlab(name):
+  return np.loadtxt(name, delimiter=',')
+
+mat_dir = 'mats/'
+optimized_M_94_960_2 = load_from_matlab(os.path.join(mat_dir,
+  'optimized_M_94_960_2.txt'))
+
 if __name__ == '__main__':
   #int_coded_matrix(4, 15)
   print(int_coded_M_6_63.shape)
@@ -4722,9 +4731,13 @@ if __name__ == '__main__':
     row_sums = np.sum(M, axis=1)
     col_sums = np.sum(M, axis=0)
     row_sparsity = np.max(row_sums)
+    min_row_sparsity = np.min(row_sums)
     col_sparsity = np.max(col_sums)
-    col_in_at_least = np.min(col_sums)
+    min_col_sparsity = np.min(col_sums)
     total_sparsity = np.sum(row_sums)
     print(m, 'Row sparsity: ', row_sparsity, 'Col sparsity: ', col_sparsity,
-        'Col in at least x rows', col_in_at_least, 'Total sparsity: ', total_sparsity)
+        'Min Row sparsity: ', min_row_sparsity, 'Min Col sparsity', min_col_sparsity,
+        'Total sparsity: ', total_sparsity)
+
     #print(max(sums))
+
