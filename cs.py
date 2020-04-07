@@ -161,7 +161,7 @@ class CS(COMP):
     # Get definite defects
     y = results
     bool_y = (y > 0).astype(np.int32)
-    _infected_comp, infected_dd, _score, _tp, _fp, _fn, surep, unsurep = self.decode_comp_new(bool_y)
+    _infected_comp, infected_dd, _score, _tp, _fp, _fn, surep, _unsurep = self.decode_comp_new(bool_y)
 
     # Compare definite defects with ours to detect if our algorithm doesn't
     # detect something that should definitely have been detected
@@ -178,6 +178,9 @@ class CS(COMP):
     fp = sum(fpos)
     fn = sum(fneg)
     
+    assert surep <= tp
+    unsurep = tp + fp - surep
+
     return infected, infected_dd, prob1, prob0, score, tp, fp, fn,\
         num_unconfident_negatives, determined, overdetermined, surep,\
         unsurep, wrongly_undetected
