@@ -1,7 +1,7 @@
 import numpy as np
 import math
 
-def sbl(A, y, sigval, tau, eps=1e-4):
+def sbl(A, y, sigval, tau, eps=1e-6):
   
   [m,n] = A.shape
   

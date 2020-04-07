@@ -46,7 +46,6 @@ class CSExpts:
 
     sys.stdout.write('\riter = %d / %d score: %.2f tp = %d fp = %d fn = %d' %
         (i, num_expts, score, tp, fp, fn))
-    sys.stdout.flush()
 
     self.add_stats(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
         unsurep, wrongly_undetected)
@@ -280,36 +279,20 @@ def get_small_random_matrix(t, n, col_sparsity):
     ones = np.random.choice(range(t), size=col_sparsity, replace=False)
     matrix[ones, col] = 1
   return matrix
-  #colsums = np.sum(matrix, axis = 0)
-  #np.set_printoptions(threshold=50000)
-  #for i, val in enumerate(colsums):
-  #  print(i, val)
-  #  if val == 0:
-  #    print('col %d is 0' %i )
-  #print(matrix)    
 
 def run_many_parallel_expts():
-  num_expts = 1000
-  n = 960
-  t = 94
-  #matrix = get_small_random_matrix_bernoulli(t, n, p=0.1)
-  #matrix = np.random.binomial(1, 0.1, size=(t, n))
-  #matrix = get_small_random_matrix(t, n, 6)
-  #assert matrix is not None
-  matrix = optimized_M_94_960_1
+  num_expts = 100
+  n = 40
+  t = 16
+
+  matrix = optimized_M_2
   
-  #sys.exit(1)
-
-  #matrix = optimized_M_16_64_1
-  #matrix = optimized_M_46_500_1
-  #matrix = optimized_M_16_96_1
-
   algos = []
-  #algos.extend(['COMP'])
+  algos.extend(['COMP'])
   algos.extend(['combined_COMP_NNOMP_random_cv'])
   #algos.append('NNOMP')
-  #algos.append('SBL')
-  #algos.append('combined_COMP_SBL')
+  algos.append('SBL')
+  algos.append('combined_COMP_SBL')
   #algos.append('combined_COMP_NNOMP')
   #algos.append('NNOMP_random_cv')
   #algos = ['combined_COMP_NNOMP_random_cv',
@@ -319,8 +302,10 @@ def run_many_parallel_expts():
   #algos = ['combined_COMP_NNOMP_random_cv',
   #    'NNOMP_random_cv']
   add_noise = True
-  d_range = range(1, 11)
-  retvals = Parallel(n_jobs=len(d_range), backend='multiprocessing')\
+  d_range = list(range(1, 5))
+  #d_range.extend([15, 20, 25, ])
+  n_jobs = 4
+  retvals = Parallel(n_jobs=n_jobs, backend='loky')\
   (\
       delayed(do_many_expts)\
       (

@@ -6,3 +6,6 @@ prefer_recall = False
 # Flip +ve bits of y with this prob
 bit_flip_prob = 0.
 
+# Exponential Gaussian or Variable Gaussian
+noise_model = 'exponential_gaussian'
+

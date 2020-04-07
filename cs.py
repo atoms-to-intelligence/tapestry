@@ -29,7 +29,7 @@ class CS(COMP):
   # Multiply actual conc matrix to M. This is the part done by mixing samples
   # and qpcr
   def get_quantitative_results(self, conc, add_noise=False,
-      noise_magnitude=None):
+      noise_magnitude=None, noise_model='exponential_gaussian'):
     conc = np.expand_dims(conc, axis=-1)
     #print(self.M.shape, conc.shape)
     y = np.matmul(self.M.T, conc).flatten()
@@ -40,18 +40,30 @@ class CS(COMP):
         # This error is independent of the magnitude
         sigval = noise_magnitude
         error = np.random.normal(0., sigval)
+        y = y + error
         raise ValueError("This noise model is incorrect and hence disabled. "
             "Enable this if you know what you're doing")
-      else:
+      elif config.noise_model == 'variable_gaussian':
         # This error is proportional to magnitude of y
         sigval = 0.01*np.absolute(y)
         error = np.random.normal(0., sigval)
+        y = y + error
+      elif config.noise_model == 'exponential_gaussian':
+        # This noise accounts for cycle time variability
+        # Cycle time is assumed to be Gaussian distributed, due to which log
+        # of y is Gaussian. Hence 
+        p = 0.95
+        error = np.random.normal(0., 1., size=self.t)
+        #print('Original y', y)
+        #print('error exponents', error)
+        y = y * ((1+p) ** error)
+        #print('p:', p, 'y with exponentiated error:', y)
+      else:
+        raise ValueError('Invalid noise model %s' % noise_model)
 
 
-      #print('y = ', y)
-      # print('adding error:', error)
-      y = y + error
       if config.bit_flip_prob > 0 :
+        raise ValueError('This is probably a mistake')
         print('before flip y = ', y)
         mask = (y > 0).astype(np.int32)
         flip = np.random.binomial(1, config.bit_flip_prob, self.t)
@@ -65,8 +77,10 @@ class CS(COMP):
   def create_conc_matrix_from_infection_array(self, arr):
     # Fix tau to 0.01 * minimum value we expect in x
     self.tau = 0.01 * 1 / 32768.
+    #self.tau = 0.01 * 0.1
     #conc = 1 + np.random.poisson(lam=5, size=self.n)
     conc = np.random.randint(low=1, high=32769, size=self.n) / 32768.
+    #conc = 0.1 + 0.9 * np.random.rand(self.n)
     #conc = np.random.randint(low=1, high=11, size=self.n) / 10.
     #conc = np.ones(self.n)
     self.conc = conc * arr # Only keep those entries which are 
@@ -131,9 +145,14 @@ class CS(COMP):
     elif algo == 'SBL':
       A = self.M.T
       y = results
+      #assert np.all(y!=0)
+      #A1 = A/y[:, None]
+      #y1 = np.ones(y.shape)
       # This sigval computation was not correct
       #sigval = 0.01 * np.linalg.norm(y, 2)
+      #sigval = 0.01 * np.mean(y1)
       sigval = 0.01 * np.mean(y)
+      #answer = sbl.sbl(A1, y1, sigval, self.tau)
       answer = sbl.sbl(A, y, sigval, self.tau)
     else:
       raise ValueError('No such algorithm %s' % algo)
@@ -153,10 +172,6 @@ class CS(COMP):
       unconfident_negatives = negatives * (prob0 < 0.6).astype(np.int32)
       num_unconfident_negatives = np.sum(unconfident_negatives)
       infected = infected + unconfident_negatives
-      #print('prob0:', prob0)
-      #print('prob1:', prob1)
-      #print('negatives: ', negatives)
-      #print('unconfident_negatives: ', unconfident_negatives)
 
     # Get definite defects
     y = results
