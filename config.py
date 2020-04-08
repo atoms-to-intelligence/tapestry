@@ -7,5 +7,6 @@ prefer_recall = False
 bit_flip_prob = 0.
 
 # Exponential Gaussian or Variable Gaussian
-noise_model = 'exponential_gaussian'
+#noise_model = 'exponential_gaussian'
+noise_model = 'variable_gaussian'
 
