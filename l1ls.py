@@ -2,7 +2,7 @@ import l1_ls_nonneg
 import numpy as np
 import math
 
-def l1ls(A, y, sigval, tau):
+def l1ls_cv(A, y, sigval, tau):
   
   [m,n] = A.shape
   mr = math.ceil(0.9*m);
@@ -25,6 +25,12 @@ def l1ls(A, y, sigval, tau):
 
   minind = np.argmin(cv_error)
   [x_est, status, hist] = l1_ls_nonneg.l1ls_nonneg(Ar, yr, lambdas[minind], tar_gap=0.001, quiet=1)
+  x_est[x_est < tau] = 0
+
+  return x_est
+
+def l1ls(A, y, l, tau):
+  [x_est, status, hist] = l1_ls_nonneg.l1ls_nonneg(A, y, l, tar_gap=0.001, quiet=1)
   x_est[x_est < tau] = 0
 
   return x_est

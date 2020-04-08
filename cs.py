@@ -8,6 +8,7 @@ from comp import create_infection_array_with_num_cases, COMP
 from matrices import *
 import nnompcv
 import sbl
+import l1ls
 
 import config
 
@@ -154,6 +155,10 @@ class CS(COMP):
       sigval = 0.01 * np.mean(y)
       #answer = sbl.sbl(A1, y1, sigval, self.tau)
       answer = sbl.sbl(A, y, sigval, self.tau)
+    elif algo == 'l1ls':
+      A = self.M.T
+      y = results
+      answer = l1ls.l1ls(A, y, self.l, self.tau)
     else:
       raise ValueError('No such algorithm %s' % algo)
 
@@ -291,7 +296,7 @@ class CS(COMP):
   # Find best d by cross-validation using these splits
   #
   # Best d is the one found by majority of the splits
-  def get_d_nnomp_cv(self, splits, max_d, resolve_method='voting'):
+  def get_d_nnomp_cv(self, splits, max_d, resolve_method='voting', algo='NNOMP'):
     train_Ms, train_ys, test_Ms, test_ys = splits
     counts = np.zeros(max_d + 1)
     cum_error = np.zeros(max_d)
