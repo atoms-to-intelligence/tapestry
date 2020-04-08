@@ -4,9 +4,17 @@ import json
 import pandas as pd
 import os
 
+def specificity(precision, recall, n, d): 
+  return 1 - (recall * d * ( (1 / precision) - 1) / (n - d)) 
+
 class CSExpts:
-  def __init__(self, name):
+  def __init__(self, name, n, d, t, mr):
+    self.n = n
+    self.d = d
+    self.t = t
+    self.mr = mr
     self.name = name
+
     self.no_error = 0 # number of expts with no error
     self.no_fp = 0 # number of expts with no false +ve
     self.no_fn = 0 # number of expts with no false -ve
@@ -112,7 +120,8 @@ class CSExpts:
     self.expts = num_expts
     self.avg_unsurep = self.unsurep / num_expts
     self.avg_surep = self.surep / num_expts
-
+    # Specificity is True Negative Rate
+    self.specificity = specificity(self.precision, self.recall, self.n, self.d)
     return stats
 
 def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
@@ -137,18 +146,18 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
   #s = 0.5
 
   # lambda for regularization
-  l = 0.01
+  l = 300
 
   if xs is not None:
     assert num_expts == len(xs)
 
   if isinstance(algo, list):
     #print('list')
-    expts = [CSExpts(item) for item in algo]
+    expts = [CSExpts(item, n, d, t, mr) for item in algo]
     ret_list = True
   else:
     #print('str')
-    expts = [CSExpts(algo)]
+    expts = [CSExpts(algo, n, d, t, mr)]
     algo = [algo]
     ret_list = False
 
@@ -181,10 +190,6 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
 
   stats = []
   for expt in expts:
-    expt.n = n
-    expt.d = d
-    expt.t = t
-    expt.mr = mr
     stat = expt.return_stats(num_expts)
     stat['n'] = n
     stat['d'] = d
@@ -281,27 +286,22 @@ def get_small_random_matrix(t, n, col_sparsity):
   return matrix
 
 def run_many_parallel_expts():
-  num_expts = 100
+  num_expts = 10
   n = 40
   t = 16
-
+  add_noise = True
   matrix = optimized_M_2
-  
+
   algos = []
   algos.extend(['COMP'])
-  algos.extend(['combined_COMP_NNOMP_random_cv'])
   #algos.append('NNOMP')
-  algos.append('SBL')
-  algos.append('combined_COMP_SBL')
   #algos.append('combined_COMP_NNOMP')
   #algos.append('NNOMP_random_cv')
-  #algos = ['combined_COMP_NNOMP_random_cv',
-  #    'NNOMP_random_cv']
-  #algos = [ 'NNOMP', ]
-  #algos = ['combined_COMP_NNOMP_random_cv', 'SBL']
-  #algos = ['combined_COMP_NNOMP_random_cv',
-  #    'NNOMP_random_cv']
-  add_noise = True
+  #algos.extend(['combined_COMP_NNOMP_random_cv'])
+  #algos.append('SBL')
+  #algos.append('combined_COMP_SBL')
+  #algos.append('l1ls')
+  #algos.append('combined_COMP_l1ls')
   d_range = list(range(1, 5))
   #d_range.extend([15, 20, 25, ])
   n_jobs = 4
@@ -338,11 +338,11 @@ def run_many_parallel_expts():
     print('\n' + algo + '\n')
     #print('\td\tPrecision\tRecall\ttotal_tests\tnum_determined\tnum_overdetermined\n')
     #print('\td\tPrecision\tRecall\tsurep\tunsurep  avg_tests  2_stage\tWrongly_undetected')
-    print('\td\tPrecision\tRecall\tsurep\tunsurep  avg_tests  2_stage')
+    print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep  avg_tests  2_stage')
     for expt in explist[i]:
       total_tests = t + expt.d / expt.precision
-      print('\t%d\t%.3f\t\t%.3f\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
-        expt.recall, expt.avg_surep, expt.avg_unsurep, expt.t +
+      print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
+        expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.t +
         expt.avg_unsurep, expt.num_expts_2_stage, ))
       #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
       #  expt.recall, total_tests, expt.determined, expt.overdetermined))
