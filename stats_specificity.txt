@@ -1,32 +1,46 @@
 Summary
 
-Following are the largest d values for each matrix and each algorithm, for which
-Sensitivity >= 0.99 and specificity >= 0.95
+Following are the largest d values for each matrix and each algorithm, for
+which Sensitivity >= 0.99 and specificity >= 0.95
 
 n = 96, t = 46
 ---------------------
 
-Algo    d       Precision       Recall (Sensitivity)    Specificity     surep   unsurep  avg_tests  2_stage
-COMP	8       0.696                   1.000           0.960            5.8      5.7      51.7      960
+Algo            d       Precision       Recall (Sensitivity)    Specificity
+
+COMP	        8       0.696                   1.000           0.960      
+COMP_NNOMP      8       0.976                   0.994           0.998
+SBL             9       0.714                   0.999           0.959
 
 
 n = 192, t = 46
 ---------------------
 
-Algo    d       Precision       Recall (Sensitivity)    Specificity     surep   unsurep  avg_tests  2_stage
-COMP    8       0.464                   1.000           0.950            2.4     14.8      60.8     1000
+Algo            d       Precision       Recall (Sensitivity)    Specificity
+
+COMP            8       0.464                   1.000           0.950      
+COMP_NNOMP      7       0.955                   0.995           0.998
+SBL             9       0.505                   0.999           0.952
 
 
 n = 384, t = 64
 ---------------------
-Algo    d       Precision       Recall (Sensitivity)    Specificity     surep   unsurep  avg_tests  2_stage
-COMP    10      0.389                   1.000           0.958            1.9     23.8      87.8     1000
+
+Algo            d       Precision       Recall (Sensitivity)    Specificity
+
+COMP            10      0.389                   1.000           0.958      
+COMP_NNOMP      9       0.974                   0.991           0.999
+SBL             12      0.461                   0.999           0.962
 
 
 n = 960, t = 94
 ---------------------
-Algo    d       Precision       Recall (Sensitivity)    Specificity     surep   unsurep  avg_tests  2_stage
-COMP    14      0.231                   1.000           0.951            0.3     60.2     154.2     1000
+
+Algo            d       Precision       Recall (Sensitivity)    Specificity
+
+COMP            14      0.231                   1.000           0.951      
+COMP_NNOMP      12      0.977                   0.993           0.9997
+SBL             16      0.292                   0.996           0.959
 
 
 =========================================================================================================
