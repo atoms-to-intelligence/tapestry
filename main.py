@@ -14,7 +14,10 @@ def load_cycle_times(filename):
       cts.append(val)
   return np.array(cts)
 
-def print_infected_people(bool_y):
+def print_infected_people(bool_y, algo):
+  print("---------------------")
+  print(algo)
+  print("---------------------")
 
   # unused params
   arr = np.zeros(n)
@@ -24,9 +27,15 @@ def print_infected_people(bool_y):
   l = 0.1
 
   cs = CS(n, t, s, d, l, arr, M, mr)
-  infected, infected_dd, score, tp, fp, fn, surep, unsurep,\
-      num_infected_in_test = \
-      cs.decode_comp_new(bool_y, compute_stats=False)
+  if algo == 'COMP':
+    infected, infected_dd, score, tp, fp, fn, surep, unsurep,\
+        num_infected_in_test = \
+        cs.decode_comp_new(bool_y, compute_stats=False)
+  else:
+    infected, infected_dd, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\
+        overdetermined, surep, unsurep, wrongly_undetected,\
+        num_infected_in_test = cs.decode_lasso(y, algo, prefer_recall=False,
+            compute_stats=False)
 
   for test in range(t):
     if bool_y[test] > 0 and num_infected_in_test[test] == 0:
@@ -36,8 +45,8 @@ def print_infected_people(bool_y):
     
   #infected = cs.decode_comp_new1(bool_y)
   #infected_dd = np.zeros(n)
-  print(infected)
-  print(infected_dd)
+  #print(infected)
+  #print(infected_dd)
 
   sure_list = []
   unsure_list = []
@@ -52,7 +61,7 @@ def print_infected_people(bool_y):
 
   print('Surely infected: ', sure_list)
   print('Possibly infected: ', unsure_list)
-  print('Not infected: ', neg_list)
+  #print('Not infected: ', neg_list)
 
 def print_results_COMP():
   #convert_matlab_format(M, sys.stdout)
@@ -89,12 +98,28 @@ def find_max_positive_cycle_time():
 
 m, cts_list , positive_cts= find_max_positive_cycle_time()
 
+#print(m)
 np.set_printoptions(linewidth=800)
-p = 0.95
+p = 0.93
+ys = []
+bool_ys = []
 for cts in positive_cts:
   bool_y = (cts > 0).astype(np.int32)
   y = (1+p) ** (m - cts)
   y = y * bool_y
-  print(y)
+  #print(y)
+  #print((m - cts) * bool_y)
+  ys.append(y)
+  bool_ys.append(bool_y)
 
+#for bool_y in bool_ys:
+#  print_infected_people(bool_y, 'COMP')
 
+for i, y in enumerate(ys):
+  print("\n=====================")
+  print('Test %d:' % (i+1))
+  bool_y = (y > 0).astype(np.int32)
+  print_infected_people(bool_y, 'COMP')
+  print_infected_people(y, 'combined_COMP_NNOMP_random_cv')
+  #print_infected_people(y, 'SBL')
+  #print_infected_people(y, 'l1ls')

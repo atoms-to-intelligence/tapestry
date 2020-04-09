@@ -68,6 +68,7 @@ class COMP:
 
 
   def decode_comp_new(self, infections, compute_stats=True):
+    assert np.all(np.logical_or(infections == 0, infections == 1))
     infected = np.all(self.M * infections == self.M, axis=1).astype(np.int32)
     infected_dd = self.get_infected_dd(infected, infections)
     assert np.all(infected_dd - infected <= 0)
@@ -75,7 +76,7 @@ class COMP:
     num_infected_in_test = np.zeros(self.t, dtype=np.int32)
     for test in range(self.t):
       for person in range(self.n):
-        if infected[person] and self.M[person, test] == 1:
+        if infected[person] > 0 and self.M[person, test] == 1:
           num_infected_in_test[test] += 1
     
     if compute_stats:

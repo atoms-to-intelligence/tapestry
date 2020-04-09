@@ -89,7 +89,8 @@ class CS(COMP):
   # Solve the CS problem using Lasso
   #
   # y is results
-  def decode_lasso(self, results, algo='lasso', prefer_recall=False):
+  def decode_lasso(self, results, algo='lasso', prefer_recall=False,
+      compute_stats=True):
     determined = 0
     overdetermined = 0
     # Add check if system is determined or overdetermined
@@ -142,7 +143,9 @@ class CS(COMP):
       #print('Doing ', algo)
       l = len('combined_COMP_')
       secondary_algo = algo[l:]
-      answer, prob1, prob0, determined, overdetermined = self.decode_comp_combined(results, secondary_algo)
+      answer, prob1, prob0, determined, overdetermined =\
+      self.decode_comp_combined(results, secondary_algo,
+          compute_stats=compute_stats)
     elif algo == 'SBL':
       A = self.M.T
       y = results
@@ -155,14 +158,19 @@ class CS(COMP):
       sigval = 0.01 * np.mean(y)
       #answer = sbl.sbl(A1, y1, sigval, self.tau)
       answer = sbl.sbl(A, y, sigval, self.tau)
+      print(answer)
     elif algo == 'l1ls':
       A = self.M.T
       y = results
-      answer = l1ls.l1ls(A, y, self.l, self.tau)
+      if np.all(y == 0):
+        answer = np.zeros(self.n)
+      else:
+        answer = l1ls.l1ls(A, y, self.l, self.tau)
     else:
       raise ValueError('No such algorithm %s' % algo)
 
     score = math.sqrt(np.linalg.norm(answer - self.conc) / self.d)
+    score = 0
     infected = (answer != 0.).astype(np.int32)
 
     if prob1 is None:
@@ -181,29 +189,46 @@ class CS(COMP):
     # Get definite defects
     y = results
     bool_y = (y > 0).astype(np.int32)
-    _infected_comp, infected_dd, _score, _tp, _fp, _fn, surep, _unsurep = self.decode_comp_new(bool_y)
+    _infected_comp, infected_dd, _score, _tp, _fp, _fn, surep, _unsurep, _ =\
+        self.decode_comp_new(bool_y, compute_stats=compute_stats)
 
+    #print(infected.shape)
+    #print(infected_dd.shape)
     # Compare definite defects with ours to detect if our algorithm doesn't
     # detect something that should definitely have been detected
     wrongly_undetected = np.sum(infected_dd - infected_dd * infected)
 
     infected = (infected + infected_dd > 0).astype(np.int32)
 
-    # Compute stats
-    tpos = (infected * self.arr)
-    fneg = (1 - infected) * self.arr
-    fpos = infected * (1 - self.arr)
-    
-    tp = sum(tpos)
-    fp = sum(fpos)
-    fn = sum(fneg)
-    
-    assert surep <= tp
-    unsurep = tp + fp - surep
+    if compute_stats:
+      # Compute stats
+      tpos = (infected * self.arr)
+      fneg = (1 - infected) * self.arr
+      fpos = infected * (1 - self.arr)
+      
+      tp = sum(tpos)
+      fp = sum(fpos)
+      fn = sum(fneg)
+      
+      assert surep <= tp
+      unsurep = tp + fp - surep
+    else:
+      tp = 0
+      fp = 0
+      fn = 0
+      surep = 0
+      unsurep = 0
+
+
+    num_infected_in_test = np.zeros(self.t, dtype=np.int32)
+    for test in range(self.t):
+      for person in range(self.n):
+        if infected[person] > 0 and self.M[person, test] == 1:
+          num_infected_in_test[test] += 1
 
     return infected, infected_dd, prob1, prob0, score, tp, fp, fn,\
         num_unconfident_negatives, determined, overdetermined, surep,\
-        unsurep, wrongly_undetected
+        unsurep, wrongly_undetected, num_infected_in_test
 
   def decode_lasso_for_cv(self, train_Ms, train_ys, test_Ms, test_ys,
       algo='lasso', l=None, sigma=None):
@@ -387,13 +412,15 @@ class CS(COMP):
 
   # Filter out those entries of x which are definitely 0 using COMP.
   # Remove corresponding columns from M.
-  def decode_comp_combined(self, y, secondary_algo, test=False):
+  def decode_comp_combined(self, y, secondary_algo, test=False,
+      compute_stats=True):
     # This assertion is needed because mr depends on number of rows.
     # Since number of rows will change for the internal CS, use frac instead
     assert self.mr == None
 
     bool_y = (y > 0).astype(np.int32)
-    infected_comp, infected_dd, _score, _tp, _fp, _fn, surep, unsurep = self.decode_comp_new(bool_y)
+    infected_comp, infected_dd, _score, _tp, _fp, _fn, surep, unsurep, _ =\
+        self.decode_comp_new(bool_y, compute_stats)
 
     # Find the indices of 1's above. These will be retained. Rest will be
     # discarded
@@ -438,7 +465,8 @@ class CS(COMP):
     _cs.conc = x
 
     infected_internal, infected_dd, prob1, prob0, score, tp, fp, fn, _, determined,\
-        overdetermined, surep, unsurep, wrongly_undetected = _cs.decode_lasso(y, secondary_algo)
+        overdetermined, surep, unsurep, wrongly_undetected, _ =\
+        _cs.decode_lasso(y, secondary_algo, compute_stats=compute_stats)
     infected = np.zeros(self.n)
     for val, idx in zip(infected_internal, non_zero_cols):
       infected[idx] = val
