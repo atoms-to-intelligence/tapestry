@@ -4,6 +4,7 @@ import math
 import os
 
 from matrices1 import *
+import sts
 
 optimized_M_1 = np.array([[0., 1., 0., 1., 0., 1., 1., 0., 0., 0., 1., 1., 0., 1., 1., 0., 0., 0.,       0., 0., 0., 1., 0., 1., 0., 0., 1., 0., 1., 0., 0., 0., 0., 0., 1., 1.,         0., 1., 1., 0.],
         [1., 0., 0., 1., 0., 0., 0., 1., 0., 1., 0., 0., 1., 1., 0., 0., 0., 1.,         1., 1., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 1., 1.,         1., 1., 0., 0.],
@@ -4699,6 +4700,9 @@ optimized_M_94_960_2 = load_from_matlab(os.path.join(mat_dir,
   'optimized_M_94_960_2.txt'))
 
 optimized_M_16_40_ncbs = np.loadtxt('mats/optimized_M_16_40_ncbs.txt')
+
+# Matrix generated using Steiner Triple System 
+optimized_M_93_960_1 = sts.sts(93, 960)
 
 if __name__ == '__main__':
   #int_coded_matrix(4, 15)
