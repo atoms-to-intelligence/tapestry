@@ -4741,7 +4741,7 @@ if __name__ == '__main__':
     col_sparsity = np.max(col_sums)
     min_col_sparsity = np.min(col_sums)
     total_sparsity = np.sum(row_sums)
-    print(m, 'Row sparsity: ', row_sparsity, 'Col sparsity: ', col_sparsity,
+    print(m, M.shape, 'Row sparsity: ', row_sparsity, 'Col sparsity: ', col_sparsity,
         'Min Row sparsity: ', min_row_sparsity, 'Min Col sparsity', min_col_sparsity,
         'Total sparsity: ', total_sparsity)
 
