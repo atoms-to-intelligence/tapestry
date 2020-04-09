@@ -1,7 +1,7 @@
 import numpy as np
 import math
 
-def sbl(A, y, sigval, tau, eps=1e-6):
+def sbl(A, y, sigval, tau, eps=1e-4):
   
   [m,n] = A.shape
   
@@ -20,13 +20,16 @@ def sbl(A, y, sigval, tau, eps=1e-6):
 
   # Sparse Bayesian Learning
   if red_n == 0:
-    x_est = np.zeros(red_n)
+    x_est = np.zeros(n)
+    #print('inside if')
   else:
     inv_Gamma = np.identity(red_n)
     mu_old = np.ones(red_n)
     mu = np.zeros(red_n)
 
+    #print('inside else')
     while np.sum(mu) == 0 or np.linalg.norm(mu_old - mu, 2) / np.linalg.norm(mu, 2) > eps:
+      #print('inside loop')
       mu_old = mu;
       inv_Sigma = np.matmul(np.transpose(red_A), red_A) / (sigval*sigval) + inv_Gamma
       Sigma = np.linalg.inv(inv_Sigma)
@@ -38,4 +41,5 @@ def sbl(A, y, sigval, tau, eps=1e-6):
     x_est[ind_nonzero_x] = mu
     x_est[x_est < tau] = 0
 
+  #print(x_est)
   return x_est

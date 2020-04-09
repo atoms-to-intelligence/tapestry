@@ -31,17 +31,18 @@ def print_infected_people(bool_y, algo):
     infected, infected_dd, score, tp, fp, fn, surep, unsurep,\
         num_infected_in_test = \
         cs.decode_comp_new(bool_y, compute_stats=False)
+    x = np.zeros(n)
   else:
-    infected, infected_dd, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\
+    x, infected, infected_dd, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\
         overdetermined, surep, unsurep, wrongly_undetected,\
         num_infected_in_test = cs.decode_lasso(y, algo, prefer_recall=False,
             compute_stats=False)
 
   for test in range(t):
     if bool_y[test] > 0 and num_infected_in_test[test] == 0:
-      print('Test %d is infected but no infected people found' % test)
+      print('y[%d] is infected but no infected people found' % test)
     if bool_y[test] == 0 and num_infected_in_test[test] > 0:
-      print('Test %d is not infected but infected people found' % test)
+      print('y[%d] is not infected but infected people found' % test)
     
   #infected = cs.decode_comp_new1(bool_y)
   #infected_dd = np.zeros(n)
@@ -61,6 +62,8 @@ def print_infected_people(bool_y, algo):
 
   print('Surely infected: ', sure_list)
   print('Possibly infected: ', unsure_list)
+  print('viral loads:', x)
+
   #print('Not infected: ', neg_list)
 
 def print_results_COMP():
@@ -119,7 +122,8 @@ for i, y in enumerate(ys):
   print("\n=====================")
   print('Test %d:' % (i+1))
   bool_y = (y > 0).astype(np.int32)
-  print_infected_people(bool_y, 'COMP')
+  #print_infected_people(bool_y, 'COMP')
   print_infected_people(y, 'combined_COMP_NNOMP_random_cv')
   #print_infected_people(y, 'SBL')
   #print_infected_people(y, 'l1ls')
+  #print_infected_people(y, 'NNOMP')
