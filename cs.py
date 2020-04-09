@@ -77,7 +77,7 @@ class CS(COMP):
   # Initial concentration of RNA in each sample
   def create_conc_matrix_from_infection_array(self, arr):
     # Fix tau to 0.01 * minimum value we expect in x
-    self.tau = 0.01 * 1 / 32768.
+    self.tau = 0.0001 * 1 / 32768.
     #self.tau = 0.01 * 0.1
     #conc = 1 + np.random.poisson(lam=5, size=self.n)
     conc = np.random.randint(low=1, high=32769, size=self.n) / 32768.

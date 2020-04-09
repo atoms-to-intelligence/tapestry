@@ -42,14 +42,17 @@ class CSExpts:
     elif cross_validation:
       raise ValueError('No cross validation implemented for %s' % algo)
     if algo == 'COMP':
-      infected, infected_dd, score, tp, fp, fn, surep, unsurep = cs.decode_comp_new(bool_y)
+      infected, infected_dd, score, tp, fp, fn, surep, unsurep,\
+          num_infected_in_test = cs.decode_comp_new(bool_y)
       uncon_negs = 0
       determined = 0
       overdetermined = 0
       wrongly_undetected = 0
+      x_est = np.zeros(cs.n)
     else:
-      infected, infected_dd, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\
-          overdetermined, surep, unsurep, wrongly_undetected = cs.decode_lasso(y, algo,
+      x_est, infected, infected_dd, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\
+          overdetermined, surep, unsurep, wrongly_undetected, \
+          num_infected_in_test = cs.decode_lasso(y, algo,
           prefer_recall=False)
 
     sys.stdout.write('\riter = %d / %d score: %.2f tp = %d fp = %d fn = %d' %
@@ -286,11 +289,11 @@ def get_small_random_matrix(t, n, col_sparsity):
   return matrix
 
 def run_many_parallel_expts():
-  num_expts = 10
-  n = 40
-  t = 16
+  num_expts = 50
+  n = 960
+  t = 93
   add_noise = True
-  matrix = optimized_M_2
+  matrix = optimized_M_93_960_1
 
   algos = []
   algos.extend(['COMP'])
@@ -298,13 +301,14 @@ def run_many_parallel_expts():
   #algos.append('combined_COMP_NNOMP')
   #algos.append('NNOMP_random_cv')
   #algos.extend(['combined_COMP_NNOMP_random_cv'])
-  #algos.append('SBL')
+  algos.append('SBL')
   #algos.append('combined_COMP_SBL')
   #algos.append('l1ls')
   #algos.append('combined_COMP_l1ls')
-  d_range = list(range(1, 5))
+  d_range = list(range(1, 21))
+  #d_range = [1]
   #d_range.extend([15, 20, 25, ])
-  n_jobs = 4
+  n_jobs = 8
   retvals = Parallel(n_jobs=n_jobs, backend='loky')\
   (\
       delayed(do_many_expts)\
