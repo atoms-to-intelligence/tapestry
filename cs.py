@@ -158,7 +158,7 @@ class CS(COMP):
       sigval = 0.01 * np.mean(y)
       #answer = sbl.sbl(A1, y1, sigval, self.tau)
       answer = sbl.sbl(A, y, sigval, self.tau)
-      print(answer)
+      #print(answer)
     elif algo == 'l1ls':
       A = self.M.T
       y = results

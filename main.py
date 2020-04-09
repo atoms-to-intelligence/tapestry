@@ -39,9 +39,9 @@ def print_infected_people(bool_y, algo):
 
   for test in range(t):
     if bool_y[test] > 0 and num_infected_in_test[test] == 0:
-      print('Test %d is infected but no infected people found' % test)
+      print('y[%d] is infected but no infected people found' % test)
     if bool_y[test] == 0 and num_infected_in_test[test] > 0:
-      print('Test %d is not infected but infected people found' % test)
+      print('y[%d] is not infected but infected people found' % test)
     
   #infected = cs.decode_comp_new1(bool_y)
   #infected_dd = np.zeros(n)
@@ -121,5 +121,5 @@ for i, y in enumerate(ys):
   bool_y = (y > 0).astype(np.int32)
   print_infected_people(bool_y, 'COMP')
   print_infected_people(y, 'combined_COMP_NNOMP_random_cv')
-  #print_infected_people(y, 'SBL')
+  print_infected_people(y, 'SBL')
   #print_infected_people(y, 'l1ls')
