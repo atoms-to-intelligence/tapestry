@@ -50,26 +50,50 @@ class COMP:
     assert (total - errors) == sum(self.arr)
     return errors, total
 
-  def decode_comp_new(self, infections):
-    infected = np.all(self.M * infections == self.M, axis=1).astype(np.int32)
-    # Compute stats
-    tpos = (infected * self.arr)
-    fneg = (1 - infected) * self.arr
-    fpos = infected * (1 - self.arr)
-    
-    tp = sum(tpos)
-    fp = sum(fpos)
-    fn = sum(fneg)
-    
+  def decode_comp_new1(self, infections, compute_stats=True):
+    n = self.n
+    t = self.t
+    infected = np.zeros(n)
+    for person in range(n):
+      is_infected = True
+      for test in range(t):
+        if self.M[person, test] == 1 and infections[test] == 0:
+          is_infected = False
+
+      if is_infected:
+        infected[person] = 1
+
+    return infected
+
+
+
+  def decode_comp_new(self, infections, compute_stats=True):
+    infected = np.all(self.M * infections[:, None] == self.M, axis=1).astype(np.int32)
     infected_dd = self.get_infected_dd(infected, infections)
     assert np.all(infected_dd - infected <= 0)
 
-    surep = np.sum(infected_dd)
-    unsurep = np.sum(infected * (1 - infected_dd))
+    
+    if compute_stats:
+      tpos = (infected * self.arr)
+      fneg = (1 - infected) * self.arr
+      fpos = infected * (1 - self.arr)
 
-    assert surep + unsurep == tp + fp
-    assert surep <= tp
-    assert unsurep >= fp
+      tp = sum(tpos)
+      fp = sum(fpos)
+      fn = sum(fneg)
+      
+      surep = np.sum(infected_dd)
+      unsurep = np.sum(infected * (1 - infected_dd))
+
+      assert surep + unsurep == tp + fp
+      assert surep <= tp
+      assert unsurep >= fp
+    else:
+      tp = 0
+      fp = 0
+      fn = 0
+      surep = 0
+      unsurep = 0
 
     return infected, infected_dd, 0., tp, fp, fn, surep, unsurep
 

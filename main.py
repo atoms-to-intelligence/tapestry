@@ -2,7 +2,7 @@ from cs import *
 
 n = 40
 t = 16
-M = optimized_M_2
+M = optimized_M_1
 
 def load_cycle_times(filename):
   cts = []
@@ -46,7 +46,7 @@ def print_infected_people(bool_y):
   print('Possibly infected: ', unsure_list)
   print('Not infected: ', neg_list)
 
-print(M)
+convert_matlab_format(M, sys.stdout)
 filenames = ['test1.txt', 'test2.txt', 'test3.txt', 'test4.txt', 'test5.txt']
 for i, filename in enumerate(filenames):
   print('Test %d:\n' % (i+1))
