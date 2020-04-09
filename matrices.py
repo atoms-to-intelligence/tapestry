@@ -4698,6 +4698,8 @@ mat_dir = 'mats/'
 optimized_M_94_960_2 = load_from_matlab(os.path.join(mat_dir,
   'optimized_M_94_960_2.txt'))
 
+optimized_M_16_40_ncbs = np.loadtxt('mats/optimized_M_16_40_ncbs.txt')
+
 if __name__ == '__main__':
   #int_coded_matrix(4, 15)
   print(int_coded_M_6_63.shape)

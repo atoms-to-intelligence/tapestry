@@ -2,7 +2,7 @@ from cs import *
 
 n = 40
 t = 16
-M = optimized_M_1
+M = optimized_M_16_40_ncbs
 
 def load_cycle_times(filename):
   cts = []
@@ -23,13 +23,20 @@ def print_infected_people(bool_y):
   l = 0.1
 
   cs = CS(n, t, s, d, l, arr, M, mr)
-  #infected, infected_dd, score, tp, fp, fn, surep, unsurep = \
-  #    cs.decode_comp_new(bool_y, compute_stats=False)
+  infected, infected_dd, score, tp, fp, fn, surep, unsurep,\
+      num_infected_in_test = \
+      cs.decode_comp_new(bool_y, compute_stats=False)
 
-  infected = cs.decode_comp_new1(bool_y)
-  infected_dd = np.zeros(n)
+  for test in range(t):
+    if bool_y[test] > 0 and num_infected_in_test[test] == 0:
+      print('Test %d is infected but no infected people found' % test)
+    if bool_y[test] == 0 and num_infected_in_test[test] > 0:
+      print('Test %d is not infected but infected people found' % test)
+    
+  #infected = cs.decode_comp_new1(bool_y)
+  #infected_dd = np.zeros(n)
   print(infected)
-  #print(infected_dd)
+  print(infected_dd)
 
   sure_list = []
   unsure_list = []
@@ -51,6 +58,7 @@ filenames = ['test1.txt', 'test2.txt', 'test3.txt', 'test4.txt', 'test5.txt']
 for i, filename in enumerate(filenames):
   print('Test %d:\n' % (i+1))
   cts = load_cycle_times(filename)
+  #bool_y = (cts < 33.479).astype(np.int32)
   bool_y = (cts < 33).astype(np.int32)
   print('Cycle times: ', cts)
   print('y: ', bool_y)
