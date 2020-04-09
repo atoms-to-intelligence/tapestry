@@ -143,8 +143,8 @@ class CS(COMP):
       #print('Doing ', algo)
       l = len('combined_COMP_')
       secondary_algo = algo[l:]
-      answer, prob1, prob0, determined, overdetermined =\
-      self.decode_comp_combined(results, secondary_algo,
+      answer, infected, prob1, prob0, determined, overdetermined =\
+          self.decode_comp_combined(results, secondary_algo,
           compute_stats=compute_stats)
     elif algo == 'SBL':
       A = self.M.T
@@ -226,7 +226,7 @@ class CS(COMP):
         if infected[person] > 0 and self.M[person, test] == 1:
           num_infected_in_test[test] += 1
 
-    return infected, infected_dd, prob1, prob0, score, tp, fp, fn,\
+    return answer, infected, infected_dd, prob1, prob0, score, tp, fp, fn,\
         num_unconfident_negatives, determined, overdetermined, surep,\
         unsurep, wrongly_undetected, num_infected_in_test
 
@@ -464,12 +464,14 @@ class CS(COMP):
     _cs = CS(n, t, s, d, l, arr, A, mr=None)
     _cs.conc = x
 
-    infected_internal, infected_dd, prob1, prob0, score, tp, fp, fn, _, determined,\
+    answer_internal, infected_internal, infected_dd, prob1, prob0, score, tp, fp, fn, _, determined,\
         overdetermined, surep, unsurep, wrongly_undetected, _ =\
         _cs.decode_lasso(y, secondary_algo, compute_stats=compute_stats)
     infected = np.zeros(self.n)
-    for val, idx in zip(infected_internal, non_zero_cols):
+    answer = np.zeros(self.n)
+    for ans, val, idx in zip(answer_internal, infected_internal, non_zero_cols):
       infected[idx] = val
+      answer[idx] = ans
 
     prob1_new = np.zeros(self.n)
     prob0_new = np.ones(self.n)
@@ -481,7 +483,7 @@ class CS(COMP):
     if test:
       return infected, prob1_new, prob0_new, score, tp, fp, fn
     else:
-      return infected, prob1_new, prob0_new, determined, overdetermined
+      return answer, infected, prob1_new, prob0_new, determined, overdetermined
 
   def decode_qp(self, results):
     pass
