@@ -3,6 +3,7 @@ from cs import *
 n = 40
 t = 16
 M = optimized_M_16_40_ncbs
+filenames = ['test1.txt', 'test2.txt', 'test3.txt', 'test4.txt', 'test5.txt']
 
 def load_cycle_times(filename):
   cts = []
@@ -53,15 +54,47 @@ def print_infected_people(bool_y):
   print('Possibly infected: ', unsure_list)
   print('Not infected: ', neg_list)
 
-convert_matlab_format(M, sys.stdout)
-filenames = ['test1.txt', 'test2.txt', 'test3.txt', 'test4.txt', 'test5.txt']
-for i, filename in enumerate(filenames):
-  print('Test %d:\n' % (i+1))
-  cts = load_cycle_times(filename)
-  #bool_y = (cts < 33.479).astype(np.int32)
-  bool_y = (cts < 33).astype(np.int32)
-  print('Cycle times: ', cts)
-  print('y: ', bool_y)
-  print_infected_people(bool_y)
-  print('\n')
+def print_results_COMP():
+  #convert_matlab_format(M, sys.stdout)
+  filenames = ['test1.txt', 'test2.txt', 'test3.txt', 'test4.txt', 'test5.txt']
+  for i, filename in enumerate(filenames):
+    print('Test %d:\n' % (i+1))
+    cts = load_cycle_times(filename)
+    #bool_y = (cts < 33.479).astype(np.int32)
+    bool_y = (cts < 33).astype(np.int32)
+    print('Cycle times: ', cts)
+    print('y: ', bool_y)
+    print_infected_people(bool_y)
+    print('\n')
+
+def find_max_positive_cycle_time():
+  cutoff = 33
+  CTS = []
+  positive_cts = []
+  for i, filename in enumerate(filenames):
+    cts = load_cycle_times(filename)
+    CTS.append(cts)
+    bool_cts = (cts < cutoff).astype(np.int32)
+    pos_cts = cts * bool_cts
+    positive_cts.append(pos_cts)
+
+  CTS_arr = np.concatenate(CTS)
+  #print(CTS_arr.shape)
+  #print(CTS_arr)
+  bool_y = (CTS_arr < cutoff).astype(np.int32)
+  #print(bool_y)
+  CTS_arr = CTS_arr * bool_y
+  m = np.max(CTS_arr)
+  return m, CTS, positive_cts
+
+m, cts_list , positive_cts= find_max_positive_cycle_time()
+
+np.set_printoptions(linewidth=800)
+p = 0.95
+for cts in positive_cts:
+  bool_y = (cts > 0).astype(np.int32)
+  y = (1+p) ** (m - cts)
+  y = y * bool_y
+  print(y)
+
 
