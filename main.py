@@ -10,7 +10,7 @@ def load_cycle_times(filename):
       cts.append(val)
   return np.array(cts)
 
-def print_infected_people(bool_y, algo):
+def print_infected_people(y, bool_y, algo):
   print("---------------------")
   print(algo)
   print("---------------------")
@@ -96,7 +96,11 @@ def find_max_positive_cycle_time():
   return m, CTS, positive_cts
 
 def run_on_list_of_files():
-  m, cts_list , positive_cts= find_max_positive_cycle_time()
+  global n, t, M
+  n = 60
+  t = 24
+  M = optimized_M_16_40_ncbs
+  m, cts_list , positive_cts = find_max_positive_cycle_time()
 
   #print(m)
   np.set_printoptions(linewidth=800)
@@ -125,67 +129,70 @@ def run_on_list_of_files():
     #print_infected_people(y, 'l1ls')
     #print_infected_people(y, 'NNOMP')
 
-n = 60
-t = 24
-M = optimized_M_3
-bool_y = [
-    1, # D3
-    1, # D4
-    0, # D5
-    0, # D6
-    0, # D7
-    0, # D8
-    0, # D9
-    0, # D10
-    0, # E3
-    0, # E4
-    1, # E5
-    0, # E6
-    0, #E7
-    1, #E8
-    0, #E9
-    0, #E10
-    1, #F3
-    0, #F4
-    0, #F5
-    0, #F6
-    0, #F7
-    0, #F8
-    0, #F9
-    0, #F10
-    ]
-bool_y = np.array(bool_y, dtype=np.int32)
-print_infected_people(bool_y, 'COMP')
+def run_harvard_data():
+  global n, t, M
+  n = 60
+  t = 24
+  M = optimized_M_3
+  bool_y = [
+      1, # D3
+      1, # D4
+      0, # D5
+      0, # D6
+      0, # D7
+      0, # D8
+      0, # D9
+      0, # D10
+      0, # E3
+      0, # E4
+      1, # E5
+      0, # E6
+      0, #E7
+      1, #E8
+      0, #E9
+      0, #E10
+      1, #F3
+      0, #F4
+      0, #F5
+      0, #F6
+      0, #F7
+      0, #F8
+      0, #F9
+      0, #F10
+      ]
+  bool_y = np.array(bool_y, dtype=np.int32)
+  y = bool_y
+  print_infected_people(y, bool_y, 'COMP')
 
-df = pd.read_csv("harvard_test1.csv")
-#cts = df.values[:, 0]
-fl = df.values[:, 1:]
+  df = pd.read_csv("harvard_test1.csv")
+  #cts = df.values[:, 0]
+  fl = df.values[:, 1:]
 
-assert t == fl.shape[1]
-cts = np.zeros(t)
-for j in range(t):
-  if bool_y[j] == 0:
-    print('Skipping', j)
-    continue
+  assert t == fl.shape[1]
+  cts = np.zeros(t)
+  for j in range(t):
+    if bool_y[j] == 0:
+      print('Skipping', j)
+      continue
 
-  for i in range(fl.shape[0]):
-    if fl[i, j] >= 1000:
-      fl1 = fl[i-1, j]
-      fl2 = fl[i, j]
+    for i in range(fl.shape[0]):
+      if fl[i, j] >= 1000:
+        fl1 = fl[i-1, j]
+        fl2 = fl[i, j]
 
-      ct = i + math.log(1000/fl1) / math.log(fl2/fl1)
-      print(j, ct)
-      cts[j] = ct
-      break
+        ct = i + math.log(1000/fl1) / math.log(fl2/fl1)
+        print(j, ct)
+        cts[j] = ct
+        break
 
-#np.set_printoptions(linewidth=400)
-p = 0.95
-m = np.max(cts)      
-y = (1+p) ** (m - cts)
-y = y * bool_y
-print('cts:', cts)
-print('y:', y)
-print_infected_people(y, 'SBL')
-print_infected_people(y, 'combined_COMP_NNOMP_random_cv')
+  #np.set_printoptions(linewidth=400)
+  p = 0.95
+  m = np.max(cts)      
+  y = (1+p) ** (m - cts)
+  y = y * bool_y
+  print('cts:', cts)
+  print('y:', y)
+  print_infected_people(y, bool_y, 'SBL')
+  print_infected_people(y, bool_y, 'combined_COMP_NNOMP_random_cv')
 
-
+run_harvard_data()
