@@ -79,6 +79,7 @@ def find_max_positive_cycle_time():
   cutoff = 33
   CTS = []
   positive_cts = []
+  filenames = ['test1.txt', 'test2.txt', 'test3.txt', 'test4.txt', 'test5.txt']
   for i, filename in enumerate(filenames):
     cts = load_cycle_times(filename)
     CTS.append(cts)
@@ -97,8 +98,8 @@ def find_max_positive_cycle_time():
 
 def run_on_list_of_files():
   global n, t, M
-  n = 60
-  t = 24
+  n = 40
+  t = 16
   M = optimized_M_16_40_ncbs
   m, cts_list , positive_cts = find_max_positive_cycle_time()
 
@@ -116,6 +117,12 @@ def run_on_list_of_files():
     ys.append(y)
     bool_ys.append(bool_y)
 
+  #for i, y in enumerate(ys):
+  #  print('Test', i + 1)
+  #convert_matlab_format(ys, sys.stdout)
+
+  #sys.exit(1)
+
   #for bool_y in bool_ys:
   #  print_infected_people(bool_y, 'COMP')
 
@@ -123,9 +130,9 @@ def run_on_list_of_files():
     print("\n=====================")
     print('Test %d:' % (i+1))
     bool_y = (y > 0).astype(np.int32)
-    print_infected_people(bool_y, 'COMP')
-    #print_infected_people(y, 'combined_COMP_NNOMP_random_cv')
-    #print_infected_people(y, 'SBL')
+    print_infected_people(y, bool_y, 'COMP')
+    print_infected_people(y, bool_y, 'combined_COMP_NNOMP_random_cv')
+    print_infected_people(y, bool_y, 'SBL')
     #print_infected_people(y, 'l1ls')
     #print_infected_people(y, 'NNOMP')
 
@@ -195,4 +202,5 @@ def run_harvard_data():
   print_infected_people(y, bool_y, 'SBL')
   print_infected_people(y, bool_y, 'combined_COMP_NNOMP_random_cv')
 
-run_harvard_data()
+run_on_list_of_files()
+#run_harvard_data()
