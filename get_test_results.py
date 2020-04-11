@@ -2,6 +2,7 @@
 
 # This is where the actual get_test_results() is present
 import app
+import config
 
 # Import the dictionary of matrix labels to the actual numpy matrices
 #
@@ -21,6 +22,8 @@ from matrices import MDict as MLabelToMatrixDict
 # removed. Once a matrix label is added, it should never be removed from the
 # code. 
 MSizeToLabelDict = {
+    "16x40":    "optimized_M_16_40_ncbs",
+    "24x60":    "optimized_M_3",
     "46x96":    "optimized_M_46_96_1",
     "46x192":   "optimized_M_46_192_1",
     }
@@ -60,6 +63,8 @@ def get_test_results(matrix_label, cycle_times):
   result_string = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
   return result_string
 
+# Composes the result string from the list of surely positives, possibly
+# positives, negatives and the x values
 def get_result_string_from_lists(sure_list, unsure_list, neg_list, x):
   if not sure_list and not unsure_list:
     s0 = "No Positive Samples\n"
@@ -86,11 +91,36 @@ def get_result_string_from_lists(sure_list, unsure_list, neg_list, x):
     else:
       s3 = "Remaining samples are negative\n"
 
-  x_str = "Detected viral loads in each sample: %s" % \
-          ", ".join([str(item) for item in x])
+  x_str = ""
+  if config.app_algo != 'COMP':
+    x_str = "Detected viral loads: %s" % \
+            ", ".join([str(item) for item in x])
   result_string = s0 + s1 + s2 + s3 + x_str
 
   return result_string
+
+# Code to run at deployment time. Checks for errors such as invalid matrix
+# labels or sizes. If this raises an exception, then deployment should not
+# happen and a notification must be sent.
+def at_deployment():
+  sanity_check_for_matrices()
+
+
+
+
+
+###########      Internal Code for testing      ##############
+
+def test_get_result_string_from_lists():
+  sure_list = [2, 17, 29]
+  unsure_list = [25, 78]
+  neg_list = list(range(1, 97))
+  for item in (sure_list + unsure_list):
+    neg_list.remove(item)
+  x = np.random.rand(96)
+  res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
+  print(res)
+
 
 # Go through all the labels in MSizeToLabelDict and determine if the corresponding
 # matrices are present MLabelToMatrixDict. Checks if the sizes match up.
@@ -106,12 +136,20 @@ def sanity_check_for_matrices():
       if t == M.shape[0] and  n == M.shape[1]:
         print(msize, mlabel, 'Sizes match')
       else:
-        print(msize, mlabel, 'Sizes don\'t match:', M.shape)
+        print('********   Error: ', msize, mlabel, 'Sizes don\'t match:',
+            M.shape, "   ********")
         error = True
     else:
       print(msize, mlabel, 'label does not exists')
       error = True
+  if error:
+    print("\nGot Error :(\n")
+    raise ValueError("Some error in matrix setup")
+  else:
+    print("\nAll OK\n")
   
+def api_sanity_checks():
+  error = False
   print('\nSome API checks...\n')
   print('Label for valid size 46x96', get_current_matrix_label_for_size("46x96"))
   try:
@@ -138,7 +176,11 @@ def sanity_check_for_matrices():
     print("\nAll OK\n")
 
 if __name__ == '__main__':
-  #sanity_check_for_matrices()
+  import numpy as np
+
+  sanity_check_for_matrices()
+  api_sanity_checks()
+  test_get_result_string_from_lists()
   # Now test get_test_results()
   from experimental_data_manager import read_harvard_data_cts
   cts = read_harvard_data_cts()
