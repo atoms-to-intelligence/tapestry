@@ -57,19 +57,49 @@ def get_test_results(matrix_label, cycle_times):
 # Go through all the labels in MSizeToLabelDict and determine if the corresponding
 # matrices are present MLabelToMatrixDict. Checks if the sizes match up.
 def sanity_check_for_matrices():
+  print('Checking if matrix sizes correspond to an actual label...\n')
+  error = False
   for msize in MSizeToLabelDict:
     t, n = [int(item) for item in msize.split("x")]
     mlabel = MSizeToLabelDict[msize]
-    assert mlabel in MLabelToMatrixDict
-    M = MLabelToMatrixDict[mlabel]
-    assert t == M.shape[0]
-    assert n == M.shape[1]
+    if mlabel in MLabelToMatrixDict:
+      print(msize, mlabel, 'label exists')
+      M = MLabelToMatrixDict[mlabel]
+      if t == M.shape[0] and  n == M.shape[1]:
+        print(msize, mlabel, 'Sizes match')
+      else:
+        print(msize, mlabel, 'Sizes don\'t match:', M.shape)
+        error = True
+    else:
+      print(msize, mlabel, 'label does not exists')
+      error = True
+  
+  print('\nSome API checks...\n')
+  print('Label for valid size 46x96', get_current_matrix_label_for_size("46x96"))
+  try:
+    print(get_current_matrix_label_for_size("fslkj"))
+    print('Did not get expected error while calling with invalid matrix size')
+    error = True
+  except KeyError as e:
+    print('Got expected error while calling with invalid matrix size:', str(e))
 
-  print("All OK")
+  
+  print('Shape of the valid matrix optimized_M_16_40_ncbs', get_matrix_for_label("optimized_M_16_40_ncbs").shape)
+  try:
+    invalid_label = "ojlkj"
+    print('shape of the invalid matrix ', invalid_label,
+        get_matrix_for_label(invalid_label).shape)
+    print('Did not get expected error while calling with invalid matrix size')
+    error = True
+  except KeyError as e:
+    print('Got expected error while calling with invalid matrix label:', str(e))
+  if error:
+    print("\nGot Error :(\n")
+    raise ValueError("Some error in matrix setup")
+  else:
+    print("\nAll OK\n")
 
 if __name__ == '__main__':
   sanity_check_for_matrices()
   # Do some sanity check tests
-  #print(get_current_matrix_label_for_size("46x96"))
-  #print(get_current_matrix_label_for_size("45x96"))
 
