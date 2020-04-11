@@ -4706,12 +4706,12 @@ optimized_M_93_960_1 = sts.sts(93, 960)
 
 if __name__ == '__main__':
   #int_coded_matrix(4, 15)
-  print(int_coded_M_6_63.shape)
+  #print(int_coded_M_6_63.shape)
   # Uncomment following code if you want to convert these matrices to matlab
 
   #mat = np.array([[1, 2, 3, 4], [3, 4, 5, 6], [10, 11, 12, 13]])
   #print(mat)
-  #convert_matlab_format(mat, sys.stdout)
+  #convert_matlab_format(optimized_M_16_40_ncbs, sys.stdout)
   #names = ['optimized_M_2.txt', 'optimized_M_3.txt', 'optimized_M_5.txt']
   #for mat, name in zip([optimized_M_2, optimized_M_3, optimized_M_5], names):
   #  with open(name, 'w') as f:

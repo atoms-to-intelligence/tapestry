@@ -28,6 +28,7 @@ class CSExpts:
     self.unsurep = 0
     self.num_expts_2_stage = 0
     self.wrongly_undetected = 0
+    self.total_score = 0
 
   # Find results using qPCR
   def do_single_expt(self, i, num_expts, cs, x, cross_validation=True, add_noise=True,
@@ -59,10 +60,10 @@ class CSExpts:
         (i, num_expts, score, tp, fp, fn))
 
     self.add_stats(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
-        unsurep, wrongly_undetected)
+        unsurep, wrongly_undetected, score)
 
   def add_stats(self, tp, fp, fn, uncon_negs, determined, overdetermined,
-      surep, unsurep, wrongly_undetected):
+      surep, unsurep, wrongly_undetected, score):
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -80,6 +81,7 @@ class CSExpts:
     self.unsurep += unsurep
     self.num_expts_2_stage += (unsurep > 0)
     self.wrongly_undetected += wrongly_undetected
+    self.total_score += score
 
   def print_stats(self, num_expts, header=False):
     precision = self.total_tp / float(self.total_tp + self.total_fp)
@@ -125,6 +127,7 @@ class CSExpts:
     self.avg_surep = self.surep / num_expts
     # Specificity is True Negative Rate
     self.specificity = specificity(self.precision, self.recall, self.n, self.d)
+    self.avg_score = self.total_score / self.expts
     return stats
 
 def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
@@ -289,26 +292,26 @@ def get_small_random_matrix(t, n, col_sparsity):
   return matrix
 
 def run_many_parallel_expts():
-  num_expts = 50
-  n = 960
-  t = 93
+  num_expts = 100
+  n = 40
+  t = 16
   add_noise = True
-  matrix = optimized_M_93_960_1
+  matrix = optimized_M_16_40_ncbs
 
   algos = []
   algos.extend(['COMP'])
   #algos.append('NNOMP')
   #algos.append('combined_COMP_NNOMP')
-  #algos.append('NNOMP_random_cv')
+  algos.append('NNOMP_random_cv')
+  #algos.append('SBL')
   #algos.extend(['combined_COMP_NNOMP_random_cv'])
-  algos.append('SBL')
   #algos.append('combined_COMP_SBL')
   #algos.append('l1ls')
   #algos.append('combined_COMP_l1ls')
-  d_range = list(range(1, 21))
+  d_range = list(range(1, 11))
   #d_range = [1]
-  #d_range.extend([15, 20, 25, ])
-  n_jobs = 8
+  #d_range.extend([15, 20, 25, 30])
+  n_jobs = len(d_range)
   retvals = Parallel(n_jobs=n_jobs, backend='loky')\
   (\
       delayed(do_many_expts)\
@@ -342,14 +345,17 @@ def run_many_parallel_expts():
     print('\n' + algo + '\n')
     #print('\td\tPrecision\tRecall\ttotal_tests\tnum_determined\tnum_overdetermined\n')
     #print('\td\tPrecision\tRecall\tsurep\tunsurep  avg_tests  2_stage\tWrongly_undetected')
-    print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep  avg_tests  2_stage')
+    #print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep  avg_tests  2_stage')
+    print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep\tavg_score')
     for expt in explist[i]:
       total_tests = t + expt.d / expt.precision
-      print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
-        expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.t +
-        expt.avg_unsurep, expt.num_expts_2_stage, ))
+      print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f' % (expt.d, expt.precision,
+        expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.avg_score))
       #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
       #  expt.recall, total_tests, expt.determined, expt.overdetermined))
+      #print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
+      #  expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.t +
+      #  expt.avg_unsurep, expt.num_expts_2_stage, ))
 
 def run_many_parallel_expts_mr():
   num_expts = 100
