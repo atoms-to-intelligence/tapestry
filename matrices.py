@@ -4704,6 +4704,15 @@ optimized_M_16_40_ncbs = np.loadtxt('mats/optimized_M_16_40_ncbs.txt')
 # Matrix generated using Steiner Triple System 
 optimized_M_93_960_1 = sts.sts(93, 960)
 
+MList = [item for item in dir() if item.startswith("optimized_M_")]
+variables = globals()
+
+# Dictionary of matrix labels to the actual np array
+MDict = {}
+for m in MList:
+  M = variables[m]
+  MDict[m] = M
+
 if __name__ == '__main__':
   #int_coded_matrix(4, 15)
   #print(int_coded_M_6_63.shape)
