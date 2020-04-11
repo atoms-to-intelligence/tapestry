@@ -11,8 +11,6 @@ def get_test_results(M, cts):
 
 
 # Get y (viral loads in each test) from cycle times
-#
-#
 def _get_y_from_cts(cts):
   # First get the min cycle time. This corresponds to the test with the
   # maximum viral load. This sample will have the least amount of variance
@@ -25,10 +23,6 @@ def _get_y_from_cts(cts):
 
   y = (1 + config.p) ** (ctmin - cts)
   y = y * bool_y
-
-  print('cts:', cts)
-  print('y:', y)
-  print('bool_y:', bool_y)
 
   return y
 
@@ -96,53 +90,33 @@ def _get_lists_from_infected(infected, infected_dd, n):
   return sure_list, unsure_list, neg_list
 
 if __name__ == '__main__':
-  import pandas as pd
-  import math
+  # These imports and functions are for testing purposes only
   from matrices import optimized_M_3
-
-  def read_harvard_data_cts():
-    t = 24
-    df = pd.read_csv("harvard_test1.csv")
-    #cts = df.values[:, 0]
-    fl = df.values[:, 1:]
-
-    assert t == fl.shape[1]
-    cts = np.zeros(t) + config.cycle_time_cutoff
-    for j in range(t):
-      for i in range(fl.shape[0]):
-        if fl[i, j] >= 1000:
-          fl1 = fl[i-1, j]
-          fl2 = fl[i, j]
-
-          ct = i + math.log(1000/fl1) / math.log(fl2/fl1)
-          #print(j, ct)
-          cts[j] = ct
-          break
-
-    return cts
+  from experimental_data_manager import read_harvard_data_cts
 
   # Test using Harvard and ncbs data
   def run_tests():
-    pass
+    cts = read_harvard_data_cts()
+    print('cts:')
+    print(cts)
+    y = _get_y_from_cts(cts)
+    print('y:')
+    print(y)
+
+    for algo in ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv']:
+      config.app_algo = algo
+      print("\nUsing algorithm %s \n" % config.app_algo)
+      harvard_test()
 
   def harvard_test():
+    print("Test on Harvard Dataset")
     cts = read_harvard_data_cts()
     M = optimized_M_3
-    print("Test on Harvard Dataset")
     sure_list, unsure_list, neg_list, x = get_test_results(M, cts)
     print("Sure list:", sure_list)
     print("Unsure list:", unsure_list)
     print("Neg list:", neg_list)
     print("x:", x)
 
-  config.app_algo = "COMP"
-  print("\nUsing algorithm %s \n" % config.app_algo)
-  harvard_test()
+  run_tests()
 
-  config.app_algo = "SBL"
-  print("\nUsing algorithm %s \n" % config.app_algo)
-  harvard_test()
-
-  config.app_algo = "combined_COMP_NNOMP_random_cv"
-  print("\nUsing algorithm %s \n" % config.app_algo)
-  harvard_test()
