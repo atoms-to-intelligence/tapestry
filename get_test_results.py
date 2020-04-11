@@ -86,7 +86,7 @@ def get_result_string_from_lists(sure_list, unsure_list, neg_list, x):
       s1  = "Surely Positive Samples: %s \n" % \
           ", ".join([str(item) for item in sure_list])
     else:
-      s1  = "No Surely Positive Samples"
+      s1  = "No Surely Positive Samples\n"
 
     if unsure_list:
       s2  = "Possibly Positive Samples: %s \n" % \
@@ -101,11 +101,12 @@ def get_result_string_from_lists(sure_list, unsure_list, neg_list, x):
 
   x_str = ""
   if config.app_algo != 'COMP':
-    x_str = "Detected viral loads: %s" % \
-            ", ".join([str(item) for item in x])
+    x_str = "Detected viral loads: %s\n" % \
+            ", ".join(["%.3f" % (item) for item in x])
   result_string = s0 + s1 + s2 + s3 + x_str
 
   return result_string
+
 
 # Code to run at deployment time. Checks for errors such as invalid matrix
 # labels or sizes. 
@@ -122,15 +123,75 @@ def at_deployment():
 ###########      Internal Code for testing      ##############
 
 def test_get_result_string_from_lists():
-  sure_list = [2, 17, 29]
-  unsure_list = [25, 78]
-  neg_list = list(range(1, 97))
-  for item in (sure_list + unsure_list):
-    neg_list.remove(item)
-  x = np.random.rand(96)
-  res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
-  print(res)
+  for algo in ['COMP', 'SBL']:
+    config.app_algo = algo
+    print("Using algo: %s\n" % config.app_algo)
 
+    sure_list = [2, 3, 4]
+    unsure_list = [1, 7]
+    neg_list = list(range(1, 11))
+    for item in (sure_list + unsure_list):
+      neg_list.remove(item)
+    x = np.random.rand(11)
+    mask = np.zeros(11)
+    mask[sure_list + unsure_list] = 1
+    x = x * mask
+    x = x[1:]
+    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
+    print(res)
+
+    sure_list = []
+    unsure_list = [1, 7]
+    neg_list = list(range(1, 11))
+    for item in (sure_list + unsure_list):
+      neg_list.remove(item)
+    x = np.random.rand(11)
+    mask = np.zeros(11)
+    mask[sure_list + unsure_list] = 1
+    x = x * mask
+    x = x[1:]
+    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
+    print(res)
+
+    sure_list = [2, 3, 4]
+    unsure_list = []
+    neg_list = list(range(1, 11))
+    for item in (sure_list + unsure_list):
+      neg_list.remove(item)
+    x = np.random.rand(11)
+    mask = np.zeros(11)
+    mask[sure_list + unsure_list] = 1
+    x = x * mask
+    x = x[1:]
+    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
+    print(res)
+
+    sure_list = []
+    unsure_list = []
+    neg_list = list(range(1, 11))
+    for item in (sure_list + unsure_list):
+      neg_list.remove(item)
+    x = np.random.rand(11)
+    mask = np.zeros(11)
+    mask[sure_list + unsure_list] = 1
+    x = x * mask
+    x = x[1:]
+    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
+    print(res)
+
+    sure_list = list(range(1, 5))
+    unsure_list = list(range(5, 11))
+    neg_list = []
+    for item in (sure_list + unsure_list):
+      if item in neg_list:
+        neg_list.remove(item)
+    x = np.random.rand(11)
+    mask = np.zeros(11)
+    mask[sure_list + unsure_list] = 1
+    x = x * mask
+    x = x[1:]
+    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
+    print(res)
 
 # Go through all the labels in MSizeToLabelDict and determine if the corresponding
 # matrices are present MLabelToMatrixDict. Checks if the sizes match up.
