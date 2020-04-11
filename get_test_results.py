@@ -1,14 +1,17 @@
 ### Get the results for a given test. Implemented in function get_test_results() ###
 
-# This is where the actual get_test_results() is present
+
+# The actual get_test_results() is present in app.py
 import app
 import config
+
 
 # Import the dictionary of matrix labels to the actual numpy matrices
 #
 # This dictionary is **auto-generated** by looking at all the variables named
 # optimized_M_* in matrices.py and matrices1.py
 from matrices import MDict as MLabelToMatrixDict
+
 
 # Dictionary of matrix size to the label of the matrix which will be used. 
 # This dictionary should be modified by hand.
@@ -28,9 +31,11 @@ MSizeToLabelDict = {
     "46x192":   "optimized_M_46_192_1",
     }
 
+
 # Returns a copy of size -> label dictionary
 def get_matrix_sizes_and_labels():
   return dict(MSizeToLabelDict)
+
 
 # Returns the currently used matrix label for a given size
 def get_current_matrix_label_for_size(matrix_size):
@@ -40,6 +45,7 @@ def get_current_matrix_label_for_size(matrix_size):
 
   return MSizeToLabelDict[matrix_size]
 
+
 # Returns the matrix (which is a numpy array of shape (t, n)) corresponding to
 # the given label
 def get_matrix_for_label(matrix_label):
@@ -47,6 +53,7 @@ def get_matrix_for_label(matrix_label):
     raise KeyError('Invalid matrix label: "%s". Correct matrix labels are: "%s"' %
         (matrix_label, '", "'.join(MLabelToMatrixDict.keys())))
   return MLabelToMatrixDict[matrix_label]
+
 
 # Get the results for a test
 #
@@ -62,6 +69,7 @@ def get_test_results(matrix_label, cycle_times):
 
   result_string = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
   return result_string
+
 
 # Composes the result string from the list of surely positives, possibly
 # positives, negatives and the x values
@@ -100,8 +108,10 @@ def get_result_string_from_lists(sure_list, unsure_list, neg_list, x):
   return result_string
 
 # Code to run at deployment time. Checks for errors such as invalid matrix
-# labels or sizes. If this raises an exception, then deployment should not
-# happen and a notification must be sent.
+# labels or sizes. 
+#
+# *******    If this raises an exception, then deployment should not  ********
+# *******            happen and a notification must be sent.          ********
 def at_deployment():
   sanity_check_for_matrices()
 
