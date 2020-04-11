@@ -1,5 +1,7 @@
 ### Get the results for a given test. Implemented in function get_test_results() ###
 
+# This is where the actual get_test_results() is present
+import app
 
 # Import the dictionary of matrix labels to the actual numpy matrices
 #
@@ -51,8 +53,11 @@ def get_matrix_for_label(matrix_label):
 # Input: Cycle time vector. Numpy array of size 't', which is the number of
 # tests or equivalently the number of rows in the matrix
 def get_test_results(matrix_label, cycle_times):
-  result_string = "This is a stub"
+  M = get_matrix_for_label(matrix_label)
+
+  result_string = app.get_test_results(M, cycle_times)
   return result_string
+
 
 # Go through all the labels in MSizeToLabelDict and determine if the corresponding
 # matrices are present MLabelToMatrixDict. Checks if the sizes match up.
@@ -101,5 +106,4 @@ def sanity_check_for_matrices():
 
 if __name__ == '__main__':
   sanity_check_for_matrices()
-  # Do some sanity check tests
 
