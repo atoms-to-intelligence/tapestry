@@ -1,6 +1,7 @@
 import pandas as pd
-import math
 import numpy as np
+import math
+
 import config
 
 def read_harvard_data_cts():

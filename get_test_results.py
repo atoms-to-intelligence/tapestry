@@ -55,9 +55,42 @@ def get_matrix_for_label(matrix_label):
 def get_test_results(matrix_label, cycle_times):
   M = get_matrix_for_label(matrix_label)
 
-  result_string = app.get_test_results(M, cycle_times)
+  sure_list, unsure_list, neg_list, x = app.get_test_results(M, cycle_times)
+
+  result_string = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
   return result_string
 
+def get_result_string_from_lists(sure_list, unsure_list, neg_list, x):
+  if not sure_list and not unsure_list:
+    s0 = "No Positive Samples\n"
+    s3 = "All samples are negative\n"
+
+    s1 = ""
+    s2 = ""
+  else:
+    s0 = ""
+    if sure_list:
+      s1  = "Surely Positive Samples: %s \n" % \
+          ", ".join([str(item) for item in sure_list])
+    else:
+      s1  = "No Surely Positive Samples"
+
+    if unsure_list:
+      s2  = "Possibly Positive Samples: %s \n" % \
+          ", ".join([str(item) for item in unsure_list])
+    else:
+      s2  = ""
+
+    if not neg_list:
+      s3 = "No surely negative samples detected\n"
+    else:
+      s3 = "Remaining samples are negative\n"
+
+  x_str = "Detected viral loads in each sample: %s" % \
+          ", ".join([str(item) for item in x])
+  result_string = s0 + s1 + s2 + s3 + x_str
+
+  return result_string
 
 # Go through all the labels in MSizeToLabelDict and determine if the corresponding
 # matrices are present MLabelToMatrixDict. Checks if the sizes match up.
@@ -105,5 +138,10 @@ def sanity_check_for_matrices():
     print("\nAll OK\n")
 
 if __name__ == '__main__':
-  sanity_check_for_matrices()
+  #sanity_check_for_matrices()
+  # Now test get_test_results()
+  from experimental_data_manager import read_harvard_data_cts
+  cts = read_harvard_data_cts()
+  res = get_test_results("optimized_M_3", cts)
+  print(res)
 
