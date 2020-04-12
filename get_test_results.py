@@ -2,7 +2,7 @@
 
 
 # The actual get_test_results() is present in app.py
-import app
+import app_utils
 import config
 
 
