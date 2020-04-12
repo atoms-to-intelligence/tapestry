@@ -115,6 +115,8 @@ def get_result_string_from_lists(sure_list, unsure_list, neg_list, x):
 # *******            happen and a notification must be sent.          ********
 def at_deployment():
   sanity_check_for_matrices()
+  api_sanity_checks()
+  test_harvard_data()
 
 
 
@@ -123,6 +125,7 @@ def at_deployment():
 ###########      Internal Code for testing      ##############
 
 def test_get_result_string_from_lists():
+  tmp = config.app_algo
   for algo in ['COMP', 'SBL']:
     config.app_algo = algo
     print("Using algo: %s\n" % config.app_algo)
@@ -192,6 +195,7 @@ def test_get_result_string_from_lists():
     x = x[1:]
     res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
     print(res)
+  config.app_algo = tmp
 
 # Go through all the labels in MSizeToLabelDict and determine if the corresponding
 # matrices are present MLabelToMatrixDict. Checks if the sizes match up.
@@ -246,15 +250,19 @@ def api_sanity_checks():
   else:
     print("\nAll OK\n")
 
-if __name__ == '__main__':
-  import numpy as np
 
-  sanity_check_for_matrices()
-  api_sanity_checks()
-  test_get_result_string_from_lists()
-  # Now test get_test_results()
+# Tests get_test_results on Harvard experimental data using the currently
+# configured algorithm. Useful for sanity check. Should not throw an
+# exception.
+def test_harvard_data():
   from experimental_data_manager import read_harvard_data_cts
   cts = read_harvard_data_cts()
   res = get_test_results("optimized_M_3", cts)
   print(res)
+
+if __name__ == '__main__':
+  at_deployment()
+
+  import numpy as np
+  test_get_result_string_from_lists()
 
