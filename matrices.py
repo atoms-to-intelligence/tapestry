@@ -4713,10 +4713,16 @@ MList = [item for item in dir() if item.startswith("optimized_M_")]
 variables = globals()
 
 # Dictionary of matrix labels to the actual np array
+# Also makes all these optimized matrices immutable
 MDict = {}
 for m in MList:
   M = variables[m]
+  M.flags.writeable = False
   MDict[m] = M
+
+#print('optimized_M_16_40_ncbs[3,2] =', optimized_M_16_40_ncbs[3,2])
+#print('Writing to optimized_M_16_40_ncbs[3,2]')
+#optimized_M_16_40_ncbs[3,2] = 9
 
 if __name__ == '__main__':
   #int_coded_matrix(4, 15)
