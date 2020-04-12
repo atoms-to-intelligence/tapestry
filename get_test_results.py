@@ -85,7 +85,15 @@ def get_test_results(matrix_label, cycle_times):
   sure_list, unsure_list, neg_list, x = app.get_test_results(M, cycle_times)
 
   result_string = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
-  return result_string, sure_list, unsure_list, neg_list, x
+
+  res = {
+      "result_string" :  result_string,
+      "sure_list" :      sure_list,
+      "unsure_list" :    unsure_list,
+      "neg_list" :       neg_list, 
+      "x" :              x,
+      }
+  return res
 
 
 # Composes the result string from the list of surely positives, possibly
@@ -303,8 +311,13 @@ def test_harvard_data():
   from experimental_data_manager import read_harvard_data_cts
   print('Testing Harvard data with config.app_algo =', config.app_algo)
   cts = read_harvard_data_cts()
-  res, sure_list, unsure_list, neg_list, x = get_test_results("optimized_M_3", cts)
-  print(res)
+  res = get_test_results("optimized_M_3", cts)
+  result_string = res["result_string"]
+  sure_list = res["sure_list"]
+  unsure_list = res["unsure_list"]
+  neg_list = res["neg_list"]
+  x = res["x"]
+  print(result_string)
   print(sure_list)
   print(unsure_list)
   print(neg_list)
