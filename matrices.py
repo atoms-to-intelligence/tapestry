@@ -4684,13 +4684,18 @@ def int_coded_matrix(t, n):
       
 int_coded_M_6_63 = int_coded_matrix(6, 63)
 
-def convert_matlab_format(M, f):
-  f.write('[ ')
+def convert_matlab_format(M, f, 
+    start_symbol='[ ',
+    end_symbol=']',
+    row_end_symbol=';'
+    ):
+  f.write(start_symbol)
   for row in M:
     for item in row:
       f.write('%d ' % item)
-    f.write(';\n')
-  f.write(']')
+    f.write(row_end_symbol)
+    f.write('\n')
+  f.write(end_symbol)
 
 def load_from_matlab(name):
   return np.loadtxt(name, delimiter=',')
@@ -4720,7 +4725,12 @@ if __name__ == '__main__':
 
   #mat = np.array([[1, 2, 3, 4], [3, 4, 5, 6], [10, 11, 12, 13]])
   #print(mat)
-  #convert_matlab_format(optimized_M_16_40_ncbs, sys.stdout)
+  #convert_matlab_format(optimized_M_46_96_1, sys.stdout,
+  #    start_symbol='',
+  #    end_symbol='',
+  #    row_end_symbol=''
+  #    )
+  #sys.exit(1)
   #names = ['optimized_M_2.txt', 'optimized_M_3.txt', 'optimized_M_5.txt']
   #for mat, name in zip([optimized_M_2, optimized_M_3, optimized_M_5], names):
   #  with open(name, 'w') as f:
