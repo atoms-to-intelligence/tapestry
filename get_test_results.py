@@ -1,8 +1,8 @@
 ### Get the results for a given test. Implemented in function get_test_results() ###
 
 
-# The actual get_test_results() is present in app.py
-import app
+# The actual get_test_results() is present in app_utils.py
+import app_utils
 import config
 
 
@@ -82,7 +82,7 @@ def get_matrix_for_label(matrix_label):
 def get_test_results(matrix_label, cycle_times):
   M = get_matrix_for_label(matrix_label)
 
-  sure_list, unsure_list, neg_list, x = app.get_test_results(M, cycle_times)
+  sure_list, unsure_list, neg_list, x = app_utils.get_test_results(M, cycle_times)
 
   result_string = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
 
