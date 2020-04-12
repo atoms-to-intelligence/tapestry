@@ -67,13 +67,25 @@ def get_matrix_for_label(matrix_label):
 #
 # Input: Cycle time vector. Numpy array of size 't', which is the number of
 # tests or equivalently the number of rows in the matrix
+#
+# Return result_string, sure_list, unsure_list, neg_list, x
+#  * These will be stored in db.
+#  * Only result_string will be displayed to the user
+#
+# sure_list - list of surely positive people
+# unsure_list - list of possibly positive people
+# neg_list - list of negative samples
+# x - viral loads
+#
+# result_string - nicely formatted string containing above info. Will be seen
+#       by the user
 def get_test_results(matrix_label, cycle_times):
   M = get_matrix_for_label(matrix_label)
 
   sure_list, unsure_list, neg_list, x = app.get_test_results(M, cycle_times)
 
   result_string = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
-  return result_string
+  return result_string, sure_list, unsure_list, neg_list, x
 
 
 # Composes the result string from the list of surely positives, possibly
@@ -202,6 +214,7 @@ def test_get_result_string_from_lists():
     print(res)
   config.app_algo = tmp
 
+
 # Go through all the labels in MSizeToLabelDict and determine if the corresponding
 # matrices are present MLabelToMatrixDict. Checks if the sizes match up.
 def sanity_check_for_matrices():
@@ -228,6 +241,7 @@ def sanity_check_for_matrices():
   else:
     print("\nAll OK\n")
   
+
 def api_sanity_checks():
   error = False
   print('\nSome API checks...\n')
@@ -287,9 +301,14 @@ def api_sanity_checks():
 # exception.
 def test_harvard_data():
   from experimental_data_manager import read_harvard_data_cts
+  print('Testing Harvard data with config.app_algo =', config.app_algo)
   cts = read_harvard_data_cts()
-  res = get_test_results("optimized_M_3", cts)
+  res, sure_list, unsure_list, neg_list, x = get_test_results("optimized_M_3", cts)
   print(res)
+  print(sure_list)
+  print(unsure_list)
+  print(neg_list)
+  print(x)
 
 
 if __name__ == '__main__':
