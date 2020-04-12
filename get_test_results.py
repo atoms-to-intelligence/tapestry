@@ -142,6 +142,7 @@ def at_deployment():
   sanity_check_for_matrices()
   api_sanity_checks()
   test_harvard_data()
+  fake_data_test()
 
 
 
@@ -323,6 +324,18 @@ def test_harvard_data():
   print(neg_list)
   print(x)
 
+
+def fake_data_test():
+  from experimental_data_manager import get_random_fake_test_data
+  size_to_label_dict = get_matrix_sizes_and_labels()
+  label_to_M_dict = get_matrix_labels_and_matrices()
+  for msize in size_to_label_dict:
+    mlabel = size_to_label_dict[msize]
+    bool_x, cts = get_random_fake_test_data(msize, mlabel)
+    res = get_test_results(mlabel, cts)
+    print("Results for data faked for %s matrix %s" % (msize, mlabel))
+    print('bool_x:', bool_x)
+    print(res)
 
 if __name__ == '__main__':
   at_deployment()

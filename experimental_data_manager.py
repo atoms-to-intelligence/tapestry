@@ -6,6 +6,7 @@ import os
 
 import config
 
+from matrices import MDict
 
 def read_harvard_data_cts():
   t = 24
@@ -30,3 +31,29 @@ def read_harvard_data_cts():
   return cts
 
 
+# Returns randomly generated bool_x and cycle times.
+# Needs matrix size and  matrix label
+#
+# Process of generation is as follows:
+#
+# 1. First choose sparsity 'd' in range 1...5.
+# 2. Generate bool_x array of size 'n'
+#
+def get_random_fake_test_data(mat_size, mat_label):
+  d = np.random.randint(0, 5)
+  t = int(mat_size.split('x')[0])
+  n = int(mat_size.split('x')[1])
+  pos_idx = np.random.choice(list(range(n)), size=d)
+  bool_x = np.zeros(n)
+  bool_x[pos_idx] = 1
+  x = np.random.rand(n) * bool_x
+  M = MDict[mat_label]
+  assert t == M.shape[0]
+  assert n == M.shape[1]
+  y = np.matmul(M, x)
+  bool_y = (y > 0).astype(np.int32)
+  ct1 = np.random.randint(1, config.cycle_time_cutoff, t)
+  ct2 = np.random.randint(config.cycle_time_cutoff, 50, t)
+  cts = ct1 * bool_y + ct2 * (1 - bool_y)
+  return bool_x, cts
+  
