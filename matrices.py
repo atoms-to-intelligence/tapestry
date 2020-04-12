@@ -6,6 +6,8 @@ import os
 from matrices1 import *
 import sts
 
+import config
+
 optimized_M_1 = np.array([[0., 1., 0., 1., 0., 1., 1., 0., 0., 0., 1., 1., 0., 1., 1., 0., 0., 0.,       0., 0., 0., 1., 0., 1., 0., 0., 1., 0., 1., 0., 0., 0., 0., 0., 1., 1.,         0., 1., 1., 0.],
         [1., 0., 0., 1., 0., 0., 0., 1., 0., 1., 0., 0., 1., 1., 0., 0., 0., 1.,         1., 1., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 1., 1.,         1., 1., 0., 0.],
         [0., 0., 0., 0., 0., 1., 1., 0., 0., 0., 1., 1., 0., 0., 0., 0., 1., 1.,         1., 0., 1., 0., 0., 0., 1., 1., 0., 1., 1., 0., 1., 1., 1., 0., 0., 0.,         0., 1., 0., 0.],
@@ -4700,11 +4702,12 @@ def convert_matlab_format(M, f,
 def load_from_matlab(name):
   return np.loadtxt(name, delimiter=',')
 
-mat_dir = 'mats/'
+mat_dir = os.path.join(config.root_dir, 'mats/')
 optimized_M_94_960_2 = load_from_matlab(os.path.join(mat_dir,
   'optimized_M_94_960_2.txt'))
 
-optimized_M_16_40_ncbs = np.loadtxt('mats/optimized_M_16_40_ncbs.txt')
+optimized_M_16_40_ncbs = np.loadtxt(os.path.join(mat_dir,
+  'optimized_M_16_40_ncbs.txt'))
 
 # Matrix generated using Steiner Triple System 
 optimized_M_93_960_1 = sts.sts(93, 960)

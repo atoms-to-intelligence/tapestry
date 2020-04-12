@@ -2,11 +2,15 @@ import pandas as pd
 import numpy as np
 import math
 
+import os
+
 import config
+
 
 def read_harvard_data_cts():
   t = 24
-  df = pd.read_csv("harvard_test1.csv")
+  harvard_data_file = os.path.join(config.root_dir, "harvard_test1.csv")
+  df = pd.read_csv(harvard_data_file)
   #cts = df.values[:, 0]
   fl = df.values[:, 1:]
 

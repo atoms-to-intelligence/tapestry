@@ -5,6 +5,8 @@ prefer_recall = False
 
 ########     Following configs are for the app backend only     ########
 
+root_dir = '.'
+
 # Decoding algorithm to be used with the app backend.
 app_algo = 'COMP'
 
