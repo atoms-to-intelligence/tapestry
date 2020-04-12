@@ -37,6 +37,11 @@ def get_matrix_sizes_and_labels():
   return dict(MSizeToLabelDict)
 
 
+# Returns a copy of label -> matrix dictionary
+def get_matrix_labels_and_matrices():
+  return dict(MLabelToMatrixDict)
+
+
 # Returns the currently used matrix label for a given size
 def get_current_matrix_label_for_size(matrix_size):
   if not matrix_size in MSizeToLabelDict:
@@ -244,6 +249,32 @@ def api_sanity_checks():
     error = True
   except KeyError as e:
     print('Got expected error while calling with invalid matrix label:', str(e))
+
+  # Dict retrieval API
+  print("\nDictionary Retrieval API sanity checks...\n")
+  d1 = get_matrix_sizes_and_labels()
+  d2 = get_matrix_labels_and_matrices()
+  print(d1)
+  print(d2.keys())
+  if d1 != MSizeToLabelDict:
+    error = True
+    print("**********       Not returning MSizeToLabelDict in get_matrix_sizes_and_labels()      *********")
+
+  if d1 is MSizeToLabelDict:
+    error = True
+    print("**********      Return a copy of MSizeToLabelDict in get_matrix_sizes_and_labels()      ***********")
+
+  if d2 != MLabelToMatrixDict:
+    error = True
+    print("**********      Not returning MLabelToMatrixDict in get_matrix_labels_and_matrices()      ************")
+
+  if d2 is MLabelToMatrixDict:
+    error = True
+    print("**********      Return a copy of MLabelToMatrixDict in get_matrix_labels_and_matrices()      ************")
+
+  l1 = list(d2.keys())[0]
+  print(l1, type(d2[l1]), d2[l1].shape)
+
   if error:
     print("\nGot Error :(\n")
     raise ValueError("Some error in matrix setup")
@@ -260,9 +291,11 @@ def test_harvard_data():
   res = get_test_results("optimized_M_3", cts)
   print(res)
 
+
 if __name__ == '__main__':
   at_deployment()
 
   import numpy as np
   test_get_result_string_from_lists()
 
+  
