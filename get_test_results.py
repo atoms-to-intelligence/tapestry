@@ -29,8 +29,8 @@ MSizeToLabelDict = {
     "24x60":    "optimized_M_3",
     "45x105":    "optimized_M_45_105_STS_1",
     "45x195":    "optimized_M_45_195_STS_1",
-    "46x96":    "optimized_M_46_96_1",
-    "46x192":   "optimized_M_46_192_1",
+    #"46x96":    "optimized_M_46_96_1",
+    #"46x192":   "optimized_M_46_192_1",
     }
 
 
@@ -256,7 +256,7 @@ def sanity_check_for_matrices():
 def api_sanity_checks():
   error = False
   print('\nSome API checks...\n')
-  print('Label for valid size 46x96', get_current_matrix_label_for_size("46x96"))
+  print('Label for valid size 45x105', get_current_matrix_label_for_size("45x105"))
   try:
     print(get_current_matrix_label_for_size("fslkj"))
     print('Did not get expected error while calling with invalid matrix size')
@@ -348,7 +348,7 @@ def fake_data_test():
 if __name__ == '__main__':
   at_deployment()
 
-  import numpy as np
-  test_get_result_string_from_lists()
+  #import numpy as np
+  #test_get_result_string_from_lists()
 
   
