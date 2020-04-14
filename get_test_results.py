@@ -325,6 +325,9 @@ def test_harvard_data():
   print(unsure_list)
   print(neg_list)
   print(x)
+  pos_list = res['sure_list'] + res['unsure_list']
+  for idx in pos_idx:
+    assert idx in pos_list
 
 
 def fake_data_test():
@@ -338,6 +341,9 @@ def fake_data_test():
     print("Results for data faked for %s matrix %s" % (msize, mlabel))
     print('bool_x:', bool_x)
     print(res)
+    pos_list = res['sure_list'] + res['unsure_list']
+    for idx in bool_x:
+      assert idx in pos_list
 
 if __name__ == '__main__':
   at_deployment()
