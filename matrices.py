@@ -4706,14 +4706,20 @@ def load_from_matlab(name, delim=','):
 mat_dir = os.path.join(config.root_dir, 'mats/')
 optimized_M_94_960_2 = load_from_matlab('optimized_M_94_960_2.txt')
 
+# Test matrix used for NCBS experiments
 optimized_M_16_40_ncbs = load_from_matlab('optimized_M_16_40_ncbs.txt',
     delim=None) # delim = None means numpy default which handles whitespaces
 
 # Matrix generated using Steiner Triple System 
 optimized_M_93_960_1 = sts.sts(93, 960)
 
+# STS matrix 45x105 created by Rishi, carved from 45x330 Bose STS using greedy
+# triplet selection
 optimized_M_45_105_STS_1 = load_from_matlab('optimized_M_45_105_STS_1.txt')
 
+# STS matrix 45x195 created by Rishi, carved from 45x330 Bose STS using greedy
+# triplet selection
+optimized_M_45_195_STS_1 = load_from_matlab('optimized_M_45_195_STS_1.txt')
 
 
 #######    All Matrices Must be added before this line     ############
