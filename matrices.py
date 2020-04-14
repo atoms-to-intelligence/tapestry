@@ -4699,18 +4699,26 @@ def convert_matlab_format(M, f,
     f.write('\n')
   f.write(end_symbol)
 
-def load_from_matlab(name):
-  return np.loadtxt(name, delimiter=',')
+def load_from_matlab(name, delim=','):
+  full_path = os.path.join(mat_dir, name)
+  return np.loadtxt(full_path, delimiter=delim)
 
 mat_dir = os.path.join(config.root_dir, 'mats/')
-optimized_M_94_960_2 = load_from_matlab(os.path.join(mat_dir,
-  'optimized_M_94_960_2.txt'))
+optimized_M_94_960_2 = load_from_matlab('optimized_M_94_960_2.txt')
 
-optimized_M_16_40_ncbs = np.loadtxt(os.path.join(mat_dir,
-  'optimized_M_16_40_ncbs.txt'))
+optimized_M_16_40_ncbs = load_from_matlab('optimized_M_16_40_ncbs.txt',
+    delim=None) # delim = None means numpy default which handles whitespaces
 
 # Matrix generated using Steiner Triple System 
 optimized_M_93_960_1 = sts.sts(93, 960)
+
+optimized_M_45_105_STS_1 = load_from_matlab('optimized_M_45_105_STS_1.txt')
+
+
+
+#######    All Matrices Must be added before this line     ############
+##########       Else the won't show up in MDict        #############
+
 
 MList = [item for item in dir() if item.startswith("optimized_M_")]
 variables = globals()
