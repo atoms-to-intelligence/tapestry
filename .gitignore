@@ -1,0 +1,9 @@
+.*.swp
+.gitignore
+__pycache__
+*.txt
+*.csv
+*.tar
+comment
+*.svg
+tasks
