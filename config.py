@@ -26,7 +26,7 @@ app_algo = 'COMP'
 
 # Cycle time cutoff. Samples with greater than or equal to this value are
 # considered negative
-cycle_time_cutoff = 35
+cycle_time_cutoff = 40
 
 
 # This is the probability of replication of RNA. Number of molecules after t
