@@ -27,6 +27,8 @@ from matrices import MDict as MLabelToMatrixDict
 MSizeToLabelDict = {
     "16x40":    "optimized_M_16_40_ncbs",
     "24x60":    "optimized_M_3",
+    "45x105":    "optimized_M_45_105_STS_1",
+    "45x195":    "optimized_M_45_195_STS_1",
     "46x96":    "optimized_M_46_96_1",
     "46x192":   "optimized_M_46_192_1",
     }
@@ -238,11 +240,11 @@ def sanity_check_for_matrices():
       if t == M.shape[0] and  n == M.shape[1]:
         print(msize, mlabel, 'Sizes match')
       else:
-        print('********   Error: ', msize, mlabel, 'Sizes don\'t match:',
-            M.shape, "   ********")
+        print(msize, mlabel, 'Sizes don\'t match:',
+            M.shape, "       <------------")
         error = True
     else:
-      print(msize, mlabel, 'label does not exists')
+      print(msize, mlabel, 'label does not exists       <------------')
       error = True
   if error:
     print("\nGot Error :(\n")
