@@ -28,7 +28,9 @@ def read_harvard_data_cts():
         cts[j] = ct
         break
 
-  return cts
+  # Ground truth positives. Indices start from 1.
+  pos_idx = [10, 28]
+  return pos_idx, cts
 
 
 # Returns randomly generated bool_x and cycle times.
@@ -55,5 +57,7 @@ def get_random_fake_test_data(mat_size, mat_label):
   ct1 = np.random.randint(1, config.cycle_time_cutoff, t)
   ct2 = np.random.randint(config.cycle_time_cutoff, 50, t)
   cts = ct1 * bool_y + ct2 * (1 - bool_y)
-  return bool_x, cts
+  return [i + 1 for i in pos_idx], cts
   
+if __name__ == '__main__':
+  print(read_harvard_data_cts())

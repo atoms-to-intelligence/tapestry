@@ -311,7 +311,7 @@ def api_sanity_checks():
 def test_harvard_data():
   from experimental_data_manager import read_harvard_data_cts
   print('Testing Harvard data with config.app_algo =', config.app_algo)
-  cts = read_harvard_data_cts()
+  pos_idx, cts = read_harvard_data_cts()
   res = get_test_results("optimized_M_3", cts)
   result_string = res["result_string"]
   sure_list = res["sure_list"]
