@@ -2,7 +2,6 @@ docutils==0.15.2
 joblib==0.14.1
 llvmlite==0.31.0
 lmdb==0.98
-MarkupSafe==1.1.1
 numba==0.48.0
 numpy==1.18.2
 pandas==1.0.3
