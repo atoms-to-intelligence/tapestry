@@ -24,13 +24,17 @@ from matrices import MDict as MLabelToMatrixDict
 # Warning: during deployment, once a matrix size is added, it should never be
 # removed. Once a matrix label is added, it should never be removed from the
 # code. 
+#
+# Also added the number of infections that the matrix can handle and the
+# infection percentage. The value inside the dict is now a 3-tuple instead of
+# a str.
 MSizeToLabelDict = {
-    "16x40":     "optimized_M_16_40_ncbs",
-    "24x60":     "optimized_M_3",
-    "45x105":    "optimized_M_45_105_STS_1",
-    "45x195":    "optimized_M_45_195_STS_1",
-    "63x399":    "optimized_M_63_399_STS_1",
-    "93x961":    "optimized_M_93_961_STS_1",
+    "16x40":     ("optimized_M_16_40_ncbs", 3, 7.5),
+    "24x60":     ("optimized_M_3", 4, 6),
+    "45x105":    ("optimized_M_45_105_STS_1", 10, 10),
+    "45x195":    ("optimized_M_45_195_STS_1", 10, 5),
+    "63x399":    ("optimized_M_63_399_STS_1", 10, 2.5),
+    "93x961":    ("optimized_M_93_961_STS_1", 10, 1),
     #"46x96":    "optimized_M_46_96_1",
     #"46x192":   "optimized_M_46_192_1",
     }
@@ -231,11 +235,18 @@ def test_get_result_string_from_lists():
 # Go through all the labels in MSizeToLabelDict and determine if the corresponding
 # matrices are present MLabelToMatrixDict. Checks if the sizes match up.
 def sanity_check_for_matrices():
-  print('Checking if matrix sizes correspond to an actual label...\n')
+  print('Printing out matrix labels for each size...\n')
+  for msize in MSizeToLabelDict:
+    t, n = [int(item) for item in msize.split("x")]
+    mlabel, d, percent = MSizeToLabelDict[msize]
+    print(f'{n:3} Samples ({t} tests. Upto {d:2} infections, or '
+        f'{percent}% infection rate)')
+
+  print('\nChecking if matrix sizes correspond to an actual label...\n')
   error = False
   for msize in MSizeToLabelDict:
     t, n = [int(item) for item in msize.split("x")]
-    mlabel = MSizeToLabelDict[msize]
+    mlabel, d, percent = MSizeToLabelDict[msize]
     if mlabel in MLabelToMatrixDict:
       print(msize, mlabel, 'label exists')
       M = MLabelToMatrixDict[mlabel]
@@ -337,7 +348,7 @@ def fake_data_test():
   size_to_label_dict = get_matrix_sizes_and_labels()
   label_to_M_dict = get_matrix_labels_and_matrices()
   for msize in size_to_label_dict:
-    mlabel = size_to_label_dict[msize]
+    mlabel, d, percent = size_to_label_dict[msize]
     bool_x, cts = get_random_fake_test_data(msize, mlabel)
     res = get_test_results(mlabel, cts)
     print("Results for data faked for %s matrix %s" % (msize, mlabel))
