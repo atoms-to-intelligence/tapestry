@@ -4724,10 +4724,11 @@ optimized_M_45_195_STS_1 = load_from_matlab('optimized_M_45_195_STS_1.txt')
 # STS matrix 63x399 created by Rishi, carved from 63x651 Bose STS.
 optimized_M_63_399_STS_1 = load_from_matlab('optimized_M_63_399_STS_1.txt')
 
-# STS matrix 93x961 created by Rishi, carved from 93x961 Bose STS.
+# STS matrix 93x961 created by Rishi, carved from 93x1426 Bose STS.
 optimized_M_93_961_STS_1 = load_from_matlab('optimized_M_93_961_STS_1.txt')
 
-
+# STS matrix 21x70
+optimized_M_21_70_STS = sts.sts(21)
 
 
 

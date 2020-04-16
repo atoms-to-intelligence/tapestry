@@ -30,7 +30,8 @@ from matrices import MDict as MLabelToMatrixDict
 # a str.
 MSizeToLabelDict = {
     "16x40":     ("optimized_M_16_40_ncbs", 3, 7.5),
-    "24x60":     ("optimized_M_3", 4, 6),
+    "21x70":     ("optimized_M_21_70_STS", 4, 6),
+    #"24x60":     ("optimized_M_3", 4, 6),
     "45x105":    ("optimized_M_45_105_STS_1", 10, 10),
     "45x195":    ("optimized_M_45_195_STS_1", 10, 5),
     "63x399":    ("optimized_M_63_399_STS_1", 10, 2.5),
