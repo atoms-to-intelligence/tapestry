@@ -25,10 +25,12 @@ from matrices import MDict as MLabelToMatrixDict
 # removed. Once a matrix label is added, it should never be removed from the
 # code. 
 MSizeToLabelDict = {
-    "16x40":    "optimized_M_16_40_ncbs",
-    "24x60":    "optimized_M_3",
+    "16x40":     "optimized_M_16_40_ncbs",
+    "24x60":     "optimized_M_3",
     "45x105":    "optimized_M_45_105_STS_1",
     "45x195":    "optimized_M_45_195_STS_1",
+    "63x399":    "optimized_M_63_399_STS_1",
+    "93x961":    "optimized_M_93_961_STS_1",
     #"46x96":    "optimized_M_46_96_1",
     #"46x192":   "optimized_M_46_192_1",
     }
