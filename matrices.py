@@ -4721,6 +4721,18 @@ optimized_M_45_105_STS_1 = load_from_matlab('optimized_M_45_105_STS_1.txt')
 # triplet selection
 optimized_M_45_195_STS_1 = load_from_matlab('optimized_M_45_195_STS_1.txt')
 
+# STS matrix 63x399 created by Rishi, carved from 63x651 Bose STS.
+optimized_M_63_399_STS_1 = load_from_matlab('optimized_M_63_399_STS_1.txt')
+
+# STS matrix 93x961 created by Rishi, carved from 93x1426 Bose STS.
+optimized_M_93_961_STS_1 = load_from_matlab('optimized_M_93_961_STS_1.txt')
+
+# STS matrix 21x70
+optimized_M_21_70_STS = sts.sts(21)
+
+
+
+
 
 #######    All Matrices Must be added before this line     ############
 ##########       Else the won't show up in MDict        #############
@@ -4771,7 +4783,7 @@ if __name__ == '__main__':
   print(np.sum(optimized_M_3))
   print(np.sum(optimized_M_4))
   print(np.sum(optimized_M_5))
-  MList = [item for item in dir() if item.startswith("optimized_M_")]
+  #MList = [item for item in dir() if item.startswith("optimized_M_")]
   #for M in [optimized_M_1, optimized_M_2, optimized_M_3, optimized_M_4]:
   variables = globals()
   for m in MList:
