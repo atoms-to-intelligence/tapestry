@@ -90,12 +90,15 @@ class CSExpts:
 
   def print_stats(self, num_expts, header=False):
     preds = self.total_tp + self.total_fp
+    actual = self.total_tp + self.total_fn
     if preds != 0:
       precision = self.total_tp / preds
     else:
-      precision = 0.
+      if actual > 0:
+        precision = 0.
+      else:
+        precision = 1.
 
-    actual = self.total_tp + self.total_fn
     if actual == 0:
       recall = 1.
     else:
@@ -126,12 +129,14 @@ class CSExpts:
     #precision = self.total_tp / float(self.total_tp + self.total_fp)
     #recall = self.total_tp / float(self.total_tp + self.total_fn)
     preds = self.total_tp + self.total_fp
+    actual = self.total_tp + self.total_fn
     if preds != 0:
       precision = self.total_tp / preds
     else:
-      precision = 0.
-
-    actual = self.total_tp + self.total_fn
+      if actual > 0:
+        precision = 0.
+      else:
+        precision = 1.
     if actual == 0:
       recall = 1.
     else:
@@ -174,7 +179,10 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
 
   # Test assignment probability. Probability that a person gets assigned to a
   # test
-  s = min(1 / d, 0.5)
+  if d > 1:
+    s = 1 / d
+  else:
+    s = 0.5
   #s = 0.5
 
   # lambda for regularization

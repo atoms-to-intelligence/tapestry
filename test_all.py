@@ -23,7 +23,7 @@ def test_all_matrices_and_algos():
     t = M.shape[0]
     num_expts=1
     add_noise = True
-    d_range = list(range(1,11))
+    d_range = list(range(0,11))
     n_jobs = len(d_range)
 
     run_many_parallel_expts_internal(num_expts, n, t, add_noise, M, algos, d_range, n_jobs)
