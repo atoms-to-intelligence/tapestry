@@ -312,6 +312,11 @@ def run_many_parallel_expts():
   #d_range = [1]
   #d_range.extend([15, 20, 25, 30])
   n_jobs = len(d_range)
+
+  run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos, d_range, n_jobs)
+
+# Separate out this function from above so that we can call on many matrices
+def run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos, d_range, n_jobs):
   retvals = Parallel(n_jobs=n_jobs, backend='loky')\
   (\
       delayed(do_many_expts)\
