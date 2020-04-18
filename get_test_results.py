@@ -41,6 +41,19 @@ MSizeToLabelDict = {
     }
 
 
+# List of matrix labels and their codenames. Not all matrix labels have
+# codenames
+mat_codenames = {
+    'optimized_M_16_40_ncbs':   'RABBIT',
+    'optimized_M_3':            'FOX',  # 24x60
+    'optimized_M_21_70_STS':    'BEAR',
+    "optimized_M_45_105_STS_1": 'LION',
+    "optimized_M_45_195_STS_1": 'TIGER',
+    "optimized_M_63_399_STS_1": 'RHINO',
+    "optimized_M_93_961_STS_1": 'CROC',
+    }
+
+
 # Returns a copy of size -> label dictionary
 def get_matrix_sizes_and_labels():
   return dict(MSizeToLabelDict)
