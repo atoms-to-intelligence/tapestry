@@ -1,7 +1,6 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 ### Get the results for a given test. Implemented in function get_test_results() ###
 
-
 # The actual get_test_results() is present in app_utils.py
 import app_utils
 import config
@@ -46,7 +45,9 @@ MSizeToLabelDict = {
 
 
 # List of matrix labels and their codenames. Not all matrix labels have
-# codenames
+# codenames.
+#
+# WARNING: Once a codename is deployed it cannot be changed or removed!!!
 mat_codenames = {
     'optimized_M_16_40_ncbs':   'RABBIT',
     #'optimized_M_3':            'FOX',  # 24x60
