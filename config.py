@@ -1,5 +1,8 @@
 # Global configuration parameters which are expected to change less frequently
 
+# Needed for paths
+import os
+
 # Trade off precision for recall in CS algorithms
 prefer_recall = False
 
@@ -15,7 +18,21 @@ prefer_recall = False
 # code from the current working dir from command-line.
 #
 # Could have gone for os.environ in retrospect but this works as well.
-root_dir = '.'
+#root_dir = '.'
+
+
+# This is where printable pdfs for each matrix are kept
+#mat_pdf_dir = os.path.join(root_dir, 'mat_pdfs')
+
+# set_root_dir is now called for root dir changes. Either call this from your
+# code or do the changes in this function yourself
+def set_root_dir(new_root_dir):
+  global root_dir, mat_pdf_dir
+  root_dir = new_root_dir
+  mat_pdf_dir = os.path.join(root_dir, 'mat_pdfs')
+
+set_root_dir('.')
+
 
 ########     Following configs are for the app backend only     ########
 
