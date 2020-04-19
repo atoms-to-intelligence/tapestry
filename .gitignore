@@ -3,9 +3,7 @@
 .*.swp
 .gitignore
 __pycache__
-*.txt
 !**requirements.txt
-*.csv
 *.tar
 comment
 *.svg

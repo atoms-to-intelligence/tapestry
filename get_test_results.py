@@ -40,6 +40,7 @@ MSizeToLabelDict = {
     "45x195":    ("optimized_M_45_195_STS_1", 10, 5),
     "63x399":    ("optimized_M_63_399_STS_1", 10, 2.5),
     "93x961":    ("optimized_M_93_961_STS_1", 10, 1),
+    "20x1140":   ("optimized_M_20_1140_1", 2, 2)
     #"46x96":    ("optimized_M_46_96_1", 10, 10)
     #"46x192":   "optimized_M_46_192_1",
     }
@@ -57,6 +58,7 @@ mat_codenames = {
     "optimized_M_45_195_STS_1": 'TIGER',
     "optimized_M_63_399_STS_1": 'RHINO',
     "optimized_M_93_961_STS_1": 'CROC',
+    "optimized_M_20_1140_1":    'MANTIS',
     #"optimized_M_46_192_1":     'IGUANA',
     }
 
@@ -70,10 +72,13 @@ def get_matrix_sizes_and_labels():
 def get_matrix_labels_and_matrices():
   return dict(MLabelToMatrixDict)
 
+
 # Returns a copy of label -> matrix codename dictionary
 def get_matrix_codenames():
   return dict(mat_codenames)
 
+
+# Return location of the pdf file for this matrix label
 def get_matrix_pdf_location(mlabel):
   M = MLabelToMatrixDict[mlabel]
   n = M.shape[1]
@@ -82,6 +87,7 @@ def get_matrix_pdf_location(mlabel):
   mcodename = mat_codenames[mlabel]
   pdf_name = f'{msize}_Matrix_{mcodename}.pdf'
   return os.path.join(config.mat_pdf_dir, pdf_name)
+
 
 # Returns the currently used matrix label for a given size
 def get_current_matrix_label_for_size(matrix_size):

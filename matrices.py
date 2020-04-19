@@ -4730,7 +4730,9 @@ optimized_M_93_961_STS_1 = load_from_matlab('optimized_M_93_961_STS_1.txt')
 # STS matrix 21x70
 optimized_M_21_70_STS = sts.sts(21)
 
-
+# 20x1140 matrix from rishiagarwal2000-patch-2 branch
+optimized_M_20_1140_1 = load_from_matlab("optimized_M_20_1140_1.txt",
+        delim=None)
 
 
 
