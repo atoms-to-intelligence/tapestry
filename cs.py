@@ -12,7 +12,10 @@ import l1ls
 
 import config
 
+# Numpy configuration
 np.set_printoptions(precision=3)
+# Numpy should raise Exception on division by zero so that we can catch programming errors
+np.seterr(all='raise')
 
 # Use compressed sensing to solve 0.5*||Mx - y||^2 + l * ||x||_1
 class CS(COMP):
@@ -454,29 +457,36 @@ class CS(COMP):
     s = self.s
     l = 0.1
 
-    #print('combined COMP A.shape', A.shape)
-    #print('combined COMP A:', A.shape)
-    # Create another CS class to run the secondary algorithm
-    # Better to set mr parameter to None since it depends on number of rows
-    # and will change for this internal CS object. frac will be used instead
-    # for deciding splits
-    _cs = CS(n, t, s, d, l, arr, A, mr=None)
-    _cs.conc = x
+    if t == 0:
+      assert n == 0
+    elif n == 0:
+      assert t == 0
 
-    answer_internal, infected_internal, infected_dd, prob1, prob0, score, tp, fp, fn, _, determined,\
-        overdetermined, surep, unsurep, wrongly_undetected, _ =\
-        _cs.decode_lasso(y, secondary_algo, compute_stats=compute_stats)
     infected = np.zeros(self.n)
     answer = np.zeros(self.n)
-    for ans, val, idx in zip(answer_internal, infected_internal, non_zero_cols):
-      infected[idx] = val
-      answer[idx] = ans
-
     prob1_new = np.zeros(self.n)
     prob0_new = np.ones(self.n)
-    for p1, p0, idx in zip(prob1, prob0, non_zero_cols):
-      prob1_new[idx] = p1
-      prob0_new[idx] = p0
+    determined = 1
+    overdetermined = 0
+    # Calling internal algo is needed only when there is at least one infection
+    if t != 0:
+      # Create another CS class to run the secondary algorithm
+      # Better to set mr parameter to None since it depends on number of rows
+      # and will change for this internal CS object. frac will be used instead
+      # for deciding splits
+      _cs = CS(n, t, s, d, l, arr, A, mr=None)
+      _cs.conc = x
+
+      answer_internal, infected_internal, infected_dd, prob1, prob0, score, tp, fp, fn, _, determined,\
+          overdetermined, surep, unsurep, wrongly_undetected, _ =\
+          _cs.decode_lasso(y, secondary_algo, compute_stats=compute_stats)
+      for ans, val, idx in zip(answer_internal, infected_internal, non_zero_cols):
+        infected[idx] = val
+        answer[idx] = ans
+
+      for p1, p0, idx in zip(prob1, prob0, non_zero_cols):
+        prob1_new[idx] = p1
+        prob0_new[idx] = p0
 
     # tp, fp and fn will be correct for the internal algo
     if test:

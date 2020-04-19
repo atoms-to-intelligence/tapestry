@@ -4,7 +4,12 @@ import json
 import pandas as pd
 import os
 
-def specificity(precision, recall, n, d): 
+def specificity(precision, recall, n, d, preds):
+  if preds == 0 or (precision == 0 and recall ==0):
+    return 1
+  else:
+    assert precision != 0
+    assert recall != 0
   return 1 - (recall * d * ( (1 / precision) - 1) / (n - d)) 
 
 class CSExpts:
@@ -84,8 +89,21 @@ class CSExpts:
     self.total_score += score
 
   def print_stats(self, num_expts, header=False):
-    precision = self.total_tp / float(self.total_tp + self.total_fp)
-    recall = self.total_tp / float(self.total_tp + self.total_fn)
+    preds = self.total_tp + self.total_fp
+    actual = self.total_tp + self.total_fn
+    if preds != 0:
+      precision = self.total_tp / preds
+    else:
+      if actual > 0:
+        precision = 0.
+      else:
+        precision = 1.
+
+    if actual == 0:
+      recall = 1.
+    else:
+      recall = self.total_tp / actual
+
     if num_expts == self.no_fp:
       avg_fp = 0
     else:
@@ -108,8 +126,21 @@ class CSExpts:
     print('avg fp = %.3f' % avg_fp, 'avg fn = %.3f' % avg_fn)
 
   def return_stats(self, num_expts):
-    precision = self.total_tp / float(self.total_tp + self.total_fp)
-    recall = self.total_tp / float(self.total_tp + self.total_fn)
+    #precision = self.total_tp / float(self.total_tp + self.total_fp)
+    #recall = self.total_tp / float(self.total_tp + self.total_fn)
+    preds = self.total_tp + self.total_fp
+    actual = self.total_tp + self.total_fn
+    if preds != 0:
+      precision = self.total_tp / preds
+    else:
+      if actual > 0:
+        precision = 0.
+      else:
+        precision = 1.
+    if actual == 0:
+      recall = 1.
+    else:
+      recall = self.total_tp / actual
     stats = {
         'precision'     : precision,
         'recall'        : recall,
@@ -126,7 +157,7 @@ class CSExpts:
     self.avg_unsurep = self.unsurep / num_expts
     self.avg_surep = self.surep / num_expts
     # Specificity is True Negative Rate
-    self.specificity = specificity(self.precision, self.recall, self.n, self.d)
+    self.specificity = specificity(self.precision, self.recall, self.n, self.d, preds)
     self.avg_score = self.total_score / self.expts
     return stats
 
@@ -148,7 +179,10 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
 
   # Test assignment probability. Probability that a person gets assigned to a
   # test
-  s = min(1 / d, 0.5)
+  if d > 1:
+    s = 1 / d
+  else:
+    s = 0.5
   #s = 0.5
 
   # lambda for regularization
@@ -181,14 +215,26 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
       #cs = CS(n, t, s, d, l, x, optimized_M)
       cs = CS(n, t, s, d, l, arr, M, mr)
       for expt, alg in zip(expts, algo):
-        expt.do_single_expt(i, num_expts, cs, cs.conc,
-            algo=alg,
-            cross_validation=cross_validation,
-            add_noise=add_noise,
-            noise_magnitude=noise_magnitude)
+        try:
+          expt.do_single_expt(i, num_expts, cs, cs.conc,
+              algo=alg,
+              cross_validation=cross_validation,
+              add_noise=add_noise,
+              noise_magnitude=noise_magnitude)
+        except:
+          print('Algo used:', alg)
+          sys.stdout.flush()
+          raise
+
     print('')
-    for expt in expts:
-      expt.print_stats(num_expts)
+    for expt, alg in zip(expts, algo):
+      try:
+        expt.print_stats(num_expts)
+      except:
+        print('Algo used:', alg)
+        sys.stdout.flush()
+        raise
+
   except KeyboardInterrupt:
     for expt in expts:
       expt.print_stats(i)
@@ -312,6 +358,11 @@ def run_many_parallel_expts():
   #d_range = [1]
   #d_range.extend([15, 20, 25, 30])
   n_jobs = len(d_range)
+
+  run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos, d_range, n_jobs)
+
+# Separate out this function from above so that we can call on many matrices
+def run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos, d_range, n_jobs):
   retvals = Parallel(n_jobs=n_jobs, backend='loky')\
   (\
       delayed(do_many_expts)\
@@ -348,7 +399,10 @@ def run_many_parallel_expts():
     #print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep  avg_tests  2_stage')
     print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep\tavg_score')
     for expt in explist[i]:
-      total_tests = t + expt.d / expt.precision
+      if expt.precision == 0:
+        total_tests = t + expt.n
+      else:
+        total_tests = t + expt.d / expt.precision
       print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f' % (expt.d, expt.precision,
         expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.avg_score))
       #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,

@@ -1,5 +1,5 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 ### Get the results for a given test. Implemented in function get_test_results() ###
-
 
 # The actual get_test_results() is present in app_utils.py
 import app_utils
@@ -11,6 +11,10 @@ import config
 # This dictionary is **auto-generated** by looking at all the variables named
 # optimized_M_* in matrices.py and matrices1.py
 from matrices import MDict as MLabelToMatrixDict
+
+# For paths
+import os
+import numpy as np
 
 
 # Dictionary of matrix size to the label of the matrix which will be used. 
@@ -36,8 +40,24 @@ MSizeToLabelDict = {
     "45x195":    ("optimized_M_45_195_STS_1", 10, 5),
     "63x399":    ("optimized_M_63_399_STS_1", 10, 2.5),
     "93x961":    ("optimized_M_93_961_STS_1", 10, 1),
-    #"46x96":    "optimized_M_46_96_1",
+    #"46x96":    ("optimized_M_46_96_1", 10, 10)
     #"46x192":   "optimized_M_46_192_1",
+    }
+
+
+# List of matrix labels and their codenames. Not all matrix labels have
+# codenames.
+#
+# WARNING: Once a codename is deployed it cannot be changed or removed!!!
+mat_codenames = {
+    'optimized_M_16_40_ncbs':   'RABBIT',
+    #'optimized_M_3':            'FOX',  # 24x60
+    'optimized_M_21_70_STS':    'BEAR',
+    "optimized_M_45_105_STS_1": 'LION',
+    "optimized_M_45_195_STS_1": 'TIGER',
+    "optimized_M_63_399_STS_1": 'RHINO',
+    "optimized_M_93_961_STS_1": 'CROC',
+    #"optimized_M_46_192_1":     'IGUANA',
     }
 
 
@@ -50,6 +70,18 @@ def get_matrix_sizes_and_labels():
 def get_matrix_labels_and_matrices():
   return dict(MLabelToMatrixDict)
 
+# Returns a copy of label -> matrix codename dictionary
+def get_matrix_codenames():
+  return dict(mat_codenames)
+
+def get_matrix_pdf_location(mlabel):
+  M = MLabelToMatrixDict[mlabel]
+  n = M.shape[1]
+  t = M.shape[0]
+  msize = f'{t}x{n}'
+  mcodename = mat_codenames[mlabel]
+  pdf_name = f'{msize} Matrix {mcodename}.pdf'
+  return os.path.join(config.mat_pdf_dir, pdf_name)
 
 # Returns the currently used matrix label for a given size
 def get_current_matrix_label_for_size(matrix_size):
@@ -77,6 +109,8 @@ def get_matrix_for_label(matrix_label):
 # Input: Cycle time vector. Numpy array of size 't', which is the number of
 # tests or equivalently the number of rows in the matrix
 #
+# Input: n - Number of samples used by the user. None means all samples.
+#
 # Return result_string, sure_list, unsure_list, neg_list, x
 #  * These will be stored in db.
 #  * Only result_string will be displayed to the user
@@ -88,8 +122,11 @@ def get_matrix_for_label(matrix_label):
 #
 # result_string - nicely formatted string containing above info. Will be seen
 #       by the user
-def get_test_results(matrix_label, cycle_times):
+def get_test_results(matrix_label, cycle_times, n=None):
   M = get_matrix_for_label(matrix_label)
+  assert n is None or n <= M.shape[1]
+  if n is not None:
+    M = M[:, :n]
 
   sure_list, unsure_list, neg_list, x = app_utils.get_test_results(M, cycle_times)
 
@@ -149,6 +186,7 @@ def get_result_string_from_lists(sure_list, unsure_list, neg_list, x):
 # *******            happen and a notification must be sent.          ********
 def at_deployment():
   sanity_check_for_matrices()
+  matrix_pdfs_sanity_check()
   api_sanity_checks()
   test_harvard_data()
   fake_data_test()
@@ -258,7 +296,14 @@ def sanity_check_for_matrices():
             M.shape, "       <------------")
         error = True
     else:
-      print(msize, mlabel, 'label does not exists       <------------')
+      print(msize, mlabel, 'label does not exists in MLabelToMatrixDict       <------------')
+      error = True
+
+    #print("\nChecking if each matrix for given size has a codename\n")
+    if mlabel in mat_codenames:
+      print(f'{msize} matrix {mlabel} codename {mat_codenames[mlabel]}')
+    else:
+      print(f'No codename exist for {msize} matrix {mlabel}       <------------')
       error = True
   if error:
     print("\nGot Error :(\n")
@@ -266,6 +311,21 @@ def sanity_check_for_matrices():
   else:
     print("\nAll OK\n")
   
+
+# Check if there exists a pdf corresponding to each matrix codename
+def matrix_pdfs_sanity_check():
+  error = False
+  for mlabel in mat_codenames:
+    pdf_file = get_matrix_pdf_location(mlabel)
+    mcodename = mat_codenames[mlabel]
+    if not os.path.exists(pdf_file):
+      print(f'No pdf found for {mlabel} codename {mcodename} : {pdf_file}'
+          '           <------------')
+      error = True
+    else:
+      print(f'Found pdf for {mlabel} codename {mcodename} : {pdf_file}')
+  if error:
+    raise ValueError('PDF files missing for some matrices :(')
 
 def api_sanity_checks():
   error = False
@@ -293,6 +353,7 @@ def api_sanity_checks():
   print("\nDictionary Retrieval API sanity checks...\n")
   d1 = get_matrix_sizes_and_labels()
   d2 = get_matrix_labels_and_matrices()
+  d3 = get_matrix_codenames()
   print(d1)
   print(d2.keys())
   if d1 != MSizeToLabelDict:
@@ -311,8 +372,48 @@ def api_sanity_checks():
     error = True
     print("**********      Return a copy of MLabelToMatrixDict in get_matrix_labels_and_matrices()      ************")
 
+  if d3 != mat_codenames:
+    error = True
+    print("**********       Not returning mat_codenames in get_matrix_sizes_and_labels()      *********")
+
+  if d3 is mat_codenames:
+    error = True
+    print("**********      Return a copy of mat_codenames in get_matrix_sizes_and_labels()      ***********")
+
   l1 = list(d2.keys())[0]
   print(l1, type(d2[l1]), d2[l1].shape)
+
+  print('Check if get_test_results errors out on using n > matrix columns')
+  mlabel = 'optimized_M_3'
+  M = MLabelToMatrixDict[mlabel]
+  n = M.shape[1]
+  t = M.shape[0]
+  cts = np.ones(t)
+  # This should not raise an exception
+  try:
+    num_samples = n
+    res = get_test_results(mlabel, cts, n=num_samples)
+    print('No error while calling get_test_results with valid value of'
+        f' num_samples : {num_samples}')
+    num_samples = n - 5
+    res = get_test_results(mlabel, cts, n=num_samples)
+    print('No error while calling get_test_results with valid value of'
+        f' num_samples : {num_samples}')
+  except:
+    print('Unexpected error while calling get_test_results with valid value of'
+        f' num_samples : {num_samples}                 <----------------------')
+    error = True
+
+  # This should raise an exception
+  try:
+    num_samples = n + 1
+    res = get_test_results(mlabel, cts, n=num_samples)
+    print('Did not get error while calling get_test_results with invalid value of'
+        f' num_samples : {num_samples}                  <--------------------')
+    error = True
+  except:
+    print('Got expected error while calling get_test_results with invalid value of'
+        f' num_samples : {num_samples}')
 
   if error:
     print("\nGot Error :(\n")
@@ -343,6 +444,23 @@ def test_harvard_data():
   for idx in pos_idx:
     assert idx in pos_list
 
+  # Do same test with smaller n
+  n = 56
+  print('\nTesting Harvard data with n =', n)
+  res = get_test_results("optimized_M_3", cts, n)
+  result_string = res["result_string"]
+  sure_list = res["sure_list"]
+  unsure_list = res["unsure_list"]
+  neg_list = res["neg_list"]
+  x = res["x"]
+  print(result_string)
+  print(sure_list)
+  print(unsure_list)
+  print(neg_list)
+  print(x)
+  pos_list = res['sure_list'] + res['unsure_list']
+  for idx in pos_idx:
+    assert idx in pos_list
 
 def fake_data_test():
   from experimental_data_manager import get_random_fake_test_data
@@ -360,6 +478,10 @@ def fake_data_test():
       assert idx in pos_list
 
 if __name__ == '__main__':
+  #matrix_pdfs_sanity_check()
+  #sanity_check_for_matrices()
+  #test_harvard_data()
+  #api_sanity_checks()
   at_deployment()
 
   #import numpy as np

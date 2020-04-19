@@ -1,3 +1,5 @@
+*~
+*.py~
 .*.swp
 .gitignore
 __pycache__
