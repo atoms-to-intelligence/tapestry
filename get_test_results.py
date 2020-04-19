@@ -80,7 +80,7 @@ def get_matrix_pdf_location(mlabel):
   t = M.shape[0]
   msize = f'{t}x{n}'
   mcodename = mat_codenames[mlabel]
-  pdf_name = f'{msize} Matrix {mcodename}.pdf'
+  pdf_name = f'{msize}_Matrix_{mcodename}.pdf'
   return os.path.join(config.mat_pdf_dir, pdf_name)
 
 # Returns the currently used matrix label for a given size
