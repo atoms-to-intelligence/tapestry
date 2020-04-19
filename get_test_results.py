@@ -1,3 +1,4 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 ### Get the results for a given test. Implemented in function get_test_results() ###
 
 
@@ -36,7 +37,7 @@ MSizeToLabelDict = {
     "45x195":    ("optimized_M_45_195_STS_1", 10, 5),
     "63x399":    ("optimized_M_63_399_STS_1", 10, 2.5),
     "93x961":    ("optimized_M_93_961_STS_1", 10, 1),
-    #"46x96":    "optimized_M_46_96_1",
+    #"46x96":    ("optimized_M_46_96_1", 10, 10)
     #"46x192":   "optimized_M_46_192_1",
     }
 
@@ -63,6 +64,9 @@ def get_matrix_sizes_and_labels():
 def get_matrix_labels_and_matrices():
   return dict(MLabelToMatrixDict)
 
+# Returns a copy of label -> matrix codename dictionary
+def get_matrix_codenames():
+  return dict(mat_codenames)
 
 # Returns the currently used matrix label for a given size
 def get_current_matrix_label_for_size(matrix_size):
@@ -271,7 +275,14 @@ def sanity_check_for_matrices():
             M.shape, "       <------------")
         error = True
     else:
-      print(msize, mlabel, 'label does not exists       <------------')
+      print(msize, mlabel, 'label does not exists in MLabelToMatrixDict       <------------')
+      error = True
+
+    #print("\nChecking if each matrix for given size has a codename\n")
+    if mlabel in mat_codenames:
+      print(f'{msize} matrix {mlabel} codename {mat_codenames[mlabel]}')
+    else:
+      print(f'No codename exist for {msize} matrix {mlabel}       <------------')
       error = True
   if error:
     print("\nGot Error :(\n")
@@ -306,6 +317,7 @@ def api_sanity_checks():
   print("\nDictionary Retrieval API sanity checks...\n")
   d1 = get_matrix_sizes_and_labels()
   d2 = get_matrix_labels_and_matrices()
+  d3 = get_matrix_codenames()
   print(d1)
   print(d2.keys())
   if d1 != MSizeToLabelDict:
@@ -323,6 +335,14 @@ def api_sanity_checks():
   if d2 is MLabelToMatrixDict:
     error = True
     print("**********      Return a copy of MLabelToMatrixDict in get_matrix_labels_and_matrices()      ************")
+
+  if d3 != mat_codenames:
+    error = True
+    print("**********       Not returning mat_codenames in get_matrix_sizes_and_labels()      *********")
+
+  if d3 is mat_codenames:
+    error = True
+    print("**********      Return a copy of mat_codenames in get_matrix_sizes_and_labels()      ***********")
 
   l1 = list(d2.keys())[0]
   print(l1, type(d2[l1]), d2[l1].shape)
