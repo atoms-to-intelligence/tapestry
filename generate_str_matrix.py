@@ -40,15 +40,52 @@ def adj_list_as_csv(M, name):
   df = pd.DataFrame(data=adj_list)
   df.to_csv(name, sep=',', index=False)
 
-csv_dir = os.path.join(config.root_dir, "csv")
-#mlabel = "optimized_M_16_40_ncbs"
-for msize in MSizeToLabelDict:
-  mlabel, _1, _2 = MSizeToLabelDict[msize]
-  mcodename = mat_codenames[mlabel]
-  mfilename = mlabel + ".csv" 
-  mfilename = os.path.join(csv_dir, mfilename)
-  adj_list_as_csv(MLabelToMatrixDict[mlabel], mfilename)
-  with open(mfilename, "a") as f:
-    f.write(f'{msize},{mcodename}\n')
+def adj_list_as_csv_block_format(M, name):
+  t = M.shape[0]
+  n = M.shape[1]
+  adj_list = {}
+  block_size = 15
+  for j in range(n):
+    sample = j + 1
+    tests, = np.nonzero(M[:,j])
+    wells = [idx_to_well(item, t) for item in tests]
+    assert len(wells) == 3
+    # Add gap of two rows
+    wells = wells + ['']*2
+    if j < block_size:
+      adj_list[str(sample)] = wells
+    else:
+      lst = [sample] + wells
+      col = j % block_size + 1
+      adj_list[str(col)].extend(lst)
 
+  # Now extend the last few blocks
+  max_len = len(adj_list["1"])
+  for col in [str(j) for j in range(1, block_size + 1)]:
+    l = len(adj_list[col])
+    assert l <= max_len
+    if l < max_len:
+      adj_list[col].extend(['']*(max_len - l))
+
+  df = pd.DataFrame(data=adj_list)
+  df.to_csv(name, sep=',', index=False, quoting=1)
+
+def create_all_csvs():
+  csv_dir = os.path.join(config.root_dir, "csv")
+  #mlabel = "optimized_M_16_40_ncbs"
+  for msize in MSizeToLabelDict:
+    mlabel, _1, _2 = MSizeToLabelDict[msize]
+    mcodename = mat_codenames[mlabel]
+    mfilename = mlabel + ".csv" 
+    mfilename = os.path.join(csv_dir, mfilename)
+    adj_list_as_csv(MLabelToMatrixDict[mlabel], mfilename)
+    with open(mfilename, "a") as f:
+      f.write(f'{msize},{mcodename}\n')
+
+csv_dir = os.path.join(config.root_dir, "csv")
+mlabel = "optimized_M_93_961_STS_1"
+mcodename = mat_codenames[mlabel]
+mfilename = mlabel + "_block.csv" 
+mfilename = os.path.join(csv_dir, mfilename)
+adj_list_as_csv_block_format(MLabelToMatrixDict[mlabel], mfilename)
 
