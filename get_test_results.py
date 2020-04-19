@@ -14,6 +14,7 @@ from matrices import MDict as MLabelToMatrixDict
 
 # For paths
 import os
+import numpy as np
 
 
 # Dictionary of matrix size to the label of the matrix which will be used. 
@@ -108,6 +109,8 @@ def get_matrix_for_label(matrix_label):
 # Input: Cycle time vector. Numpy array of size 't', which is the number of
 # tests or equivalently the number of rows in the matrix
 #
+# Input: n - Number of samples used by the user. None means all samples.
+#
 # Return result_string, sure_list, unsure_list, neg_list, x
 #  * These will be stored in db.
 #  * Only result_string will be displayed to the user
@@ -119,8 +122,11 @@ def get_matrix_for_label(matrix_label):
 #
 # result_string - nicely formatted string containing above info. Will be seen
 #       by the user
-def get_test_results(matrix_label, cycle_times):
+def get_test_results(matrix_label, cycle_times, n=None):
   M = get_matrix_for_label(matrix_label)
+  assert n is None or n <= M.shape[1]
+  if n is not None:
+    M = M[:, :n]
 
   sure_list, unsure_list, neg_list, x = app_utils.get_test_results(M, cycle_times)
 
@@ -377,6 +383,38 @@ def api_sanity_checks():
   l1 = list(d2.keys())[0]
   print(l1, type(d2[l1]), d2[l1].shape)
 
+  print('Check if get_test_results errors out on using n > matrix columns')
+  mlabel = 'optimized_M_3'
+  M = MLabelToMatrixDict[mlabel]
+  n = M.shape[1]
+  t = M.shape[0]
+  cts = np.ones(t)
+  # This should not raise an exception
+  try:
+    num_samples = n
+    res = get_test_results(mlabel, cts, n=num_samples)
+    print('No error while calling get_test_results with valid value of'
+        f' num_samples : {num_samples}')
+    num_samples = n - 5
+    res = get_test_results(mlabel, cts, n=num_samples)
+    print('No error while calling get_test_results with valid value of'
+        f' num_samples : {num_samples}')
+  except:
+    print('Unexpected error while calling get_test_results with valid value of'
+        f' num_samples : {num_samples}                 <----------------------')
+    error = True
+
+  # This should raise an exception
+  try:
+    num_samples = n + 1
+    res = get_test_results(mlabel, cts, n=num_samples)
+    print('Did not get error while calling get_test_results with invalid value of'
+        f' num_samples : {num_samples}                  <--------------------')
+    error = True
+  except:
+    print('Got expected error while calling get_test_results with invalid value of'
+        f' num_samples : {num_samples}')
+
   if error:
     print("\nGot Error :(\n")
     raise ValueError("Some error in matrix setup")
@@ -406,6 +444,23 @@ def test_harvard_data():
   for idx in pos_idx:
     assert idx in pos_list
 
+  # Do same test with smaller n
+  n = 56
+  print('\nTesting Harvard data with n =', n)
+  res = get_test_results("optimized_M_3", cts, n)
+  result_string = res["result_string"]
+  sure_list = res["sure_list"]
+  unsure_list = res["unsure_list"]
+  neg_list = res["neg_list"]
+  x = res["x"]
+  print(result_string)
+  print(sure_list)
+  print(unsure_list)
+  print(neg_list)
+  print(x)
+  pos_list = res['sure_list'] + res['unsure_list']
+  for idx in pos_idx:
+    assert idx in pos_list
 
 def fake_data_test():
   from experimental_data_manager import get_random_fake_test_data
@@ -426,6 +481,7 @@ if __name__ == '__main__':
   #matrix_pdfs_sanity_check()
   #sanity_check_for_matrices()
   #test_harvard_data()
+  #api_sanity_checks()
   at_deployment()
 
   #import numpy as np
