@@ -13,6 +13,9 @@ import config
 # optimized_M_* in matrices.py and matrices1.py
 from matrices import MDict as MLabelToMatrixDict
 
+# For paths
+import os
+
 
 # Dictionary of matrix size to the label of the matrix which will be used. 
 # This dictionary should be modified by hand.
@@ -46,12 +49,13 @@ MSizeToLabelDict = {
 # codenames
 mat_codenames = {
     'optimized_M_16_40_ncbs':   'RABBIT',
-    'optimized_M_3':            'FOX',  # 24x60
+    #'optimized_M_3':            'FOX',  # 24x60
     'optimized_M_21_70_STS':    'BEAR',
     "optimized_M_45_105_STS_1": 'LION',
     "optimized_M_45_195_STS_1": 'TIGER',
     "optimized_M_63_399_STS_1": 'RHINO',
     "optimized_M_93_961_STS_1": 'CROC',
+    #"optimized_M_46_192_1":     'IGUANA',
     }
 
 
@@ -67,6 +71,15 @@ def get_matrix_labels_and_matrices():
 # Returns a copy of label -> matrix codename dictionary
 def get_matrix_codenames():
   return dict(mat_codenames)
+
+def get_matrix_pdf_location(mlabel):
+  M = MLabelToMatrixDict[mlabel]
+  n = M.shape[1]
+  t = M.shape[0]
+  msize = f'{t}x{n}'
+  mcodename = mat_codenames[mlabel]
+  pdf_name = f'{msize} Matrix {mcodename}.pdf'
+  return os.path.join(config.mat_pdf_dir, pdf_name)
 
 # Returns the currently used matrix label for a given size
 def get_current_matrix_label_for_size(matrix_size):
@@ -166,6 +179,7 @@ def get_result_string_from_lists(sure_list, unsure_list, neg_list, x):
 # *******            happen and a notification must be sent.          ********
 def at_deployment():
   sanity_check_for_matrices()
+  matrix_pdfs_sanity_check()
   api_sanity_checks()
   test_harvard_data()
   fake_data_test()
@@ -291,6 +305,21 @@ def sanity_check_for_matrices():
     print("\nAll OK\n")
   
 
+# Check if there exists a pdf corresponding to each matrix codename
+def matrix_pdfs_sanity_check():
+  error = False
+  for mlabel in mat_codenames:
+    pdf_file = get_matrix_pdf_location(mlabel)
+    mcodename = mat_codenames[mlabel]
+    if not os.path.exists(pdf_file):
+      print(f'No pdf found for {mlabel} codename {mcodename} : {pdf_file}'
+          '           <------------')
+      error = True
+    else:
+      print(f'Found pdf for {mlabel} codename {mcodename} : {pdf_file}')
+  if error:
+    raise ValueError('PDF files missing for some matrices :(')
+
 def api_sanity_checks():
   error = False
   print('\nSome API checks...\n')
@@ -393,6 +422,9 @@ def fake_data_test():
       assert idx in pos_list
 
 if __name__ == '__main__':
+  #matrix_pdfs_sanity_check()
+  #sanity_check_for_matrices()
+  #test_harvard_data()
   at_deployment()
 
   #import numpy as np
