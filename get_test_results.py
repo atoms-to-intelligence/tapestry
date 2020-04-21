@@ -36,8 +36,8 @@ MSizeToLabelDict = {
     "16x40":     ("optimized_M_16_40_ncbs", 3, 7.5),
     "21x70":     ("optimized_M_21_70_STS", 4, 6),
     #"24x60":     ("optimized_M_3", 4, 6),
-    "45x105":    ("optimized_M_45_105_STS_1", 10, 10),
-    "45x195":    ("optimized_M_45_195_STS_1", 10, 5),
+    "45x105":    ("optimized_M_45_105_STS_1", 8, 8),
+    "45x195":    ("optimized_M_45_195_STS_1", 8, 4),
     "63x399":    ("optimized_M_63_399_STS_1", 10, 2.5),
     "93x961":    ("optimized_M_93_961_STS_1", 10, 1),
     "20x1140":   ("optimized_M_20_1140_1", 2, 2)
