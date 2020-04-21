@@ -44,7 +44,7 @@ def read_harvard_data_cts():
 # 2. Generate bool_x array of size 'n'
 #
 def get_random_fake_test_data(mat_size, mat_label):
-  d = np.random.randint(0, 5)
+  d = np.random.randint(0, 10)
   t = int(mat_size.split('x')[0])
   n = int(mat_size.split('x')[1])
   pos_idx = np.random.choice(list(range(n)), size=d)
