@@ -4734,6 +4734,9 @@ optimized_M_21_70_STS = sts.sts(21)
 optimized_M_20_1140_1 = load_from_matlab("optimized_M_20_1140_1.txt",
         delim=None)
 
+optimized_M_36_99_social_golfer = load_from_matlab("optimized_M_36_99_social_golfer.txt",
+        delim=None)
+
 
 
 #######    All Matrices Must be added before this line     ############
