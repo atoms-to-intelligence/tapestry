@@ -3,41 +3,91 @@ import string
 import numpy as np
 from matrices import mat_dir
 import os
+import sys
 
-row_map = {}
-upper = string.ascii_uppercase
-lower = string.ascii_lowercase
-for i in range(26):
-  row_map[upper[i]] = i
+def parse_social_golfer_wolfram():
+  row_map = {}
+  upper = string.ascii_uppercase
+  lower = string.ascii_lowercase
+  for i in range(26):
+    row_map[upper[i]] = i
 
-row_map['+'] = 26
+  row_map['+'] = 26
 
-#for j in range(18):
-#  row_map[lower[j]] = j + 18
+  #for j in range(18):
+  #  row_map[lower[j]] = j + 18
 
-print(row_map)
+  print(row_map)
 
-#M = np.zeros((36, 99), dtype=np.int32)
-#M = np.zeros((18, 153), dtype=np.int32)
-M = np.zeros((27, 117), dtype=np.int32)
-with open('27x117_social_golfer.txt') as f:
-  lines = f.readlines()
-  col = 0
-  for line in lines:
-    if line.strip() == "":
+  #M = np.zeros((36, 99), dtype=np.int32)
+  #M = np.zeros((18, 153), dtype=np.int32)
+  M = np.zeros((27, 117), dtype=np.int32)
+  with open('27x117_social_golfer.txt') as f:
+    lines = f.readlines()
+    col = 0
+    for line in lines:
+      if line.strip() == "":
+        continue
+      rows = [row_map[ch] for ch in line.strip()]
+      print(rows)
+      M[rows, col] = 1
+      col += 1
+      
+    print(col)
+    assert col == 117
+
+  write_matrix(M, "optimized_M_27_117_social_golfer.txt")
+
+def write_matrix(M, fname):
+  print(np.sum(M))
+  print(np.sum(M, axis=1))
+  print(np.sum(M, axis=0))
+
+  full_path = os.path.join(mat_dir, fname)
+  np.savetxt(full_path, M, fmt="%d")
+
+def parse_social_golfer_github():
+  count = 0
+  f = open("48x384_social_golfer.txt")
+  A = np.zeros((48, 384), dtype=np.int32)
+  for line in f:
+    if line.strip() == '':
       continue
-    rows = [row_map[ch] for ch in line.strip()]
+    rows = [int(item) for item in line.strip().split() if item]
+    assert len(rows) == 12
     print(rows)
-    M[rows, col] = 1
-    col += 1
     
-  print(col)
-  assert col == 117
+    block = count // 16
+    
+    idx = count % 16
+    
+    w1 = block*4
+    w2 = w1 + 1
+    w3 = w2 + 1
+    w4 = w3 + 1
+    
+    col1 = 16*w1 + idx
+    col2 = 16*w2 + idx
+    col3 = 16*w3 + idx
+    col4 = 16*w4 + idx
+    
+    A[rows[0], col1] = 1
+    A[rows[1], col1] = 1
+    A[rows[2], col1] = 1
 
-print(np.sum(M))
-print(np.sum(M, axis=1))
-print(np.sum(M, axis=0))
+    A[rows[3], col2] = 1
+    A[rows[4], col2] = 1
+    A[rows[5], col2] = 1
 
-full_path = os.path.join(mat_dir, "optimized_M_27_117_social_golfer.txt")
-np.savetxt(full_path, M, fmt="%d")
+    A[rows[6], col3] = 1
+    A[rows[7], col3] = 1
+    A[rows[8], col3] = 1
 
+    A[rows[9], col4] = 1
+    A[rows[10], col4] = 1
+    A[rows[11], col4] = 1
+    count += 1
+
+  write_matrix(A, "optimized_M_48_384_social_golfer.txt")
+
+parse_social_golfer_github()
