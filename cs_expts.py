@@ -1,3 +1,4 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 from cs import *
 
 import json
@@ -410,6 +411,52 @@ def run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos, 
       #print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
       #  expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.t +
       #  expt.avg_unsurep, expt.num_expts_2_stage, ))
+  return explist
+
+def compare_sts_vs_kirkman():
+  t = 27
+  M = optimized_M_27_117_social_golfer
+
+  best_ds_kirkman = [run_with_matrix_n(M, t, n) for n in [50, 60, 70, 80, 90, 100, 110,
+    117]]
+  
+  ds_kirkman = [item[0] for item in best_ds_kirkman]
+  sps_kirkman = np.array([item[1] for item in best_ds_kirkman])
+
+  M = sts.sts(27)
+  best_ds_sts = [run_with_matrix_n(M, t, n) for n in [50, 60, 70, 80, 90, 100, 110,
+    117]]
+  ds_sts = [item[0] for item in best_ds_sts]
+  sps_sts = np.array([item[1] for item in best_ds_sts])
+
+
+  print('Kirkman:', ds_kirkman)
+  print('STS:\t', ds_sts)
+  print('Kirkman:', sps_kirkman)
+  print('STS:\t', sps_sts)
+
+def run_with_matrix_n(M, t, n):
+  assert n <= M.shape[1]
+  assert t == M.shape[0]
+
+  M = M[:, :n]
+  num_expts = 1000
+  add_noise = True
+
+  algos = ['COMP']
+  d_range = list(range(4, 7))
+  n_jobs = 4
+
+  explist = run_many_parallel_expts_internal(num_expts, n, t, add_noise, M, algos, d_range, n_jobs)
+  expts = explist[0]
+  sp = [expt.specificity for expt in expts]
+  best_d = 0
+  best_sp = 0
+  for d in range(1, len(sp) + 1):
+    if sp[d-1] >= 0.945:
+      best_d = d
+      best_sp = sp[d-1]
+  return best_d, best_sp
 
 def run_many_parallel_expts_mr():
   num_expts = 100
