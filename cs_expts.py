@@ -339,26 +339,33 @@ def get_small_random_matrix(t, n, col_sparsity):
   return matrix
 
 def run_many_parallel_expts():
-  num_expts = 100
-  n = 40
-  t = 16
+  num_expts = 1000
+  t = 27
+  n = 60
   add_noise = True
-  matrix = optimized_M_16_40_ncbs
+  matrix = optimized_M_27_117_social_golfer[:,:n]
+
+  t = 45
+  n = t * (t - 1) // 6
+  matrix = sts.sts(t)
+  #matrix = matrix[:48, :384]
+  #t = 48
+  #n = 384
 
   algos = []
   algos.extend(['COMP'])
   #algos.append('NNOMP')
   #algos.append('combined_COMP_NNOMP')
-  algos.append('NNOMP_random_cv')
+  #algos.append('NNOMP_random_cv')
   #algos.append('SBL')
   #algos.extend(['combined_COMP_NNOMP_random_cv'])
   #algos.append('combined_COMP_SBL')
   #algos.append('l1ls')
   #algos.append('combined_COMP_l1ls')
-  d_range = list(range(1, 11))
+  d_range = list(range(1, 13))
   #d_range = [1]
   #d_range.extend([15, 20, 25, 30])
-  n_jobs = len(d_range)
+  n_jobs = 4
 
   run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos, d_range, n_jobs)
 
@@ -398,14 +405,14 @@ def run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos, 
     #print('\td\tPrecision\tRecall\ttotal_tests\tnum_determined\tnum_overdetermined\n')
     #print('\td\tPrecision\tRecall\tsurep\tunsurep  avg_tests  2_stage\tWrongly_undetected')
     #print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep  avg_tests  2_stage')
-    print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep\tavg_score')
+    print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep\tfalse_pos')
     for expt in explist[i]:
       if expt.precision == 0:
         total_tests = t + expt.n
       else:
         total_tests = t + expt.d / expt.precision
       print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f' % (expt.d, expt.precision,
-        expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.avg_score))
+        expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.total_fp / num_expts))
       #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
       #  expt.recall, total_tests, expt.determined, expt.overdetermined))
       #print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
@@ -422,18 +429,23 @@ def compare_sts_vs_kirkman():
   
   ds_kirkman = [item[0] for item in best_ds_kirkman]
   sps_kirkman = np.array([item[1] for item in best_ds_kirkman])
+  pr_kirkman = np.array([item[2] for item in best_ds_kirkman])
 
   M = sts.sts(27)
   best_ds_sts = [run_with_matrix_n(M, t, n) for n in [50, 60, 70, 80, 90, 100, 110,
     117]]
   ds_sts = [item[0] for item in best_ds_sts]
   sps_sts = np.array([item[1] for item in best_ds_sts])
+  pr_sts = np.array([item[2] for item in best_ds_sts])
 
 
   print('Kirkman:', ds_kirkman)
   print('STS:\t', ds_sts)
   print('Kirkman:', sps_kirkman)
   print('STS:\t', sps_sts)
+  print('Kirkman:', pr_kirkman)
+  print('STS:\t', pr_sts)
+
 
 def run_with_matrix_n(M, t, n):
   assert n <= M.shape[1]
@@ -450,13 +462,16 @@ def run_with_matrix_n(M, t, n):
   explist = run_many_parallel_expts_internal(num_expts, n, t, add_noise, M, algos, d_range, n_jobs)
   expts = explist[0]
   sp = [expt.specificity for expt in expts]
+  pr = [expt.precision for expt in expts]
   best_d = 0
   best_sp = 0
-  for d in range(1, len(sp) + 1):
-    if sp[d-1] >= 0.945:
+  best_pr = 0
+  for i, d in enumerate(d_range):
+    if sp[i] >= 0.945:
       best_d = d
-      best_sp = sp[d-1]
-  return best_d, best_sp
+      best_sp = sp[i]
+      best_pr = pr[i]
+  return best_d, best_sp, best_pr
 
 def run_many_parallel_expts_mr():
   num_expts = 100
@@ -557,6 +572,7 @@ if __name__=='__main__':
   #do_many_expts(200, 6, 46, num_expts=100, M=None,
   #    add_noise=True,algo='combined_COMP_NNOMP_random_cv', mr=mr)
   run_many_parallel_expts()
+  #compare_sts_vs_kirkman()
   #for mr in range(8, 15):
   #  do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M_2,
   #      add_noise=True,algo='NNOMP_random_cv', mr=mr)
