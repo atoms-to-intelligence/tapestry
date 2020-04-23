@@ -57,7 +57,7 @@ class CS(COMP):
         # Cycle time is assumed to be Gaussian distributed, due to which log
         # of y is Gaussian. Hence 
         p = 0.95
-        error = np.random.normal(0., 1., size=self.t)
+        error = np.random.normal(0., 0.1, size=self.t)
         #print('Original y', y)
         #print('error exponents', error)
         y = y * ((1+p) ** error)

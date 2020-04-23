@@ -27,9 +27,10 @@ prefer_recall = False
 # set_root_dir is now called for root dir changes. Either call this from your
 # code or do the changes in this function yourself
 def set_root_dir(new_root_dir):
-  global root_dir, mat_pdf_dir
+  global root_dir, mat_pdf_dir, mat_dir
   root_dir = new_root_dir
   mat_pdf_dir = os.path.join(root_dir, 'mat_pdfs')
+  mat_dir = os.path.join(root_dir, 'mats')
 
 set_root_dir('.')
 
@@ -59,6 +60,6 @@ bit_flip_prob = 0.
 
 
 # Exponential Gaussian or Variable Gaussian
-#noise_model = 'exponential_gaussian'
-noise_model = 'variable_gaussian'
+noise_model = 'exponential_gaussian'
+#noise_model = 'variable_gaussian'
 
