@@ -1,3 +1,4 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 import numpy as np
 import sys
 import math
@@ -4741,6 +4742,9 @@ optimized_M_18_153_social_golfer = load_from_matlab("optimized_M_18_153_social_g
         delim=None)
 
 optimized_M_27_117_social_golfer = load_from_matlab("optimized_M_27_117_social_golfer.txt",
+        delim=None)
+
+optimized_M_48_384_social_golfer = load_from_matlab("optimized_M_48_384_social_golfer.txt",
         delim=None)
 
 #######    All Matrices Must be added before this line     ############
