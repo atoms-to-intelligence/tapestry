@@ -56,7 +56,8 @@ def parse_social_golfer_github(t, n, block_size):
     if line.strip() == '':
       continue
     rows = [int(item) for item in line.strip().split() if item]
-    assert len(rows) == 12
+    if len(rows) != 12:
+      print("Last row")
     print(rows)
     
     block = count // block_size
@@ -73,25 +74,30 @@ def parse_social_golfer_github(t, n, block_size):
     col3 = block_size*w3 + idx
     col4 = block_size*w4 + idx
     
-    A[rows[0], col1] = 1
-    A[rows[1], col1] = 1
-    A[rows[2], col1] = 1
+    try:
+      A[rows[0], col1] = 1
+      A[rows[1], col1] = 1
+      A[rows[2], col1] = 1
 
-    A[rows[3], col2] = 1
-    A[rows[4], col2] = 1
-    A[rows[5], col2] = 1
+      A[rows[3], col2] = 1
+      A[rows[4], col2] = 1
+      A[rows[5], col2] = 1
 
-    A[rows[6], col3] = 1
-    A[rows[7], col3] = 1
-    A[rows[8], col3] = 1
+      A[rows[6], col3] = 1
+      A[rows[7], col3] = 1
+      A[rows[8], col3] = 1
 
-    A[rows[9], col4] = 1
-    A[rows[10], col4] = 1
-    A[rows[11], col4] = 1
+      A[rows[9], col4] = 1
+      A[rows[10], col4] = 1
+      A[rows[11], col4] = 1
+    except:
+      print("Last row")
+      pass
     count += 1
 
   print(count*4, n)
-  assert count*4 == n
+  #assert count*4 == n
   write_matrix(A, f"optimized_M_{t}_{n}_social_golfer.txt")
 
-parse_social_golfer_github(384, 16384, 128)
+parse_social_golfer_github(96, 1312, 32)
+
