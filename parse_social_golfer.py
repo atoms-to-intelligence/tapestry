@@ -99,5 +99,7 @@ def parse_social_golfer_github(t, n, block_size):
   #assert count*4 == n
   write_matrix(A, f"optimized_M_{t}_{n}_social_golfer.txt")
 
-parse_social_golfer_github(96, 1312, 32)
+#parse_social_golfer_github(96, 1312, 32)
+parse_social_golfer_github(192, 5120, 64)
+
 

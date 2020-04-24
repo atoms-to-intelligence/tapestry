@@ -4759,6 +4759,9 @@ optimized_M_384_16384_social_golfer = load_from_matlab("optimized_M_384_16384_so
 optimized_M_96_1312_social_golfer = load_from_matlab("optimized_M_96_1312_social_golfer.txt",
         delim=None)
 
+optimized_M_192_5120_social_golfer = load_from_matlab("optimized_M_192_5120_social_golfer.txt",
+        delim=None)
+
 #######    All Matrices Must be added before this line     ############
 ##########       Else the won't show up in MDict        #############
 
@@ -4816,13 +4819,13 @@ optimized_M_360_1320_strided_sts = strided_randomized_matrix(sts.sts(45), 8)
 if __name__ == '__main__':
   A = np.arange(8).reshape((2,4)) + 1
   #A = sts.sts(45)
-  n_strides = 4
-  B = strided_randomized_matrix(A, n_strides)
-  print(A)
-  print(B)
-  print(A.shape)
-  print(B.shape)
-  sys.exit(1)
+  #n_strides = 4
+  #B = strided_randomized_matrix(A, n_strides)
+  #print(A)
+  #print(B)
+  #print(A.shape)
+  #print(B.shape)
+  #sys.exit(1)
   #int_coded_matrix(4, 15)
   #print(int_coded_M_6_63.shape)
   # Uncomment following code if you want to convert these matrices to matlab
