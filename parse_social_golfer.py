@@ -46,12 +46,12 @@ def write_matrix(M, fname):
   full_path = os.path.join(mat_dir, fname)
   np.savetxt(full_path, M, fmt="%d")
 
-def parse_social_golfer_github():
+def parse_social_golfer_github(t, n, block_size):
   count = 0
   #f = open("48x384_social_golfer.txt")
   #f = open("384_4096.txt")
-  f = open("384_8192.txt", "r")
-  A = np.zeros((384,8192), dtype=np.int32)
+  f = open(f"{t}_{n}.txt", "r")
+  A = np.zeros((t,n), dtype=np.int32)
   for line in f:
     if line.strip() == '':
       continue
@@ -59,19 +59,19 @@ def parse_social_golfer_github():
     assert len(rows) == 12
     print(rows)
     
-    block = count // 128
+    block = count // block_size
     
-    idx = count % 128
+    idx = count % block_size
     
     w1 = block*4
     w2 = w1 + 1
     w3 = w2 + 1
     w4 = w3 + 1
     
-    col1 = 128*w1 + idx
-    col2 = 128*w2 + idx
-    col3 = 128*w3 + idx
-    col4 = 128*w4 + idx
+    col1 = block_size*w1 + idx
+    col2 = block_size*w2 + idx
+    col3 = block_size*w3 + idx
+    col4 = block_size*w4 + idx
     
     A[rows[0], col1] = 1
     A[rows[1], col1] = 1
@@ -90,6 +90,8 @@ def parse_social_golfer_github():
     A[rows[11], col4] = 1
     count += 1
 
-  write_matrix(A, "optimized_M_384_8192_social_golfer.txt")
+  print(count*4, n)
+  assert count*4 == n
+  write_matrix(A, f"optimized_M_{t}_{n}_social_golfer.txt")
 
-parse_social_golfer_github()
+parse_social_golfer_github(384, 16384, 128)
