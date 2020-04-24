@@ -48,8 +48,10 @@ def write_matrix(M, fname):
 
 def parse_social_golfer_github():
   count = 0
-  f = open("48x384_social_golfer.txt")
-  A = np.zeros((48, 384), dtype=np.int32)
+  #f = open("48x384_social_golfer.txt")
+  #f = open("384_4096.txt")
+  f = open("384_8192.txt", "r")
+  A = np.zeros((384,8192), dtype=np.int32)
   for line in f:
     if line.strip() == '':
       continue
@@ -57,19 +59,19 @@ def parse_social_golfer_github():
     assert len(rows) == 12
     print(rows)
     
-    block = count // 16
+    block = count // 128
     
-    idx = count % 16
+    idx = count % 128
     
     w1 = block*4
     w2 = w1 + 1
     w3 = w2 + 1
     w4 = w3 + 1
     
-    col1 = 16*w1 + idx
-    col2 = 16*w2 + idx
-    col3 = 16*w3 + idx
-    col4 = 16*w4 + idx
+    col1 = 128*w1 + idx
+    col2 = 128*w2 + idx
+    col3 = 128*w3 + idx
+    col4 = 128*w4 + idx
     
     A[rows[0], col1] = 1
     A[rows[1], col1] = 1
@@ -88,6 +90,6 @@ def parse_social_golfer_github():
     A[rows[11], col4] = 1
     count += 1
 
-  write_matrix(A, "optimized_M_48_384_social_golfer.txt")
+  write_matrix(A, "optimized_M_384_8192_social_golfer.txt")
 
 parse_social_golfer_github()
