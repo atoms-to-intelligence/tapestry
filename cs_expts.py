@@ -339,21 +339,22 @@ def get_small_random_matrix(t, n, col_sparsity):
   return matrix
 
 def run_many_parallel_expts():
-  num_expts = 1000
-  t = 27
-  n = 60
+  num_expts = 100
+  t = 20
+  n = 1140
   add_noise = True
-  matrix = optimized_M_27_117_social_golfer[:,:n]
+  matrix = optimized_M_20_1140_1
 
-  t = 45
-  n = t * (t - 1) // 6
-  matrix = sts.sts(t)
+  #t = 45
+  #n = t * (t - 1) // 6
+  #matrix = sts.sts(t)
   #matrix = matrix[:48, :384]
   #t = 48
   #n = 384
 
   algos = []
   algos.extend(['COMP'])
+  #algos.extend(['SBL'])
   #algos.append('NNOMP')
   #algos.append('combined_COMP_NNOMP')
   #algos.append('NNOMP_random_cv')
@@ -363,6 +364,8 @@ def run_many_parallel_expts():
   #algos.append('l1ls')
   #algos.append('combined_COMP_l1ls')
   d_range = list(range(1, 13))
+  #d_range = list(range(71, 80))
+  #d_range = list(range(10, 111, 10))
   #d_range = [1]
   #d_range.extend([15, 20, 25, 30])
   n_jobs = 4
@@ -405,20 +408,23 @@ def run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos, 
     #print('\td\tPrecision\tRecall\ttotal_tests\tnum_determined\tnum_overdetermined\n')
     #print('\td\tPrecision\tRecall\tsurep\tunsurep  avg_tests  2_stage\tWrongly_undetected')
     #print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep  avg_tests  2_stage')
-    print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep\tfalse_pos')
-    for expt in explist[i]:
-      if expt.precision == 0:
-        total_tests = t + expt.n
-      else:
-        total_tests = t + expt.d / expt.precision
-      print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f' % (expt.d, expt.precision,
-        expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.total_fp / num_expts))
-      #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
-      #  expt.recall, total_tests, expt.determined, expt.overdetermined))
-      #print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
-      #  expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.t +
-      #  expt.avg_unsurep, expt.num_expts_2_stage, ))
+    print_expts(explist[i], num_expts, t)
   return explist
+
+def print_expts(expts, num_expts, t):
+  print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep\tfalse_pos')
+  for expt in expts:
+    if expt.precision == 0:
+      total_tests = t + expt.n
+    else:
+      total_tests = t + expt.d / expt.precision
+    print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f' % (expt.d, expt.precision,
+      expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.total_fp / num_expts))
+    #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
+    #  expt.recall, total_tests, expt.determined, expt.overdetermined))
+    #print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
+    #  expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.t +
+    #  expt.avg_unsurep, expt.num_expts_2_stage, ))
 
 def compare_sts_vs_kirkman():
   t = 27
@@ -446,17 +452,29 @@ def compare_sts_vs_kirkman():
   print('Kirkman:', pr_kirkman)
   print('STS:\t', pr_sts)
 
+def compare_different_ns():
+  explist = []
+  t = 384
+  ns = [768] + list(range(1000, 7001, 1000)) + [8192]
+  M = optimized_M_384_8192_social_golfer
+  num_expts = 100
+  for n in ns:
+    expts = run_with_matrix_n(M, t, n, True, num_expts)
+    explist.append(expts)
+  for expts, n in zip(explist, ns):
+    print(f'n = {n}, t = {t}')
+    print_expts(expts, num_expts, t)
 
-def run_with_matrix_n(M, t, n):
+
+def run_with_matrix_n(M, t, n, ret_explist=False, num_expts=1):
   assert n <= M.shape[1]
   assert t == M.shape[0]
 
   M = M[:, :n]
-  num_expts = 1000
   add_noise = True
 
   algos = ['COMP']
-  d_range = list(range(4, 7))
+  d_range = list(range(10, 101, 10))
   n_jobs = 4
 
   explist = run_many_parallel_expts_internal(num_expts, n, t, add_noise, M, algos, d_range, n_jobs)
@@ -471,7 +489,10 @@ def run_with_matrix_n(M, t, n):
       best_d = d
       best_sp = sp[i]
       best_pr = pr[i]
-  return best_d, best_sp, best_pr
+  if ret_explist:
+    return expts
+  else:
+    return best_d, best_sp, best_pr
 
 def run_many_parallel_expts_mr():
   num_expts = 100
@@ -571,6 +592,7 @@ if __name__=='__main__':
   #mr = None
   #do_many_expts(200, 6, 46, num_expts=100, M=None,
   #    add_noise=True,algo='combined_COMP_NNOMP_random_cv', mr=mr)
+  #compare_different_ns()
   run_many_parallel_expts()
   #compare_sts_vs_kirkman()
   #for mr in range(8, 15):
