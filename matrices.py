@@ -4775,7 +4775,51 @@ for m in MList:
 #print('Writing to optimized_M_16_40_ncbs[3,2]')
 #optimized_M_16_40_ncbs[3,2] = 9
 
+# Take n_strides strides of size n / 2 each and create a matrix of size
+# n_strides*t x n * n_strides / 2
+def strided_matrix(A, n_strides):
+  t = A.shape[0]
+  n = A.shape[1]
+  assert n % 2 == 0
+  N = n * n_strides // 2
+  pad = N - n
+  A = np.pad(A, ((0,0), (0, pad)), constant_values=0)
+  mlist = [np.roll(A, i * n//2, axis=1) for i in range(0, n_strides)]
+  A = np.concatenate(mlist, axis=0)
+  return A
+
+# Take n_strides strides of size n / 2 each and create a matrix of size
+# n_strides*t x n * n_strides / 2. Permute cols of each A
+def strided_randomized_matrix(A, n_strides):
+  t = A.shape[0]
+  n = A.shape[1]
+  assert n % 2 == 0
+  N = n * n_strides // 2
+  pad = N - n
+  idx = np.arange(n)
+  mlist = []
+  for i in range(0, n_strides):
+    idx_perm = np.random.permutation(idx)
+    B = A[:, idx_perm]
+    B = np.pad(B, ((0,0), (0, pad)), constant_values=0)
+    mlist.append(np.roll(B, i * n//2, axis=1))
+
+  A = np.concatenate(mlist, axis=0)
+  return A
+
+#optimized_M_384_1320_strided_sts = strided_matrix(sts.sts(45), 8)
+optimized_M_360_1320_strided_sts = strided_randomized_matrix(sts.sts(45), 8)
+
 if __name__ == '__main__':
+  A = np.arange(8).reshape((2,4)) + 1
+  #A = sts.sts(45)
+  n_strides = 4
+  B = strided_randomized_matrix(A, n_strides)
+  print(A)
+  print(B)
+  print(A.shape)
+  print(B.shape)
+  sys.exit(1)
   #int_coded_matrix(4, 15)
   #print(int_coded_M_6_63.shape)
   # Uncomment following code if you want to convert these matrices to matlab
