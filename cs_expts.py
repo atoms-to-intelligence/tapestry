@@ -19,7 +19,7 @@ def specificity(precision, recall, n, d, preds):
 class SingleExpt:
   def __init__(self, tp, fp, fn, uncon_negs, determined, overdetermined, surep,
       unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
-      infected, infected_dd):
+      infected, infected_dd, n, d, t, mr, algo, mlabel):
     # computed stats
     self.tp = tp
     self.fp = fp
@@ -43,23 +43,26 @@ class SingleExpt:
     self.infected_dd = infected_dd
 
     # Global settings common for many expts
-    #self.n = n
-    #self.d = d
-    #self.t = t
-    #self.mr = mr
-    #self.algo = algo
+    self.n = n
+    self.d = d
+    self.t = t
+    self.mr = mr
+    self.algo = algo
+    self.mlabel = mlabel
 
     # Not saving the matrix label here because it'd need changes at too many
     # places. We'll have the matrix label as the first key into the dict
     # anyway
 
 class CSExpts:
-  def __init__(self, name, n, d, t, mr):
+  def __init__(self, name, n, d, t, mr, algo, mlabel):
     self.n = n
     self.d = d
     self.t = t
     self.mr = mr
     self.name = name
+    self.algo = algo
+    self.mlabel = mlabel
 
     self.no_error = 0 # number of expts with no error
     self.no_fp = 0 # number of expts with no false +ve
@@ -78,12 +81,12 @@ class CSExpts:
     self.single_expts = []
 
   # manage stats for a single expt
-  def record_single_expt(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
+  def record_single_expt(self, tp, fp, fn, uncon_negs, determined, overdetermined, surep,
       unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
       infected, infected_dd):
     single_expt = SingleExpt(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
       unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
-      infected, infected_dd)
+      infected, infected_dd, self.n, self.d, self.t, self.mr, self.algo, self.mlabel)
 
     self.single_expts.append(single_expt)
 
@@ -115,7 +118,7 @@ class CSExpts:
 
     # Save this single experiment's settings and stats
     self.record_single_expt(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
-      unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
+      unsurep, wrongly_undetected, score, cs.conc, (cs.conc > 0).astype(int), y, bool_y, x_est,
       infected, infected_dd)
 
     sys.stdout.write('\riter = %d / %d score: %.2f tp = %d fp = %d fn = %d' %
@@ -223,7 +226,8 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
     add_noise=False,
     algo='OMP',
     noise_magnitude=None,
-    mr=None):
+    mr=None,
+    mlabel="dummy_matrix_label"):
 
   # Test width. Max number of parallel tests available.
   #t = 12
@@ -250,11 +254,11 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
 
   if isinstance(algo, list):
     #print('list')
-    expts = [CSExpts(item, n, d, t, mr) for item in algo]
+    expts = [CSExpts(item, n, d, t, mr, item, mlabel) for item in algo]
     ret_list = True
   else:
     #print('str')
-    expts = [CSExpts(algo, n, d, t, mr)]
+    expts = [CSExpts(algo, n, d, t, mr, algo, mlabel)]
     algo = [algo]
     ret_list = False
 
@@ -397,13 +401,13 @@ def get_small_random_matrix(t, n, col_sparsity):
 
 # helper to load pickle
 def load_pickle(name):
-  with gzip.open(stats_pickle, "rb") as f:
+  with gzip.open(config.stats_pickle, "rb") as f:
     stats = pickle.load(f)
   return stats
 
 # helper to check and load stats dict
 def get_stats_dict():
-  if os.path.exist(config.stats_pickle_tmp):
+  if os.path.exists(config.stats_pickle_tmp):
     raise ValueError("Temporary pickle file found. Please check if this "
         "contains valid data")
 
@@ -416,10 +420,10 @@ def get_stats_dict():
 # Saves to tmp file first, then copies the tmp file onto the old file. Then
 # deletes the tmp file
 def carefully_save_stats(stats):
-  with gzip.open(stats_pickle_tmp, "wb") as f:
+  with gzip.open(config.stats_pickle_tmp, "wb") as f:
     pickle.dump(stats, f)
-  shutil.copy2(stats_pickle_tmp, stats_pickle)
-  os.remove(stats_pickle_tmp)
+  shutil.copy2(config.stats_pickle_tmp, config.stats_pickle)
+  os.remove(config.stats_pickle_tmp)
 
 # Runs many parallel experiments and save stats
 def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos, num_expts):
@@ -433,14 +437,14 @@ def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos, num_ex
     t = M.shape[0]
     add_noise = True
     matrix = M
-    n_jobs = 4
+    n_jobs = 1
     explist = run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos,
-        d_range, n_jobs, xslist=[None for d in d_range])
+        d_range, n_jobs, xslist=[None for d in d_range], mlabel=label)
     for algo, expts in zip(algos, explist):
       if not algo in stats[label]:
         stats[label][algo] = {}
       for d, expt in zip(d_range, expts):
-        stats[label][algo][d] = expt.single_expts
+        stats[label][algo][d] = [item.__dict__ for item in expt.single_expts]
 
     # Now that this matrix is done, we want to save the stats
     # We do this after every matrix so that even if the entire process is
@@ -486,17 +490,18 @@ def run_many_parallel_expts():
   n_jobs = 4
 
   run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos,
-      d_range, n_jobs, xslist=[None for d in d_range])
+      d_range, n_jobs, xslist=[None for d in d_range],
+      mlabel="dummy_matrix_label")
 
 # Separate out this function from above so that we can call on many matrices
 def run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix,
-    algos, d_range, n_jobs, xslist):
+    algos, d_range, n_jobs, xslist, mlabel):
   retvals = Parallel(n_jobs=n_jobs, backend='loky')\
   (\
       delayed(do_many_expts)\
       (
         n, d, t, num_expts=num_expts, M=matrix,\
-        add_noise=add_noise,algo=algos, mr=None, xs=xs \
+        add_noise=add_noise,algo=algos, mr=None, xs=xs, mlabel=mlabel \
       )\
       for d, xs in zip(d_range, xslist)\
   )
@@ -742,7 +747,13 @@ if __name__=='__main__':
   #mlabels = ['optimized_M_45_105_STS_1', 'optimized_M_45_285_social_golfer[:, :105]']
 
   #compare_different_mats(M, mlabels)
-  run_many_parallel_expts()
+  #run_many_parallel_expts()
+  labels = ['optimized_M_16_40_ncbs', 'optimized_M_3']
+  mats = [MDict[label] for label in labels]
+  d_ranges = [list(range(1, 5)) for i in range(len(mats))]
+  num_expts = 5
+  algos = ['COMP', 'SBL']
+  run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos, num_expts)
   #compare_sts_vs_kirkman()
   #for mr in range(8, 15):
   #  do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M_2,
