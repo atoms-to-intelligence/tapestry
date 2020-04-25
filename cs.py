@@ -1,3 +1,4 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 import numpy as np
 import math
 from sklearn.linear_model import Lasso, LassoLars, LassoCV, LassoLarsCV
