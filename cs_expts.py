@@ -82,7 +82,7 @@ class CSExpts:
       unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
       infected, infected_dd)
 
-    single_expts.append(single_expt)
+    self.single_expts.append(single_expt)
 
   # Find results using qPCR
   def do_single_expt(self, i, num_expts, cs, x, cross_validation=True, add_noise=True,
@@ -109,6 +109,11 @@ class CSExpts:
           overdetermined, surep, unsurep, wrongly_undetected, \
           num_infected_in_test = cs.decode_lasso(y, algo,
           prefer_recall=False)
+
+    # Save this single experiment's settings and stats
+    self.record_single_expt(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
+      unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
+      infected, infected_dd)
 
     sys.stdout.write('\riter = %d / %d score: %.2f tp = %d fp = %d fn = %d' %
         (i, num_expts, score, tp, fp, fn))
@@ -385,6 +390,27 @@ def get_small_random_matrix(t, n, col_sparsity):
     ones = np.random.choice(range(t), size=col_sparsity, replace=False)
     matrix[ones, col] = 1
   return matrix
+
+# Runs many parallel experiments and return stats
+def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos, num_expts):
+  # stats is a 3-deep dictionary
+  # stats[matrix][algo][d] points to list of 1000 experiments
+  stats = {}
+  for M, label, d_range in zip(mats, mlabels, d_ranges):
+    stats[label] = {}
+    n = M.shape[1]
+    t = M.shape[0]
+    add_noise = True
+    matrix = M
+    n_jobs = 4
+    explist = run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos,
+        d_range, n_jobs, xslist=[None for d in d_range])
+    for algo, expts in zip(algos, explist):
+      stats[label][algo] = {}
+      for d, expt in zip(d_range, expts):
+        stats[label][algo][d] = expt.single_expts
+  return stats
+
 
 def run_many_parallel_expts():
   #from experimental_data_manager import parse_israel_matrix
