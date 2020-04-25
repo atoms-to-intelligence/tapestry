@@ -13,6 +13,43 @@ def specificity(precision, recall, n, d, preds):
     assert recall != 0
   return 1 - (recall * d * ( (1 / precision) - 1) / (n - d)) 
 
+class SingleExpt:
+  def __init__(self, tp, fp, fn, uncon_negs, determined, overdetermined, surep,
+      unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
+      infected, infected_dd):
+    # computed stats
+    self.tp = tp
+    self.fp = fp
+    self.fn = fn
+    self.uncon_negs = uncon_negs
+    self.determined = determined
+    self.overdetermined = overdetermined
+    self.surep = surep
+    self.unsurep = unsurep
+    self.wrongly_undetected = wrongly_undetected
+    self.score = score
+
+    # Experimental setting and returned value
+    self.x = x
+    self.bool_x = bool_x
+    self.y = y
+    self.bool_y = bool_y
+
+    self.x_est = x_est
+    self.infected = infected
+    self.infected_dd = infected_dd
+
+    # Global settings common for many expts
+    #self.n = n
+    #self.d = d
+    #self.t = t
+    #self.mr = mr
+    #self.algo = algo
+
+    # Not saving the matrix label here because it'd need changes at too many
+    # places. We'll have the matrix label as the first key into the dict
+    # anyway
+
 class CSExpts:
   def __init__(self, name, n, d, t, mr):
     self.n = n
@@ -35,6 +72,17 @@ class CSExpts:
     self.num_expts_2_stage = 0
     self.wrongly_undetected = 0
     self.total_score = 0
+    self.single_expts = []
+
+  # manage stats for a single expt
+  def record_single_expt(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
+      unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
+      infected, infected_dd):
+    single_expt = SingleExpt(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
+      unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
+      infected, infected_dd)
+
+    single_expts.append(single_expt)
 
   # Find results using qPCR
   def do_single_expt(self, i, num_expts, cs, x, cross_validation=True, add_noise=True,
@@ -64,7 +112,7 @@ class CSExpts:
 
     sys.stdout.write('\riter = %d / %d score: %.2f tp = %d fp = %d fn = %d' %
         (i, num_expts, score, tp, fp, fn))
-
+    
     self.add_stats(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
         unsurep, wrongly_undetected, score)
 
@@ -342,7 +390,7 @@ def run_many_parallel_expts():
   #from experimental_data_manager import parse_israel_matrix
   #optimized_M_48_384_israel = parse_israel_matrix()
 
-  num_expts = 10
+  num_expts = 1000
   t = 45
   n = 105
   add_noise = True
@@ -365,9 +413,9 @@ def run_many_parallel_expts():
   #algos.extend(['combined_COMP_NNOMP_random_cv'])
   #algos.append('combined_COMP_SBL')
   #algos.append('l1ls_cv')
-  algos.append('combined_COMP_l1ls_cv')
+  #algos.append('combined_COMP_l1ls_cv')
   #algos.append('combined_COMP_l1ls')
-  d_range = list(range(1, 16))
+  d_range = list(range(8, 11))
   #d_range = list(range(10, 101, 10))
   #d_range = list(range(10, 101, 10))
   #d_range = [1]
