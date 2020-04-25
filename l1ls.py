@@ -16,6 +16,7 @@ def l1ls_cv(A, y, sigval, tau):
   Acv = A[mr:m,:]
 
   lambda_min = max(sigval * math.sqrt(math.log(n)) - 5, 0.000001)
+  #lambda_min = max(sigval * math.sqrt(math.log(n)) - 5, 0)
   lambda_max = sigval * math.sqrt(math.log(n)) + 5
   lambdas = np.arange(lambda_min, lambda_max, 0.05)
   l_lambdas = len(lambdas)
