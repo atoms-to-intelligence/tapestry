@@ -169,6 +169,14 @@ class CS(COMP):
         answer = np.zeros(self.n)
       else:
         answer = l1ls.l1ls(A, y, self.l, self.tau)
+    elif algo == 'l1ls_cv':
+      A = self.M.T
+      y = results
+      sigval = 0.01 * np.mean(y)
+      if np.all(y == 0):
+        answer = np.zeros(self.n)
+      else:
+        answer = l1ls.l1ls_cv(A, y, sigval, self.tau)
     else:
       raise ValueError('No such algorithm %s' % algo)
 
