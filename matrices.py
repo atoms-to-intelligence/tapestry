@@ -4762,6 +4762,9 @@ optimized_M_96_1312_social_golfer = load_from_matlab("optimized_M_96_1312_social
 optimized_M_192_5120_social_golfer = load_from_matlab("optimized_M_192_5120_social_golfer.txt",
         delim=None)
 
+optimized_M_45_285_social_golfer = load_from_matlab("optimized_M_45_285_social_golfer.txt",
+        delim=None)
+
 #######    All Matrices Must be added before this line     ############
 ##########       Else the won't show up in MDict        #############
 
@@ -4815,6 +4818,18 @@ def strided_randomized_matrix(A, n_strides):
 
 #optimized_M_384_1320_strided_sts = strided_matrix(sts.sts(45), 8)
 optimized_M_360_1320_strided_sts = strided_randomized_matrix(sts.sts(45), 8)
+
+def print_matrix_stats(M, label):
+  row_sums = np.sum(M, axis=1)
+  col_sums = np.sum(M, axis=0)
+  row_sparsity = np.max(row_sums)
+  min_row_sparsity = np.min(row_sums)
+  col_sparsity = np.max(col_sums)
+  min_col_sparsity = np.min(col_sums)
+  total_sparsity = np.sum(row_sums)
+  print(label, M.shape, 'Row sparsity: ', row_sparsity, 'Col sparsity: ', col_sparsity,
+      'Min Row sparsity: ', min_row_sparsity, 'Min Col sparsity', min_col_sparsity,
+      'Total sparsity: ', total_sparsity)
 
 if __name__ == '__main__':
   A = np.arange(8).reshape((2,4)) + 1

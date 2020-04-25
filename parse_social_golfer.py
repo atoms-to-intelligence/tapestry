@@ -1,7 +1,7 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 import string
 import numpy as np
-from matrices import mat_dir
+from config import mat_dir
 import os
 import sys
 
@@ -100,6 +100,6 @@ def parse_social_golfer_github(t, n, block_size):
   write_matrix(A, f"optimized_M_{t}_{n}_social_golfer.txt")
 
 #parse_social_golfer_github(96, 1312, 32)
-parse_social_golfer_github(192, 5120, 64)
+parse_social_golfer_github(45, 285, 15)
 
 
