@@ -4,6 +4,9 @@ from cs import *
 import json
 import pandas as pd
 import os
+import pickle
+import gzip
+import shutil
 
 def specificity(precision, recall, n, d, preds):
   if preds == 0 or (precision == 0 and recall ==0):
@@ -391,13 +394,41 @@ def get_small_random_matrix(t, n, col_sparsity):
     matrix[ones, col] = 1
   return matrix
 
-# Runs many parallel experiments and return stats
+
+# helper to load pickle
+def load_pickle(name):
+  with gzip.open(stats_pickle, "rb") as f:
+    stats = pickle.load(f)
+  return stats
+
+# helper to check and load stats dict
+def get_stats_dict():
+  if os.path.exist(config.stats_pickle_tmp):
+    raise ValueError("Temporary pickle file found. Please check if this "
+        "contains valid data")
+
+  if os.path.exists(config.stats_pickle):
+    stats = load_pickle(config.stats_pickle)
+  else:
+    stats = {}
+  return stats
+
+# Saves to tmp file first, then copies the tmp file onto the old file. Then
+# deletes the tmp file
+def carefully_save_stats(stats):
+  with gzip.open(stats_pickle_tmp, "wb") as f:
+    pickle.dump(stats, f)
+  shutil.copy2(stats_pickle_tmp, stats_pickle)
+  os.remove(stats_pickle_tmp)
+
+# Runs many parallel experiments and save stats
 def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos, num_expts):
   # stats is a 3-deep dictionary
   # stats[matrix][algo][d] points to list of 1000 experiments
-  stats = {}
+  stats = get_stats_dict()
   for M, label, d_range in zip(mats, mlabels, d_ranges):
-    stats[label] = {}
+    if not label in stats:
+      stats[label] = {}
     n = M.shape[1]
     t = M.shape[0]
     add_noise = True
@@ -406,9 +437,15 @@ def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos, num_ex
     explist = run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos,
         d_range, n_jobs, xslist=[None for d in d_range])
     for algo, expts in zip(algos, explist):
-      stats[label][algo] = {}
+      if not algo in stats[label]:
+        stats[label][algo] = {}
       for d, expt in zip(d_range, expts):
         stats[label][algo][d] = expt.single_expts
+
+    # Now that this matrix is done, we want to save the stats
+    # We do this after every matrix so that even if the entire process is
+    # cancelled, stats are still saved
+    carefully_save_stats(stats)
   return stats
 
 

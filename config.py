@@ -63,3 +63,8 @@ bit_flip_prob = 0.
 noise_model = 'exponential_gaussian'
 #noise_model = 'variable_gaussian'
 
+# Pickle files containing stats. Stats are first written to tmp and then
+# finally copied
+stats_pickle = os.path.join(root_dir, "expt_stats.p.gz")
+stats_pickle_tmp = os.path.join(root_dir, "expt_stats_temp.p.gz")
+
