@@ -25,7 +25,7 @@ def parse_stats_and_get_confidence_intervals(explist, k=3, n_batches=120):
   #
   # means and intervals are dicts keyed by stat name such as precision, recall
   # interval gives a tuple (low, high), both inclusive.
-  intervals = get_intervals(stats_list)
+  intervals = get_intervals(stats_list, k)
 
 
   # This is stats computed on the actual list of experiments
@@ -59,10 +59,24 @@ def compute_stats_for_batch(batch):
 
 
 # Compute confidence intervals for each stat using the list of stats
-def get_intervals(stats_list):
-  pass
+def get_intervals(agg_stats_list, k, keys=None):
+  assert agg_stats_list
+  if not keys:
+    # Get which stats we are going to compute the confidence intervals for
+    keys = agg_stats_list[0].keys()
+  
+  intervals = {}
+  for key in keys:
+    stats = sorted([agg_stats[key] for agg_stats in agg_stats_list])
+    # Drop the first k and the last k to get interval
+    low = stats[k]
+    high = stats[-k-1]
+    intervals[key] = (low, high)
+
+  return intervals
+
 
 if __name__ == '__main__':
   print(make_many_batches([1, 2, 3], 10))
-
+  
 
