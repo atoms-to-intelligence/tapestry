@@ -31,11 +31,13 @@ def parse_stats_and_get_confidence_intervals(explist, k=3, n_batches=120):
   #
   # means and intervals are dicts keyed by stat name such as precision, recall
   # interval gives a tuple (low, high), both inclusive.
-  intervals = get_intervals(stats_list, k, keys=["precision"])
+  #intervals = get_intervals(stats_list, k, keys=["precision"])
+  intervals = get_intervals(stats_list, k)
 
 
   # This is stats computed on the actual list of experiments
   original = compute_stats_for_batch(explist)
+  convert_dict_to_simple_type(original)
   return original, intervals
 
 
@@ -76,13 +78,34 @@ def get_intervals(agg_stats_list, k, keys=None):
   
   intervals = {}
   for key in keys:
+    if key == "mr":
+      continue
+    print("Processing key: ", key)
     stats = sorted([agg_stats[key] for agg_stats in agg_stats_list])
     # Drop the first k and the last k to get interval
     low = stats[k]
     high = stats[-k-1]
+    low = convert_scalar_to_simple_type(low)
+    high = convert_scalar_to_simple_type(high)
     intervals[key] = (low, high)
 
   return intervals
+
+# Converts each item in dict from numpy to python types. This makes it
+# serializable with json
+def convert_dict_to_simple_type(d):
+  for key in d:
+    try:
+      d[key] = d[key].item()
+      print(f"Converted {key} to python")
+    except:
+      print(f"Could not convert {key} to python")
+
+def convert_scalar_to_simple_type(val):
+  try:
+    return val.item()
+  except:
+    return val
 
 class PickleManager:
   def __init__(self, main_pickle, tmp_pickle):
@@ -127,8 +150,8 @@ if __name__ == '__main__':
   explist = stats["optimized_M_1"]["COMP"][2]
   original, intervals = parse_stats_and_get_confidence_intervals(explist, k=3, n_batches=120)
 
-  s = json.dumps(original["precision"])
+  s = json.dumps(original, indent=4)
   print(s)
-  s = json.dumps(intervals)
+  s = json.dumps(intervals, indent=4)
   print(s)
 
