@@ -748,11 +748,16 @@ if __name__=='__main__':
 
   #compare_different_mats(M, mlabels)
   #run_many_parallel_expts()
-  labels = ['optimized_M_16_40_ncbs', 'optimized_M_3']
+  #labels = ['optimized_M_16_40_ncbs', 'optimized_M_3']
+  from get_test_results import MSizeToLabelDict
+  tups = MSizeToLabelDict.values()
+  labels = [tup[0] for tup in tups]
   mats = [MDict[label] for label in labels]
-  d_ranges = [list(range(1, 5)) for i in range(len(mats))]
-  num_expts = 5
-  algos = ['COMP', 'SBL']
+  #d_ranges = [list(range(1, 5)) for i in range(len(mats))]
+  d_ranges = [ [ tup[1] ] for tup in tups ]
+  num_expts = 1000
+  #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',]
+  algos = ['combined_COMP_l1ls_cv']
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos, num_expts)
   #compare_sts_vs_kirkman()
   #for mr in range(8, 15):
