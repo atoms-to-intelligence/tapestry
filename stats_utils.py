@@ -1,6 +1,7 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 # Utility methods to parse stats dictionary
 
+import config
 from cs_expts import CSExpts
 
 import numpy as np
@@ -8,6 +9,7 @@ import os
 import gzip
 import pickle
 import shutil
+import json
 
 # Use bootstrapping to compute confidence intervals
 #
@@ -29,7 +31,7 @@ def parse_stats_and_get_confidence_intervals(explist, k=3, n_batches=120):
   #
   # means and intervals are dicts keyed by stat name such as precision, recall
   # interval gives a tuple (low, high), both inclusive.
-  intervals = get_intervals(stats_list, k)
+  intervals = get_intervals(stats_list, k, keys=["precision"])
 
 
   # This is stats computed on the actual list of experiments
@@ -44,12 +46,15 @@ def make_many_batches(explist, n_batches):
 
 # Computes stats for one batch of experiments
 def compute_stats_for_batch(batch):
+  expt = batch[0]
   # We already have the CSExpts class - we'll just use that to compute stats
-  agg_expt = CSExpts
+  agg_expt = CSExpts('dummy_name', expt["n"], expt["d"], expt["t"], expt["mr"],
+    expt["algo"], expt["mlabel"])
   for expt in batch:
-    agg_expt.add_stats(expt.tp, expt.fp, expt.fn, expt.uncon_negs,
-        expt.determined, expt.overdetermined,
-        expt.surep, expt.unsurep, expt.wrongly_undetected, expt.score)
+    agg_expt.add_stats(expt["tp"], expt["fp"], expt["fn"], expt["uncon_negs"],
+        expt["determined"], expt["overdetermined"],
+        expt["surep"], expt["unsurep"], expt["wrongly_undetected"],
+        expt["score"])
 
   # This method computes more stats. It returns something but we don't care
   agg_expt.return_stats(len(batch))
@@ -116,6 +121,14 @@ class PickleManager:
 
 
 if __name__ == '__main__':
-  print(make_many_batches([1, 2, 3], 10))
-  
+  #print(make_many_batches([1, 2, 3], 10))
+  pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
+  stats = pm.get_stats_dict()
+  explist = stats["optimized_M_1"]["COMP"][2]
+  original, intervals = parse_stats_and_get_confidence_intervals(explist, k=3, n_batches=120)
+
+  s = json.dumps(original["precision"])
+  print(s)
+  s = json.dumps(intervals)
+  print(s)
 
