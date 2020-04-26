@@ -4,9 +4,6 @@ from cs import *
 import json
 import pandas as pd
 import os
-import pickle
-import gzip
-import shutil
 
 def specificity(precision, recall, n, d, preds):
   if preds == 0 or (precision == 0 and recall ==0):
@@ -33,14 +30,16 @@ class SingleExpt:
     self.score = score
 
     # Experimental setting and returned value
-    self.x = x
-    self.bool_x = bool_x
-    self.y = y
-    self.bool_y = bool_y
+    self.x_idx = np.array(np.where(x), dtype=np.uint8)
+    self.x = np.array(x[self.x_idx], dtype=np.float32)
+    self.y_idx = np.array(np.where(y), dtype=np.uint8)
+    self.y = np.array(y[self.y_idx], dtype=np.float32)
 
-    self.x_est = x_est
-    self.infected = infected
-    self.infected_dd = infected_dd
+    self.x_est_idx = np.array(np.where(x_est), dtype=np.uint8)
+    self.x_est = np.array(x_est[self.x_est_idx], dtype=np.float32)
+
+    self.infected_idx = np.array(np.where(infected), dtype=np.uint8)
+    self.infected_dd_idx = np.array(np.where(infected_dd), dtype=np.uint8)
 
     # Global settings common for many expts
     self.n = n
@@ -401,37 +400,13 @@ def get_small_random_matrix(t, n, col_sparsity):
   return matrix
 
 
-# helper to load pickle
-def load_pickle(name):
-  with gzip.open(config.stats_pickle, "rb") as f:
-    stats = pickle.load(f)
-  return stats
-
-# helper to check and load stats dict
-def get_stats_dict():
-  if os.path.exists(config.stats_pickle_tmp):
-    raise ValueError("Temporary pickle file found. Please check if this "
-        "contains valid data")
-
-  if os.path.exists(config.stats_pickle):
-    stats = load_pickle(config.stats_pickle)
-  else:
-    stats = {}
-  return stats
-
-# Saves to tmp file first, then copies the tmp file onto the old file. Then
-# deletes the tmp file
-def carefully_save_stats(stats):
-  with gzip.open(config.stats_pickle_tmp, "wb") as f:
-    pickle.dump(stats, f)
-  shutil.copy2(config.stats_pickle_tmp, config.stats_pickle)
-  os.remove(config.stats_pickle_tmp)
-
 # Runs many parallel experiments and save stats
 def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos, num_expts):
+  from stats_utils import PickleManager
+  pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
   # stats is a 3-deep dictionary
   # stats[matrix][algo][d] points to list of 1000 experiments
-  stats = get_stats_dict()
+  stats = pm.get_stats_dict()
   for M, label, d_range in zip(mats, mlabels, d_ranges):
     if not label in stats:
       stats[label] = {}
@@ -451,7 +426,7 @@ def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos, num_ex
     # Now that this matrix is done, we want to save the stats
     # We do this after every matrix so that even if the entire process is
     # cancelled, stats are still saved
-    carefully_save_stats(stats)
+    pm.carefully_save_stats(stats)
   return stats
 
 
@@ -750,17 +725,23 @@ if __name__=='__main__':
 
   #compare_different_mats(M, mlabels)
   #run_many_parallel_expts()
-  #labels = ['optimized_M_16_40_ncbs', 'optimized_M_3']
-  from get_test_results import MSizeToLabelDict
-  tups = MSizeToLabelDict.values()
-  labels = [tup[0] for tup in tups]
+
+  labels = ['optimized_M_1', 'optimized_M_2']
+  #from get_test_results import MSizeToLabelDict
+  #tups = MSizeToLabelDict.values()
+  #labels = [tup[0] for tup in tups]
+
   mats = [MDict[label] for label in labels]
-  #d_ranges = [list(range(1, 5)) for i in range(len(mats))]
-  d_ranges = [ [ tup[1] ] for tup in tups ]
+
+  d_ranges = [list(range(1, 5)) for i in range(len(mats))]
+  #d_ranges = [ [ tup[1] ] for tup in tups ]
+
   num_expts = 1000
   #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',]
-  algos = ['combined_COMP_l1ls_cv']
+  algos = ['COMP', 'SBL', ]
+  #algos = ['combined_COMP_l1ls_cv']
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos, num_expts)
+
   #compare_sts_vs_kirkman()
   #for mr in range(8, 15):
   #  do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M_2,
