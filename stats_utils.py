@@ -3,6 +3,8 @@
 
 from cs_expts import CSExpts
 
+import numpy as np
+
 # Use bootstrapping to compute confidence intervals
 #
 # Get a list of 1000 expts
@@ -33,7 +35,7 @@ def parse_stats_and_get_confidence_intervals(explist, k=3, n_batches=120):
 
 # Make many batches of size 1000 from 1000 expts by resampling
 def make_many_batches(explist, n_batches):
-  pass
+  return np.random.choice(explist, size=(n_batches, len(explist)))
 
 
 # Computes stats for one batch of experiments
@@ -59,3 +61,8 @@ def compute_stats_for_batch(batch):
 # Compute confidence intervals for each stat using the list of stats
 def get_intervals(stats_list):
   pass
+
+if __name__ == '__main__':
+  print(make_many_batches([1, 2, 3], 10))
+
+
