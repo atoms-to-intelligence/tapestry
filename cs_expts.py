@@ -211,6 +211,8 @@ class CSExpts:
         'expts'         : num_expts,
         }
 
+    self.preds = preds
+    self.actual = actual
     self.precision = precision
     self.recall = recall
     self.expts = num_expts
