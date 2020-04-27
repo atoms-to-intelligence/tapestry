@@ -16,7 +16,8 @@ import json
 # Get a list of 1000 expts
 #
 # compute precision, recall, specificity etc for
-def parse_stats_and_get_confidence_intervals(explist, k=3, n_batches=120):
+def parse_stats_and_get_confidence_intervals(explist, k=3, n_batches=120,
+    keys=None):
   # 120 batches of 1000 experiments, gotten using resampling
   batches = make_many_batches(explist, n_batches)
 
@@ -32,13 +33,15 @@ def parse_stats_and_get_confidence_intervals(explist, k=3, n_batches=120):
   # means and intervals are dicts keyed by stat name such as precision, recall
   # interval gives a tuple (low, high), both inclusive.
   #intervals = get_intervals(stats_list, k, keys=["precision"])
-  intervals = get_intervals(stats_list, k)
+  intervals = get_intervals(stats_list, k, keys)
 
 
   # This is stats computed on the actual list of experiments
   original = compute_stats_for_batch(explist)
   convert_dict_to_simple_type(original)
-  return original, intervals
+  
+  combined = combined_original_and_intervals(original, intervals)
+  return combined
 
 
 # Make many batches of size 1000 from 1000 expts by resampling
@@ -78,9 +81,9 @@ def get_intervals(agg_stats_list, k, keys=None):
   
   intervals = {}
   for key in keys:
-    if key == "mr":
+    if key in ["n", "t", "d", "mr", "algo", "name", "mlabel"]:
       continue
-    print("Processing key: ", key)
+    #print("Processing key: ", key)
     stats = sorted([agg_stats[key] for agg_stats in agg_stats_list])
     # Drop the first k and the last k to get interval
     low = stats[k]
@@ -91,15 +94,22 @@ def get_intervals(agg_stats_list, k, keys=None):
 
   return intervals
 
+def combined_original_and_intervals(original, intervals):
+  combined = {}
+  for key in intervals:
+    combined[key] = (original[key], intervals[key][0], intervals[key][1])
+  return combined
+
 # Converts each item in dict from numpy to python types. This makes it
 # serializable with json
 def convert_dict_to_simple_type(d):
   for key in d:
     try:
       d[key] = d[key].item()
-      print(f"Converted {key} to python")
+      #print(f"Converted {key} to python")
     except:
-      print(f"Could not convert {key} to python")
+      #print(f"Could not convert {key} to python")
+      pass
 
 def convert_scalar_to_simple_type(val):
   try:
@@ -142,16 +152,37 @@ class PickleManager:
     shutil.copy2(self.tmp_pickle, self.main_pickle)
     os.remove(self.tmp_pickle)
 
-
-if __name__ == '__main__':
-  #print(make_many_batches([1, 2, 3], 10))
+def get_stats_for_deployed_matrices():
   pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
   stats = pm.get_stats_dict()
-  explist = stats["optimized_M_1"]["COMP"][2]
-  original, intervals = parse_stats_and_get_confidence_intervals(explist, k=3, n_batches=120)
+  #explist = stats["optimized_M_1"]["COMP"][2]
 
-  s = json.dumps(original, indent=4)
-  print(s)
-  s = json.dumps(intervals, indent=4)
-  print(s)
+  from get_test_results import MSizeToLabelDict
+  tups = MSizeToLabelDict.values()
+  sizes = MSizeToLabelDict.keys()
+  labels = [tup[0] for tup in tups]
+  ds = [tup[1] for tup in tups]
+  algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv', 'combined_COMP_l1ls_cv']
+
+  for size, label, d in zip(sizes, labels, ds):
+    print(f"Matrix: {size}, d = {d}")
+    for algo in algos:
+      print(f"Algo: {algo}")
+      explist = stats[label][algo][d]
+      combined = parse_stats_and_get_confidence_intervals(explist, k=3,
+          n_batches=120, keys=['precision', 'recall', 'specificity'])
+      s = json.dumps(combined, indent=2)
+      print(s)
+
+if __name__ == '__main__':
+  get_stats_for_deployed_matrices()
+  #print(make_many_batches([1, 2, 3], 10))
+  #pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
+  #stats = pm.get_stats_dict()
+  #explist = stats["optimized_M_1"]["COMP"][2]
+  #combined = parse_stats_and_get_confidence_intervals(explist, k=3,
+  #    n_batches=120, keys=['precision', 'recall', 'specificity'])
+
+  #s = json.dumps(combined, indent=2)
+  #print(s)
 
