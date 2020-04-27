@@ -16,6 +16,8 @@ def test_all_matrices_and_algos():
   algos.append('combined_COMP_SBL')
   algos.append('l1ls')
   algos.append('combined_COMP_l1ls')
+  algos.append('l1ls_cv')
+  algos.append('combined_COMP_l1ls_cv')
   for mlabel in MDict:
     print("Running algos for matrix ", mlabel)
     M = MDict[mlabel]
@@ -26,7 +28,8 @@ def test_all_matrices_and_algos():
     d_range = list(range(0,11))
     n_jobs = len(d_range)
 
-    run_many_parallel_expts_internal(num_expts, n, t, add_noise, M, algos, d_range, n_jobs)
+    run_many_parallel_expts_internal(num_expts, n, t, add_noise, M, algos,
+            d_range, n_jobs, xslist=[None for d in d_range], mlabel=mlabel)
     #for d in d_range:
     #  do_many_expts(n, d, t, num_expts=num_expts, M=M, add_noise=add_noise, algo=algos)
 
