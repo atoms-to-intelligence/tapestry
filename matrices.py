@@ -4704,7 +4704,7 @@ def load_from_matlab(name, delim=','):
   full_path = os.path.join(mat_dir, name)
   return np.loadtxt(full_path, delimiter=delim)
 
-mat_dir = os.path.join(config.root_dir, 'mats/')
+mat_dir = config.mat_dir
 optimized_M_94_960_2 = load_from_matlab('optimized_M_94_960_2.txt')
 
 # Test matrix used for NCBS experiments
@@ -4767,6 +4767,21 @@ optimized_M_45_285_social_golfer = load_from_matlab("optimized_M_45_285_social_g
 
 optimized_M_45_105_social_golfer = optimized_M_45_285_social_golfer[:, :105]
 optimized_M_45_195_social_golfer = optimized_M_45_285_social_golfer[:, :195]
+
+# loads and adds all kirkman matrices as variables in this module
+def add_kirkman_matrices():
+  global kirkman_mlabels
+  kirkman_mlabels = []
+  variables = globals()
+  kirkman_dir = os.path.join(config.mat_dir, "kirkman")
+  for name in os.listdir(kirkman_dir):
+    full_path = os.path.join(kirkman_dir, name)
+    vname = name.replace(".txt", "")
+    kirkman_mlabels.append(vname)
+    print(name, vname, full_path)
+    variables[vname] = np.loadtxt(full_path)
+
+add_kirkman_matrices()
 
 #######    All Matrices Must be added before this line     ############
 ##########       Else the won't show up in MDict        #############
