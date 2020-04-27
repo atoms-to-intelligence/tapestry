@@ -1,4 +1,4 @@
-from get_test_results import at_deployment
+from get_test_results import at_deployment, mat_codenames
 from cs_expts import run_many_parallel_expts_internal, do_many_expts
 from matrices import MDict
 
@@ -18,7 +18,8 @@ def test_all_matrices_and_algos():
   algos.append('combined_COMP_l1ls')
   #algos.append('l1ls_cv')
   #algos.append('combined_COMP_l1ls_cv')
-  for mlabel in MDict:
+  # List of all deployed matrices past and present is in mat_codenames
+  for mlabel in mat_codenames:
     print("Running algos for matrix ", mlabel)
     M = MDict[mlabel]
     n = M.shape[1]
