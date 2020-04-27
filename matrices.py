@@ -4825,6 +4825,10 @@ def validate_kirkman():
 
 add_kirkman_matrices()
 
+# These two will be used in deployment
+optimized_M_63_399_kirkman = optimized_M_63_546_kirkman[:, :399]
+optimized_M_93_961_kirkman = optimized_M_93_1240_kirkman[:, :961]
+
 #######    All Matrices Must be added before this line     ############
 ##########       Else the won't show up in MDict        #############
 

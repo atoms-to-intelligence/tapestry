@@ -435,6 +435,8 @@ def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos,
       pm.carefully_save_stats(stats)
 
   for M, label, explist in zip(mats, mlabels, all_exps_list):
+    n = M.shape[1]
+    t = M.shape[0]
     print(f"\nt = {t}, n = {n}, matrix = {label}\n")
     for algo, expts in zip(algos, explist):
       print(algo)
@@ -755,7 +757,7 @@ def run_stats_for_these_matrices(labels, save):
   mats = [MDict[label] for label in labels]
   d_ranges = [ (list(range(1, 16)) + [20, 25]) for item  in labels]
 
-  num_expts = 1
+  num_expts = 1000
   algos = ['COMP']
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
       num_expts, save)
@@ -777,9 +779,9 @@ if __name__=='__main__':
       [
         "optimized_M_27_117_social_golfer",
         "optimized_M_63_399_STS_1",
-        "optimized_M_63_399_social_golfer",
+        "optimized_M_63_399_kirkman",
         "optimized_M_93_961_STS_1",
-        "optimized_M_93_961_social_golfer"
+        "optimized_M_93_961_kirkman"
       ],
       save=True
     )
