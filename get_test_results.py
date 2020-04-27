@@ -1,4 +1,4 @@
-# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 ### Get the results for a given test. Implemented in function get_test_results() ###
 
 # The actual get_test_results() is present in app_utils.py
@@ -36,8 +36,10 @@ MSizeToLabelDict = {
     "16x40":     ("optimized_M_16_40_ncbs", 3, 7.5),
     "21x70":     ("optimized_M_21_70_STS", 4, 6),
     #"24x60":     ("optimized_M_3", 4, 6),
-    "45x105":    ("optimized_M_45_105_STS_1", 8, 8),
-    "45x195":    ("optimized_M_45_195_STS_1", 8, 4),
+    #"45x105":    ("optimized_M_45_105_STS_1", 8, 8),
+    "45x105":    ("optimized_M_45_105_social_golfer", 8, 8),
+    #"45x195":    ("optimized_M_45_195_STS_1", 8, 4),
+    "45x195":    ("optimized_M_45_195_social_golfer", 8, 4),
     "63x399":    ("optimized_M_63_399_STS_1", 10, 2.5),
     "93x961":    ("optimized_M_93_961_STS_1", 10, 1),
     "20x1140":   ("optimized_M_20_1140_1", 2, 2)
@@ -51,14 +53,16 @@ MSizeToLabelDict = {
 #
 # WARNING: Once a codename is deployed it cannot be changed or removed!!!
 mat_codenames = {
-    'optimized_M_16_40_ncbs':   'RABBIT',
-    #'optimized_M_3':            'FOX',  # 24x60
-    'optimized_M_21_70_STS':    'BEAR',
-    "optimized_M_45_105_STS_1": 'LION',
-    "optimized_M_45_195_STS_1": 'TIGER',
-    "optimized_M_63_399_STS_1": 'RHINO',
-    "optimized_M_93_961_STS_1": 'CROC',
-    "optimized_M_20_1140_1":    'MANTIS',
+    'optimized_M_16_40_ncbs':                   'RABBIT',
+    #'optimized_M_3':                           'FOX',  # 24x60
+    'optimized_M_21_70_STS':                    'BEAR',
+    "optimized_M_45_105_STS_1":                 'LION',
+    "optimized_M_45_105_social_golfer":         'PUMA',
+    "optimized_M_45_195_STS_1":                 'TIGER',
+    "optimized_M_45_195_social_golfer":         'JAGUAR',
+    "optimized_M_63_399_STS_1":                 'RHINO',
+    "optimized_M_93_961_STS_1":                 'CROC',
+    "optimized_M_20_1140_1":                    'MANTIS',
     #"optimized_M_46_192_1":     'IGUANA',
     }
 
@@ -195,7 +199,7 @@ def get_result_string_from_lists(sure_list, unsure_list, neg_list, x, n):
 # *******            happen and a notification must be sent.          ********
 def at_deployment():
   sanity_check_for_matrices()
-  matrix_pdfs_sanity_check()
+  #matrix_pdfs_sanity_check()
   api_sanity_checks()
   test_harvard_data()
   fake_data_test()

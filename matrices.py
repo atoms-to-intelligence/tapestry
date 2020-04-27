@@ -4765,6 +4765,9 @@ optimized_M_192_5120_social_golfer = load_from_matlab("optimized_M_192_5120_soci
 optimized_M_45_285_social_golfer = load_from_matlab("optimized_M_45_285_social_golfer.txt",
         delim=None)
 
+optimized_M_45_105_social_golfer = optimized_M_45_285_social_golfer[:, :105]
+optimized_M_45_195_social_golfer = optimized_M_45_285_social_golfer[:, :195]
+
 #######    All Matrices Must be added before this line     ############
 ##########       Else the won't show up in MDict        #############
 
