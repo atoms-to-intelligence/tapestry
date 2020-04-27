@@ -435,8 +435,9 @@ def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos,
       pm.carefully_save_stats(stats)
 
   for M, label, explist in zip(mats, mlabels, all_exps_list):
-    print("\nt = {t}, n = {n}, matrix = {label}\n")
+    print(f"\nt = {t}, n = {n}, matrix = {label}\n")
     for algo, expts in zip(algos, explist):
+      print(algo)
       print_expts(expts, num_expts, t)
   #return stats
 
