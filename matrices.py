@@ -1,8 +1,12 @@
-# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 import numpy as np
 import sys
 import math
 import os
+
+# Regular expression search
+import re
+
 
 from matrices1 import *
 import sts
@@ -4778,8 +4782,46 @@ def add_kirkman_matrices():
     full_path = os.path.join(kirkman_dir, name)
     vname = name.replace(".txt", "")
     kirkman_mlabels.append(vname)
-    print(name, vname, full_path)
+    #print(name, vname, full_path)
     variables[vname] = np.loadtxt(full_path)
+
+def validate_kirkman():
+  for mlabel in kirkman_mlabels:
+    size = [int(item) for item in re.findall(r'\d+', mlabel)]
+    t = size[0]
+    n = size[1]
+    d = t / 6
+    infection_rate = 100 * d / n
+    print(f"Validating: {mlabel} of size {t}x{n}, d = {d}, infection_rate ="
+        f" {infection_rate:.1f}, gain = {n/t:.1f}x")
+    assert t % 3 == 0
+    assert n % (t//3) == 0
+    
+    M = MDict[mlabel]
+    assert t == M.shape[0]
+    assert n == M.shape[1]
+
+    # Kirkman number of groups and number of weeks
+    g = t // 3
+    w = n // g
+
+    col_sums = np.sum(M, axis=0)
+    col_sparsity = np.max(col_sums)
+    min_col_sparsity = np.min(col_sums)
+    assert col_sparsity == 3
+    assert min_col_sparsity == 3
+    for k in range(1, w+1):
+      # Get first k*g columns of M
+      cols = k*g
+      A = M[:, :cols]
+
+      row_sums = np.sum(A, axis=1)
+      row_sparsity = np.max(row_sums)
+      min_row_sparsity = np.min(row_sums)
+
+      #print(k, row_sparsity, min_row_sparsity)
+      assert row_sparsity == k
+      assert min_row_sparsity == k
 
 add_kirkman_matrices()
 
@@ -4835,7 +4877,7 @@ def strided_randomized_matrix(A, n_strides):
   return A
 
 #optimized_M_384_1320_strided_sts = strided_matrix(sts.sts(45), 8)
-optimized_M_360_1320_strided_sts = strided_randomized_matrix(sts.sts(45), 8)
+#optimized_M_360_1320_strided_sts = strided_randomized_matrix(sts.sts(45), 8)
 
 def print_matrix_stats(M, label):
   row_sums = np.sum(M, axis=1)
@@ -4850,6 +4892,8 @@ def print_matrix_stats(M, label):
       'Total sparsity: ', total_sparsity)
 
 if __name__ == '__main__':
+  #validate_kirkman()
+  #sys.exit(1)
   A = np.arange(8).reshape((2,4)) + 1
   #A = sts.sts(45)
   #n_strides = 4

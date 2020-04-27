@@ -1,9 +1,13 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 from get_test_results import at_deployment, mat_codenames
 from cs_expts import run_many_parallel_expts_internal, do_many_expts
-from matrices import MDict
+from matrices import MDict, validate_kirkman
 
 def test_get_test_results():
   at_deployment()
+
+def test_kirkman_matrices():
+  validate_kirkman()
 
 def test_all_matrices_and_algos():
   algos = []
@@ -35,5 +39,6 @@ def test_all_matrices_and_algos():
     #  do_many_expts(n, d, t, num_expts=num_expts, M=M, add_noise=add_noise, algo=algos)
 
 if __name__ == '__main__':
+  test_kirkman_matrices()
   test_get_test_results()
   test_all_matrices_and_algos()
