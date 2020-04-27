@@ -348,6 +348,13 @@ def sanity_check_for_matrices():
       print(f'Codename {name} exists more than once               <------------')
       error = True
 
+  # Now check if labels collide in the size to labels dict
+  labels = list(MSizeToLabelDict.values())
+  for label in labels:
+    if labels.count(name) > 1:
+      print(f'label {name} exists more than once               <------------')
+      error = True
+
   if error:
     print("\nGot Error :(\n")
     raise ValueError("Some error in matrix setup")

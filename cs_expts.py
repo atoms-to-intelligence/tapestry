@@ -777,13 +777,13 @@ if __name__=='__main__':
   #run_many_parallel_expts()
   run_stats_for_these_matrices(
       [
-        "optimized_M_27_117_social_golfer",
-        "optimized_M_63_399_STS_1",
-        "optimized_M_63_399_kirkman",
-        "optimized_M_93_961_STS_1",
-        "optimized_M_93_961_kirkman"
+        "optimized_M_27_117_kirkman",
+        #"optimized_M_63_399_STS_1",
+        #"optimized_M_63_399_kirkman",
+        #"optimized_M_93_961_STS_1",
+        #"optimized_M_93_961_kirkman"
       ],
-      save=True
+      save=False
     )
 
 
