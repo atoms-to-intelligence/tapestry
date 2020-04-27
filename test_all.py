@@ -16,8 +16,8 @@ def test_all_matrices_and_algos():
   algos.append('combined_COMP_SBL')
   algos.append('l1ls')
   algos.append('combined_COMP_l1ls')
-  algos.append('l1ls_cv')
-  algos.append('combined_COMP_l1ls_cv')
+  #algos.append('l1ls_cv')
+  #algos.append('combined_COMP_l1ls_cv')
   for mlabel in MDict:
     print("Running algos for matrix ", mlabel)
     M = MDict[mlabel]
