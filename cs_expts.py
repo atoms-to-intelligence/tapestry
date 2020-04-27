@@ -402,14 +402,18 @@ def get_small_random_matrix(t, n, col_sparsity):
 
 
 # Runs many parallel experiments and save stats
-def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos, num_expts):
-  pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
-  # stats is a 3-deep dictionary
-  # stats[matrix][algo][d] points to list of 1000 experiments
-  stats = pm.get_stats_dict()
+def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos,
+    num_expts, save):
+  if save:
+    pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
+    # stats is a 3-deep dictionary
+    # stats[matrix][algo][d] points to list of 1000 experiments
+    stats = pm.get_stats_dict()
+  all_exps_list = []
   for M, label, d_range in zip(mats, mlabels, d_ranges):
-    if not label in stats:
-      stats[label] = {}
+    if save:
+      if not label in stats:
+        stats[label] = {}
     n = M.shape[1]
     t = M.shape[0]
     add_noise = True
@@ -417,17 +421,24 @@ def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos, num_ex
     n_jobs = 1
     explist = run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos,
         d_range, n_jobs, xslist=[None for d in d_range], mlabel=label)
-    for algo, expts in zip(algos, explist):
-      if not algo in stats[label]:
-        stats[label][algo] = {}
-      for d, expt in zip(d_range, expts):
-        stats[label][algo][d] = [item.__dict__ for item in expt.single_expts]
+    all_exps_list.append(explist)
+    if save:
+      for algo, expts in zip(algos, explist):
+        if not algo in stats[label]:
+          stats[label][algo] = {}
+        for d, expt in zip(d_range, expts):
+          stats[label][algo][d] = [item.__dict__ for item in expt.single_expts]
 
-    # Now that this matrix is done, we want to save the stats
-    # We do this after every matrix so that even if the entire process is
-    # cancelled, stats are still saved
-    pm.carefully_save_stats(stats)
-  return stats
+      # Now that this matrix is done, we want to save the stats
+      # We do this after every matrix so that even if the entire process is
+      # cancelled, stats are still saved
+      pm.carefully_save_stats(stats)
+
+  for M, label, explist in zip(mats, mlabels, all_exps_list):
+    print("\nt = {t}, n = {n}, matrix = {label}\n")
+    for algo, expts in zip(algos, explist):
+      print_expts(expts, num_expts, t)
+  #return stats
 
 
 def run_many_parallel_expts():
@@ -714,22 +725,39 @@ def large_test_decode_comp_combined(num_expts):
   with_comp.print_stats(num_expts, header=True)
   without_comp.print_stats(num_expts, header=True)
 
-def generate_expts_deployed_matrices():
+def generate_expts_deployed_matrices(only_these_labels=None, save=True):
   #labels = ['optimized_M_1', 'optimized_M_2']
   from get_test_results import MSizeToLabelDict
   tups = MSizeToLabelDict.values()
-  labels = [tup[0] for tup in tups]
+  all_labels = [tup[0] for tup in tups]
+  if not only_these_labels:
+    labels = all_labels
+  else:
+    for label in only_these_labels:
+      assert label in all_labels
+    labels = only_these_labels
+
 
   mats = [MDict[label] for label in labels]
 
   #d_ranges = [list(range(1, 5)) for i in range(len(mats))]
-  d_ranges = [ [ tup[1] ] for tup in tups ]
+  d_ranges = [ [ tup[1] ] for tup in tups if tup[1] in labels]
 
   num_expts = 1000
   #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',]
   algos = ['COMP', 'SBL', ]
   #algos = ['combined_COMP_l1ls_cv']
-  run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos, num_expts)
+  run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
+      num_expts, save)
+
+def run_stats_for_these_matrices(labels, save):
+  mats = [MDict[label] for label in labels]
+  d_ranges = [ (list(range(1, 16)) + [20, 25]) for item  in labels]
+
+  num_expts = 1
+  algos = ['COMP']
+  run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
+      num_expts, save)
 
 if __name__=='__main__':
   #large_test_decode_comp_combined(1000)
@@ -739,11 +767,21 @@ if __name__=='__main__':
   #compare_different_ns()
   #M = [optimized_M_45_105_STS_1, optimized_M_45_285_social_golfer[:, :105]]
   #mlabels = ['optimized_M_45_105_STS_1', 'optimized_M_45_285_social_golfer[:, :105]']
-  M = [optimized_M_45_195_STS_1, optimized_M_45_285_social_golfer[:, :195]]
-  mlabels = ['optimized_M_45_195_STS_1', 'optimized_M_45_285_social_golfer[:, :195]']
+  #M = [optimized_M_45_195_STS_1, optimized_M_45_285_social_golfer[:, :195]]
+  #mlabels = ['optimized_M_45_195_STS_1', 'optimized_M_45_285_social_golfer[:, :195]']
 
-  compare_different_mats(M, mlabels)
+  #compare_different_mats(M, mlabels)
   #run_many_parallel_expts()
+  run_stats_for_these_matrices(
+      [
+        "optimized_M_27_117_social_golfer",
+        "optimized_M_63_399_STS_1",
+        "optimized_M_63_399_social_golfer",
+        "optimized_M_93_961_STS_1",
+        "optimized_M_93_961_social_golfer"
+      ],
+      save=True
+    )
 
 
   #compare_sts_vs_kirkman()
