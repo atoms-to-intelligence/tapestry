@@ -1,4 +1,6 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 from cs import *
+from pickle_manager import PickleManager
 
 import json
 import pandas as pd
@@ -12,13 +14,55 @@ def specificity(precision, recall, n, d, preds):
     assert recall != 0
   return 1 - (recall * d * ( (1 / precision) - 1) / (n - d)) 
 
+class SingleExpt:
+  def __init__(self, tp, fp, fn, uncon_negs, determined, overdetermined, surep,
+      unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
+      infected, infected_dd, n, d, t, mr, algo, mlabel):
+    # computed stats
+    self.tp = tp
+    self.fp = fp
+    self.fn = fn
+    self.uncon_negs = uncon_negs
+    self.determined = determined
+    self.overdetermined = overdetermined
+    self.surep = surep
+    self.unsurep = unsurep
+    self.wrongly_undetected = wrongly_undetected
+    self.score = score
+
+    # Experimental setting and returned value
+    self.x_idx = np.array(np.where(x), dtype=np.uint8)
+    self.x = np.array(x[self.x_idx], dtype=np.float32)
+    self.y_idx = np.array(np.where(y), dtype=np.uint8)
+    self.y = np.array(y[self.y_idx], dtype=np.float32)
+
+    self.x_est_idx = np.array(np.where(x_est), dtype=np.uint8)
+    self.x_est = np.array(x_est[self.x_est_idx], dtype=np.float32)
+
+    self.infected_idx = np.array(np.where(infected), dtype=np.uint8)
+    self.infected_dd_idx = np.array(np.where(infected_dd), dtype=np.uint8)
+
+    # Global settings common for many expts
+    self.n = n
+    self.d = d
+    self.t = t
+    self.mr = mr
+    self.algo = algo
+    self.mlabel = mlabel
+
+    # Not saving the matrix label here because it'd need changes at too many
+    # places. We'll have the matrix label as the first key into the dict
+    # anyway
+
 class CSExpts:
-  def __init__(self, name, n, d, t, mr):
+  def __init__(self, name, n, d, t, mr, algo, mlabel):
     self.n = n
     self.d = d
     self.t = t
     self.mr = mr
     self.name = name
+    self.algo = algo
+    self.mlabel = mlabel
 
     self.no_error = 0 # number of expts with no error
     self.no_fp = 0 # number of expts with no false +ve
@@ -34,6 +78,17 @@ class CSExpts:
     self.num_expts_2_stage = 0
     self.wrongly_undetected = 0
     self.total_score = 0
+    self.single_expts = []
+
+  # manage stats for a single expt
+  def record_single_expt(self, tp, fp, fn, uncon_negs, determined, overdetermined, surep,
+      unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
+      infected, infected_dd):
+    single_expt = SingleExpt(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
+      unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
+      infected, infected_dd, self.n, self.d, self.t, self.mr, self.algo, self.mlabel)
+
+    self.single_expts.append(single_expt)
 
   # Find results using qPCR
   def do_single_expt(self, i, num_expts, cs, x, cross_validation=True, add_noise=True,
@@ -61,9 +116,14 @@ class CSExpts:
           num_infected_in_test = cs.decode_lasso(y, algo,
           prefer_recall=False)
 
+    # Save this single experiment's settings and stats
+    self.record_single_expt(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
+      unsurep, wrongly_undetected, score, cs.conc, (cs.conc > 0).astype(int), y, bool_y, x_est,
+      infected, infected_dd)
+
     sys.stdout.write('\riter = %d / %d score: %.2f tp = %d fp = %d fn = %d' %
         (i, num_expts, score, tp, fp, fn))
-
+    
     self.add_stats(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
         unsurep, wrongly_undetected, score)
 
@@ -151,6 +211,8 @@ class CSExpts:
         'expts'         : num_expts,
         }
 
+    self.preds = preds
+    self.actual = actual
     self.precision = precision
     self.recall = recall
     self.expts = num_expts
@@ -166,7 +228,8 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
     add_noise=False,
     algo='OMP',
     noise_magnitude=None,
-    mr=None):
+    mr=None,
+    mlabel="dummy_matrix_label"):
 
   # Test width. Max number of parallel tests available.
   #t = 12
@@ -193,11 +256,11 @@ def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
 
   if isinstance(algo, list):
     #print('list')
-    expts = [CSExpts(item, n, d, t, mr) for item in algo]
+    expts = [CSExpts(item, n, d, t, mr, item, mlabel) for item in algo]
     ret_list = True
   else:
     #print('str')
-    expts = [CSExpts(algo, n, d, t, mr)]
+    expts = [CSExpts(algo, n, d, t, mr, algo, mlabel)]
     algo = [algo]
     ret_list = False
 
@@ -337,40 +400,101 @@ def get_small_random_matrix(t, n, col_sparsity):
     matrix[ones, col] = 1
   return matrix
 
+
+# Runs many parallel experiments and save stats
+def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos,
+    num_expts, save):
+  if save:
+    pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
+    # stats is a 3-deep dictionary
+    # stats[matrix][algo][d] points to list of 1000 experiments
+    stats = pm.get_stats_dict()
+  all_exps_list = []
+  for M, label, d_range in zip(mats, mlabels, d_ranges):
+    if save:
+      if not label in stats:
+        stats[label] = {}
+    n = M.shape[1]
+    t = M.shape[0]
+    add_noise = True
+    matrix = M
+    n_jobs = 1
+    explist = run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos,
+        d_range, n_jobs, xslist=[None for d in d_range], mlabel=label)
+    all_exps_list.append(explist)
+    if save:
+      for algo, expts in zip(algos, explist):
+        if not algo in stats[label]:
+          stats[label][algo] = {}
+        for d, expt in zip(d_range, expts):
+          stats[label][algo][d] = [item.__dict__ for item in expt.single_expts]
+
+      # Now that this matrix is done, we want to save the stats
+      # We do this after every matrix so that even if the entire process is
+      # cancelled, stats are still saved
+      pm.carefully_save_stats(stats)
+
+  for M, label, explist in zip(mats, mlabels, all_exps_list):
+    n = M.shape[1]
+    t = M.shape[0]
+    print(f"\nt = {t}, n = {n}, matrix = {label}\n")
+    for algo, expts in zip(algos, explist):
+      print(algo)
+      print_expts(expts, num_expts, t)
+  #return stats
+
+
 def run_many_parallel_expts():
-  num_expts = 100
-  n = 40
-  t = 16
+  #from experimental_data_manager import parse_israel_matrix
+  #optimized_M_48_384_israel = parse_israel_matrix()
+
+  num_expts = 1000
+  t = 45
+  n = 105
   add_noise = True
-  matrix = optimized_M_16_40_ncbs
+  matrix = optimized_M_45_105_STS_1
+
+  #t = 45
+  #n = t * (t - 1) // 6
+  #matrix = sts.sts(t)
+  #matrix = matrix[:48, :384]
+  #t = 48
+  #n = 384
 
   algos = []
   algos.extend(['COMP'])
+  #algos.extend(['SBL'])
   #algos.append('NNOMP')
   #algos.append('combined_COMP_NNOMP')
-  algos.append('NNOMP_random_cv')
+  #algos.append('NNOMP_random_cv')
   #algos.append('SBL')
   #algos.extend(['combined_COMP_NNOMP_random_cv'])
   #algos.append('combined_COMP_SBL')
-  #algos.append('l1ls')
+  #algos.append('l1ls_cv')
+  #algos.append('combined_COMP_l1ls_cv')
   #algos.append('combined_COMP_l1ls')
-  d_range = list(range(1, 11))
+  d_range = list(range(8, 11))
+  #d_range = list(range(10, 101, 10))
+  #d_range = list(range(10, 101, 10))
   #d_range = [1]
   #d_range.extend([15, 20, 25, 30])
-  n_jobs = len(d_range)
+  n_jobs = 4
 
-  run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos, d_range, n_jobs)
+  run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos,
+      d_range, n_jobs, xslist=[None for d in d_range],
+      mlabel="dummy_matrix_label")
 
 # Separate out this function from above so that we can call on many matrices
-def run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos, d_range, n_jobs):
+def run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix,
+    algos, d_range, n_jobs, xslist, mlabel):
   retvals = Parallel(n_jobs=n_jobs, backend='loky')\
   (\
       delayed(do_many_expts)\
       (
         n, d, t, num_expts=num_expts, M=matrix,\
-        add_noise=add_noise,algo=algos, mr=None \
+        add_noise=add_noise,algo=algos, mr=None, xs=xs, mlabel=mlabel \
       )\
-      for d in d_range\
+      for d, xs in zip(d_range, xslist)\
   )
 
   l = len(algos)
@@ -397,19 +521,119 @@ def run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos, 
     #print('\td\tPrecision\tRecall\ttotal_tests\tnum_determined\tnum_overdetermined\n')
     #print('\td\tPrecision\tRecall\tsurep\tunsurep  avg_tests  2_stage\tWrongly_undetected')
     #print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep  avg_tests  2_stage')
-    print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep\tavg_score')
-    for expt in explist[i]:
-      if expt.precision == 0:
-        total_tests = t + expt.n
-      else:
-        total_tests = t + expt.d / expt.precision
-      print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f' % (expt.d, expt.precision,
-        expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.avg_score))
-      #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
-      #  expt.recall, total_tests, expt.determined, expt.overdetermined))
-      #print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
-      #  expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.t +
-      #  expt.avg_unsurep, expt.num_expts_2_stage, ))
+    print_expts(explist[i], num_expts, t)
+  return explist
+
+def print_expts(expts, num_expts, t):
+  print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep\tfalse_pos')
+  for expt in expts:
+    if expt.precision == 0:
+      total_tests = t + expt.n
+    else:
+      total_tests = t + expt.d / expt.precision
+    print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f' % (expt.d, expt.precision,
+      expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.total_fp / num_expts))
+    #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
+    #  expt.recall, total_tests, expt.determined, expt.overdetermined))
+    #print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
+    #  expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.t +
+    #  expt.avg_unsurep, expt.num_expts_2_stage, ))
+
+def compare_sts_vs_kirkman():
+  t = 27
+  M = optimized_M_27_117_social_golfer
+
+  best_ds_kirkman = [run_with_matrix_n(M, t, n) for n in [50, 60, 70, 80, 90, 100, 110,
+    117]]
+  
+  ds_kirkman = [item[0] for item in best_ds_kirkman]
+  sps_kirkman = np.array([item[1] for item in best_ds_kirkman])
+  pr_kirkman = np.array([item[2] for item in best_ds_kirkman])
+
+  M = sts.sts(27)
+  best_ds_sts = [run_with_matrix_n(M, t, n) for n in [50, 60, 70, 80, 90, 100, 110,
+    117]]
+  ds_sts = [item[0] for item in best_ds_sts]
+  sps_sts = np.array([item[1] for item in best_ds_sts])
+  pr_sts = np.array([item[2] for item in best_ds_sts])
+
+
+  print('Kirkman:', ds_kirkman)
+  print('STS:\t', ds_sts)
+  print('Kirkman:', sps_kirkman)
+  print('STS:\t', sps_sts)
+  print('Kirkman:', pr_kirkman)
+  print('STS:\t', pr_sts)
+
+def compare_different_ns():
+  explist = []
+  t = 192
+  ns = list(range(400, 1000, 200)) + list(range(1000, 5000, 500)) + [5120]
+  M = optimized_M_192_5120_social_golfer
+  num_expts = 100
+  for n in ns:
+    expts = run_with_matrix_n(M, t, n, True, num_expts)
+    explist.append(expts)
+  for expts, n in zip(explist, ns):
+    print(f'n = {n}, t = {t}')
+    print_expts(expts, num_expts, t)
+
+def compare_different_mats(mat_list, mat_labels):
+  t = mat_list[0].shape[0]
+  n = mat_list[0].shape[1]
+  num_expts = 1000
+  explist = []
+
+  d_range = list(range(1, 16))
+  xslist = []
+  for d in d_range:
+    xslist.append([create_infection_array_with_num_cases(n, d) for i in
+      range(num_expts)])
+
+  for M in mat_list:
+    expts = run_with_matrix_n(M, t, n, True, num_expts, d_range, xslist)
+    explist.append(expts)
+
+  for expts, M, label in zip(explist, mat_list, mat_labels):
+    t = M.shape[0]
+    n = M.shape[1]
+    print(f'n = {n}, t = {t}, matrix = {label}')
+    print_expts(expts, num_expts, t)
+
+
+def run_with_matrix_n(M, t, n, ret_explist=False, num_expts=1, d_range=None,
+    xslist=None):
+  assert n <= M.shape[1]
+  assert t == M.shape[0]
+
+  M = M[:, :n]
+  add_noise = True
+
+  algos = ['COMP']
+  #d_range = list(range(5, 16)) + list(range(20, 41, 5))
+  if not d_range:
+    d_range = list(range(1, 16))
+    assert not xslist
+    xslist = [None for d in d_range]
+  n_jobs = 4
+
+  explist = run_many_parallel_expts_internal(num_expts, n, t, add_noise, M,
+      algos, d_range, n_jobs, xslist, "dummy_label")
+  expts = explist[0]
+  sp = [expt.specificity for expt in expts]
+  pr = [expt.precision for expt in expts]
+  best_d = 0
+  best_sp = 0
+  best_pr = 0
+  for i, d in enumerate(d_range):
+    if sp[i] >= 0.945:
+      best_d = d
+      best_sp = sp[i]
+      best_pr = pr[i]
+  if ret_explist:
+    return expts
+  else:
+    return best_d, best_sp, best_pr
 
 def run_many_parallel_expts_mr():
   num_expts = 100
@@ -504,12 +728,66 @@ def large_test_decode_comp_combined(num_expts):
   with_comp.print_stats(num_expts, header=True)
   without_comp.print_stats(num_expts, header=True)
 
+def generate_expts_deployed_matrices(only_these_labels=None, save=True):
+  #labels = ['optimized_M_1', 'optimized_M_2']
+  from get_test_results import MSizeToLabelDict
+  tups = MSizeToLabelDict.values()
+  all_labels = [tup[0] for tup in tups]
+  if not only_these_labels:
+    labels = all_labels
+  else:
+    for label in only_these_labels:
+      assert label in all_labels
+    labels = only_these_labels
+
+
+  mats = [MDict[label] for label in labels]
+
+  #d_ranges = [list(range(1, 5)) for i in range(len(mats))]
+  d_ranges = [ [ tup[1] ] for tup in tups if tup[1] in labels]
+
+  num_expts = 1000
+  #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',]
+  algos = ['COMP', 'SBL', ]
+  #algos = ['combined_COMP_l1ls_cv']
+  run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
+      num_expts, save)
+
+def run_stats_for_these_matrices(labels, save):
+  mats = [MDict[label] for label in labels]
+  d_ranges = [ (list(range(1, 16)) + [20, 25]) for item  in labels]
+
+  num_expts = 1000
+  algos = ['COMP']
+  run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
+      num_expts, save)
+
 if __name__=='__main__':
   #large_test_decode_comp_combined(1000)
   #mr = None
   #do_many_expts(200, 6, 46, num_expts=100, M=None,
   #    add_noise=True,algo='combined_COMP_NNOMP_random_cv', mr=mr)
-  run_many_parallel_expts()
+  #compare_different_ns()
+  #M = [optimized_M_45_105_STS_1, optimized_M_45_285_social_golfer[:, :105]]
+  #mlabels = ['optimized_M_45_105_STS_1', 'optimized_M_45_285_social_golfer[:, :105]']
+  #M = [optimized_M_45_195_STS_1, optimized_M_45_285_social_golfer[:, :195]]
+  #mlabels = ['optimized_M_45_195_STS_1', 'optimized_M_45_285_social_golfer[:, :195]']
+
+  #compare_different_mats(M, mlabels)
+  #run_many_parallel_expts()
+  run_stats_for_these_matrices(
+      [
+        "optimized_M_27_117_kirkman",
+        #"optimized_M_63_399_STS_1",
+        #"optimized_M_63_399_kirkman",
+        #"optimized_M_93_961_STS_1",
+        #"optimized_M_93_961_kirkman"
+      ],
+      save=False
+    )
+
+
+  #compare_sts_vs_kirkman()
   #for mr in range(8, 15):
   #  do_many_expts(40, 2, 16, num_expts=1000, M=optimized_M_2,
   #      add_noise=True,algo='NNOMP_random_cv', mr=mr)

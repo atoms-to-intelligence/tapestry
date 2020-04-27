@@ -1,3 +1,4 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 import numpy as np
 import math
 from sklearn.linear_model import Lasso, LassoLars, LassoCV, LassoLarsCV
@@ -57,7 +58,7 @@ class CS(COMP):
         # Cycle time is assumed to be Gaussian distributed, due to which log
         # of y is Gaussian. Hence 
         p = 0.95
-        error = np.random.normal(0., 1., size=self.t)
+        error = np.random.normal(0., 0.1, size=self.t)
         #print('Original y', y)
         #print('error exponents', error)
         y = y * ((1+p) ** error)
@@ -169,6 +170,14 @@ class CS(COMP):
         answer = np.zeros(self.n)
       else:
         answer = l1ls.l1ls(A, y, self.l, self.tau)
+    elif algo == 'l1ls_cv':
+      A = self.M.T
+      y = results
+      sigval = 0.01 * np.mean(y)
+      if np.all(y == 0):
+        answer = np.zeros(self.n)
+      else:
+        answer = l1ls.l1ls_cv(A, y, sigval, self.tau)
     else:
       raise ValueError('No such algorithm %s' % algo)
 

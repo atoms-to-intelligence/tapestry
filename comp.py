@@ -1,3 +1,4 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 # Combinatorial Orthogonal Matching Pursuit. Non-adaptive group-testing
 # algorithm
 #
@@ -103,6 +104,16 @@ class COMP:
 
     return infected, infected_dd, 0., tp, fp, fn, surep, unsurep,\
         num_infected_in_test
+
+  # SCOMP: COMP ka baap
+  #
+  # 1. Run COMP and remove -ves
+  # 2. Get definite defects
+  # 3. After getting definite defects, declare those tests as negative and delete
+  #    the definite defect columns.
+  # 4. Goto step 1
+  def decode_scomp(self, infections, compute_stats=True):
+    pass
 
   # Ax = y
   # x -> infected

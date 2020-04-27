@@ -1,4 +1,4 @@
-# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 ### Get the results for a given test. Implemented in function get_test_results() ###
 
 # The actual get_test_results() is present in app_utils.py
@@ -34,13 +34,28 @@ import numpy as np
 # a str.
 MSizeToLabelDict = {
     "16x40":     ("optimized_M_16_40_ncbs", 3, 7.5),
-    "21x70":     ("optimized_M_21_70_STS", 4, 6),
+
+    #"21x70":     ("optimized_M_21_70_STS", 4, 6),
+    "21x70":     ("optimized_M_21_70_kirkman", 4, 6),
+
     #"24x60":     ("optimized_M_3", 4, 6),
-    "45x105":    ("optimized_M_45_105_STS_1", 10, 10),
-    "45x195":    ("optimized_M_45_195_STS_1", 10, 5),
-    "63x399":    ("optimized_M_63_399_STS_1", 10, 2.5),
-    "93x961":    ("optimized_M_93_961_STS_1", 10, 1),
+
+    #"45x105":    ("optimized_M_45_105_STS_1", 8, 8),
+    "45x105":    ("optimized_M_45_105_kirkman", 8, 8),
+
+    #"45x195":    ("optimized_M_45_195_STS_1", 8, 4),
+    "45x195":    ("optimized_M_45_195_kirkman", 8, 4),
+
+    #"63x399":    ("optimized_M_63_399_STS_1", 10, 2.5),
+    "63x399":    ("optimized_M_63_399_kirkman", 10, 2.5),
+
+    #"93x961":    ("optimized_M_93_961_STS_1", 10, 1),
+    "93x961":    ("optimized_M_93_961_kirkman", 10, 1),
+
+    "20x1140":   ("optimized_M_20_1140_1", 2, 0.2)
+
     #"46x96":    ("optimized_M_46_96_1", 10, 10)
+
     #"46x192":   "optimized_M_46_192_1",
     }
 
@@ -50,13 +65,27 @@ MSizeToLabelDict = {
 #
 # WARNING: Once a codename is deployed it cannot be changed or removed!!!
 mat_codenames = {
-    'optimized_M_16_40_ncbs':   'RABBIT',
-    #'optimized_M_3':            'FOX',  # 24x60
-    'optimized_M_21_70_STS':    'BEAR',
-    "optimized_M_45_105_STS_1": 'LION',
-    "optimized_M_45_195_STS_1": 'TIGER',
-    "optimized_M_63_399_STS_1": 'RHINO',
-    "optimized_M_93_961_STS_1": 'CROC',
+    'optimized_M_16_40_ncbs':                   'RABBIT',
+
+    #'optimized_M_3':                           'FOX',  # 24x60
+
+    'optimized_M_21_70_STS':                    'BEAR',
+    'optimized_M_21_70_kirkman':                'WOLF',
+
+    "optimized_M_45_105_STS_1":                 'LION',
+    "optimized_M_45_105_kirkman":               'PUMA',
+
+    "optimized_M_45_195_STS_1":                 'TIGER',
+    "optimized_M_45_195_kirkman":               'JAGUAR',
+
+    "optimized_M_63_399_STS_1":                 'RHINO',
+    "optimized_M_63_399_kirkman":               'HIPPO',
+
+    "optimized_M_93_961_STS_1":                 'CROC',
+    "optimized_M_93_961_kirkman":               'ELEPHANT',
+
+    "optimized_M_20_1140_1":                    'MANTIS',
+
     #"optimized_M_46_192_1":     'IGUANA',
     }
 
@@ -70,18 +99,22 @@ def get_matrix_sizes_and_labels():
 def get_matrix_labels_and_matrices():
   return dict(MLabelToMatrixDict)
 
+
 # Returns a copy of label -> matrix codename dictionary
 def get_matrix_codenames():
   return dict(mat_codenames)
 
+
+# Return location of the pdf file for this matrix label
 def get_matrix_pdf_location(mlabel):
   M = MLabelToMatrixDict[mlabel]
   n = M.shape[1]
   t = M.shape[0]
   msize = f'{t}x{n}'
   mcodename = mat_codenames[mlabel]
-  pdf_name = f'{msize} Matrix {mcodename}.pdf'
+  pdf_name = f'{msize}_Matrix_{mcodename}.pdf'
   return os.path.join(config.mat_pdf_dir, pdf_name)
+
 
 # Returns the currently used matrix label for a given size
 def get_current_matrix_label_for_size(matrix_size):
@@ -124,13 +157,15 @@ def get_matrix_for_label(matrix_label):
 #       by the user
 def get_test_results(matrix_label, cycle_times, n=None):
   M = get_matrix_for_label(matrix_label)
-  assert n is None or n <= M.shape[1]
-  if n is not None:
-    M = M[:, :n]
+  if n is None:
+    n = M.shape[1]
+  assert n <= M.shape[1]
+  M = M[:, :n]
 
   sure_list, unsure_list, neg_list, x = app_utils.get_test_results(M, cycle_times)
 
-  result_string = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
+  result_string = get_result_string_from_lists(sure_list, unsure_list,
+      neg_list, x, n)
 
   res = {
       "result_string" :  result_string,
@@ -144,7 +179,8 @@ def get_test_results(matrix_label, cycle_times, n=None):
 
 # Composes the result string from the list of surely positives, possibly
 # positives, negatives and the x values
-def get_result_string_from_lists(sure_list, unsure_list, neg_list, x):
+def get_result_string_from_lists(sure_list, unsure_list, neg_list, x, n):
+  m0 = f"Number of Samples : {n}\n"
   if not sure_list and not unsure_list:
     s0 = "No Positive Samples\n"
     s3 = "All samples are negative\n"
@@ -154,7 +190,7 @@ def get_result_string_from_lists(sure_list, unsure_list, neg_list, x):
   else:
     s0 = ""
     if sure_list:
-      s1  = "Surely Positive Samples: %s \n" % \
+      s1  = "Positive Samples: %s \n" % \
           ", ".join([str(item) for item in sure_list])
     else:
       s1  = "No Surely Positive Samples\n"
@@ -174,7 +210,7 @@ def get_result_string_from_lists(sure_list, unsure_list, neg_list, x):
   if config.app_algo != 'COMP':
     x_str = "Detected viral loads: %s\n" % \
             ", ".join(["%.3f" % (item) for item in x])
-  result_string = s0 + s1 + s2 + s3 + x_str
+  result_string = m0 + s0 + s1 + s2 + s3 + x_str
 
   return result_string
 
@@ -186,7 +222,7 @@ def get_result_string_from_lists(sure_list, unsure_list, neg_list, x):
 # *******            happen and a notification must be sent.          ********
 def at_deployment():
   sanity_check_for_matrices()
-  matrix_pdfs_sanity_check()
+  #matrix_pdfs_sanity_check()
   api_sanity_checks()
   test_harvard_data()
   fake_data_test()
@@ -213,7 +249,7 @@ def test_get_result_string_from_lists():
     mask[sure_list + unsure_list] = 1
     x = x * mask
     x = x[1:]
-    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
+    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x, 10)
     print(res)
 
     sure_list = []
@@ -226,7 +262,7 @@ def test_get_result_string_from_lists():
     mask[sure_list + unsure_list] = 1
     x = x * mask
     x = x[1:]
-    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
+    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x, 10)
     print(res)
 
     sure_list = [2, 3, 4]
@@ -239,7 +275,7 @@ def test_get_result_string_from_lists():
     mask[sure_list + unsure_list] = 1
     x = x * mask
     x = x[1:]
-    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
+    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x, 10)
     print(res)
 
     sure_list = []
@@ -252,7 +288,7 @@ def test_get_result_string_from_lists():
     mask[sure_list + unsure_list] = 1
     x = x * mask
     x = x[1:]
-    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
+    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x, 10)
     print(res)
 
     sure_list = list(range(1, 5))
@@ -266,7 +302,7 @@ def test_get_result_string_from_lists():
     mask[sure_list + unsure_list] = 1
     x = x * mask
     x = x[1:]
-    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x)
+    res = get_result_string_from_lists(sure_list, unsure_list, neg_list, x, 10)
     print(res)
   config.app_algo = tmp
 
@@ -305,6 +341,20 @@ def sanity_check_for_matrices():
     else:
       print(f'No codename exist for {msize} matrix {mlabel}       <------------')
       error = True
+  # Now check if codenames collide
+  codenames = list(mat_codenames.values())
+  for name in codenames:
+    if codenames.count(name) > 1:
+      print(f'Codename {name} exists more than once               <------------')
+      error = True
+
+  # Now check if labels collide in the size to labels dict
+  labels = list(MSizeToLabelDict.values())
+  for label in labels:
+    if labels.count(name) > 1:
+      print(f'label {name} exists more than once               <------------')
+      error = True
+
   if error:
     print("\nGot Error :(\n")
     raise ValueError("Some error in matrix setup")
@@ -462,6 +512,24 @@ def test_harvard_data():
   for idx in pos_idx:
     assert idx in pos_list
 
+  # Do same test with smaller n
+  n = 50
+  print('\nTesting Harvard data with n =', n)
+  res = get_test_results("optimized_M_3", cts, n)
+  result_string = res["result_string"]
+  sure_list = res["sure_list"]
+  unsure_list = res["unsure_list"]
+  neg_list = res["neg_list"]
+  x = res["x"]
+  print(result_string)
+  print(sure_list)
+  print(unsure_list)
+  print(neg_list)
+  print(x)
+  pos_list = res['sure_list'] + res['unsure_list']
+  for idx in pos_idx:
+    assert idx in pos_list
+
 def fake_data_test():
   from experimental_data_manager import get_random_fake_test_data
   size_to_label_dict = get_matrix_sizes_and_labels()
@@ -472,7 +540,7 @@ def fake_data_test():
     res = get_test_results(mlabel, cts)
     print("Results for data faked for %s matrix %s" % (msize, mlabel))
     print('bool_x:', bool_x)
-    print(res)
+    print(res["result_string"])
     pos_list = res['sure_list'] + res['unsure_list']
     for idx in bool_x:
       assert idx in pos_list
@@ -482,6 +550,7 @@ if __name__ == '__main__':
   #sanity_check_for_matrices()
   #test_harvard_data()
   #api_sanity_checks()
+  #fake_data_test()
   at_deployment()
 
   #import numpy as np

@@ -94,7 +94,7 @@ def create_csv(mlabel, msize, block=False):
   with open(mfilename, "a") as f:
     f.write(f'{msize},{mcodename}\n')
 
-create_csv('optimized_M_3', "24x60", block=True)
+create_csv('optimized_M_20_1140_1', "20x1140", block=True)
 
 #csv_dir = os.path.join(config.root_dir, "csv")
 #mlabel = "optimized_M_3"
