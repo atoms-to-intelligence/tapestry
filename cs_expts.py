@@ -1,5 +1,6 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 from cs import *
+from pickle_manager import PickleManager
 
 import json
 import pandas as pd
@@ -402,7 +403,6 @@ def get_small_random_matrix(t, n, col_sparsity):
 
 # Runs many parallel experiments and save stats
 def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos, num_expts):
-  from stats_utils import PickleManager
   pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
   # stats is a 3-deep dictionary
   # stats[matrix][algo][d] points to list of 1000 experiments
@@ -714,33 +714,35 @@ def large_test_decode_comp_combined(num_expts):
   with_comp.print_stats(num_expts, header=True)
   without_comp.print_stats(num_expts, header=True)
 
-if __name__=='__main__':
-  #large_test_decode_comp_combined(1000)
-  #mr = None
-  #do_many_expts(200, 6, 46, num_expts=100, M=None,
-  #    add_noise=True,algo='combined_COMP_NNOMP_random_cv', mr=mr)
-  #compare_different_ns()
-  #M = [optimized_M_45_105_STS_1, optimized_M_45_285_social_golfer[:, :105]]
-  #mlabels = ['optimized_M_45_105_STS_1', 'optimized_M_45_285_social_golfer[:, :105]']
-
-  #compare_different_mats(M, mlabels)
-  #run_many_parallel_expts()
-
-  labels = ['optimized_M_1', 'optimized_M_2']
-  #from get_test_results import MSizeToLabelDict
-  #tups = MSizeToLabelDict.values()
-  #labels = [tup[0] for tup in tups]
+def generate_expts_deployed_matrices():
+  #labels = ['optimized_M_1', 'optimized_M_2']
+  from get_test_results import MSizeToLabelDict
+  tups = MSizeToLabelDict.values()
+  labels = [tup[0] for tup in tups]
 
   mats = [MDict[label] for label in labels]
 
-  d_ranges = [list(range(1, 5)) for i in range(len(mats))]
-  #d_ranges = [ [ tup[1] ] for tup in tups ]
+  #d_ranges = [list(range(1, 5)) for i in range(len(mats))]
+  d_ranges = [ [ tup[1] ] for tup in tups ]
 
   num_expts = 1000
   #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',]
   algos = ['COMP', 'SBL', ]
   #algos = ['combined_COMP_l1ls_cv']
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos, num_expts)
+
+if __name__=='__main__':
+  #large_test_decode_comp_combined(1000)
+  #mr = None
+  #do_many_expts(200, 6, 46, num_expts=100, M=None,
+  #    add_noise=True,algo='combined_COMP_NNOMP_random_cv', mr=mr)
+  #compare_different_ns()
+  M = [optimized_M_45_105_STS_1, optimized_M_45_285_social_golfer[:, :105]]
+  mlabels = ['optimized_M_45_105_STS_1', 'optimized_M_45_285_social_golfer[:, :105]']
+
+  compare_different_mats(M, mlabels)
+  #run_many_parallel_expts()
+
 
   #compare_sts_vs_kirkman()
   #for mr in range(8, 15):
