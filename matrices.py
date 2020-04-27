@@ -4739,14 +4739,14 @@ optimized_M_21_70_STS = sts.sts(21)
 optimized_M_20_1140_1 = load_from_matlab("optimized_M_20_1140_1.txt",
         delim=None)
 
-optimized_M_36_99_social_golfer = load_from_matlab("optimized_M_36_99_social_golfer.txt",
-        delim=None)
+#optimized_M_36_99_social_golfer = load_from_matlab("optimized_M_36_99_social_golfer.txt",
+#        delim=None)
 
-optimized_M_18_153_social_golfer = load_from_matlab("optimized_M_18_153_social_golfer.txt",
-        delim=None)
+#optimized_M_18_153_social_golfer = load_from_matlab("optimized_M_18_153_social_golfer.txt",
+#        delim=None)
 
-optimized_M_27_117_social_golfer = load_from_matlab("optimized_M_27_117_social_golfer.txt",
-        delim=None)
+#optimized_M_27_117_social_golfer = load_from_matlab("optimized_M_27_117_social_golfer.txt",
+#        delim=None)
 
 optimized_M_48_384_social_golfer = load_from_matlab("optimized_M_48_384_social_golfer.txt",
         delim=None)
@@ -4766,11 +4766,11 @@ optimized_M_96_1312_social_golfer = load_from_matlab("optimized_M_96_1312_social
 optimized_M_192_5120_social_golfer = load_from_matlab("optimized_M_192_5120_social_golfer.txt",
         delim=None)
 
-optimized_M_45_285_social_golfer = load_from_matlab("optimized_M_45_285_social_golfer.txt",
-        delim=None)
+#optimized_M_45_285_social_golfer = load_from_matlab("optimized_M_45_285_social_golfer.txt",
+#        delim=None)
 
-optimized_M_45_105_social_golfer = optimized_M_45_285_social_golfer[:, :105]
-optimized_M_45_195_social_golfer = optimized_M_45_285_social_golfer[:, :195]
+#optimized_M_45_105_social_golfer = optimized_M_45_285_social_golfer[:, :105]
+#optimized_M_45_195_social_golfer = optimized_M_45_285_social_golfer[:, :195]
 
 # loads and adds all kirkman matrices as variables in this module
 def add_kirkman_matrices():
@@ -4825,9 +4825,26 @@ def validate_kirkman():
 
 add_kirkman_matrices()
 
-# These two will be used in deployment
+# These will be used in deployment
+optimized_M_45_105_kirkman = optimized_M_45_285_kirkman[:, :105]
+optimized_M_45_195_kirkman = optimized_M_45_285_kirkman[:, :195]
 optimized_M_63_399_kirkman = optimized_M_63_546_kirkman[:, :399]
 optimized_M_93_961_kirkman = optimized_M_93_1240_kirkman[:, :961]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #######    All Matrices Must be added before this line     ############
 ##########       Else the won't show up in MDict        #############
