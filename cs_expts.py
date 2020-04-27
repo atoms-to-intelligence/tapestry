@@ -604,7 +604,7 @@ def run_with_matrix_n(M, t, n, ret_explist=False, num_expts=1, d_range=None,
   n_jobs = 4
 
   explist = run_many_parallel_expts_internal(num_expts, n, t, add_noise, M,
-      algos, d_range, n_jobs, xslist)
+      algos, d_range, n_jobs, xslist, "dummy_label")
   expts = explist[0]
   sp = [expt.specificity for expt in expts]
   pr = [expt.precision for expt in expts]
@@ -737,8 +737,10 @@ if __name__=='__main__':
   #do_many_expts(200, 6, 46, num_expts=100, M=None,
   #    add_noise=True,algo='combined_COMP_NNOMP_random_cv', mr=mr)
   #compare_different_ns()
-  M = [optimized_M_45_105_STS_1, optimized_M_45_285_social_golfer[:, :105]]
-  mlabels = ['optimized_M_45_105_STS_1', 'optimized_M_45_285_social_golfer[:, :105]']
+  #M = [optimized_M_45_105_STS_1, optimized_M_45_285_social_golfer[:, :105]]
+  #mlabels = ['optimized_M_45_105_STS_1', 'optimized_M_45_285_social_golfer[:, :105]']
+  M = [optimized_M_45_195_STS_1, optimized_M_45_285_social_golfer[:, :195]]
+  mlabels = ['optimized_M_45_195_STS_1', 'optimized_M_45_285_social_golfer[:, :195]']
 
   compare_different_mats(M, mlabels)
   #run_many_parallel_expts()
