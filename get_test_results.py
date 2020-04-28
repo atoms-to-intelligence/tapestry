@@ -40,6 +40,8 @@ MSizeToLabelDict = {
 
     #"24x60":     ("optimized_M_3", 4, 6),
 
+    "27x117":     ("optimized_M_27_117_kirkman", 5, 4.5),
+
     #"45x105":    ("optimized_M_45_105_STS_1", 8, 8),
     "45x105":    ("optimized_M_45_105_kirkman", 8, 8),
 
@@ -71,6 +73,8 @@ mat_codenames = {
 
     'optimized_M_21_70_STS':                    'BEAR',
     'optimized_M_21_70_kirkman':                'WOLF',
+
+    'optimized_M_27_117_kirkman':               'OTTER',
 
     "optimized_M_45_105_STS_1":                 'LION',
     "optimized_M_45_105_kirkman":               'PUMA',
