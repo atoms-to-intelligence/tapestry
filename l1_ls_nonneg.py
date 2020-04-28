@@ -136,7 +136,8 @@ def l1ls_nonneg(A, y, lmbda, x0=None, At=None, m=None, n=None, tar_gap=1e-3,
             print('{:4d} {:12.2e} {:15.5e} {:15.5e} {:11.1e}'
                   .format(ntiter, gap, pobj, dobj, s))
 
-        if (gap / np.abs(dobj)) < reltol:
+        #print(f"gap = {gap}, dobj = {dobj}")
+        if dobj == 0 or (gap / np.abs(dobj)) < reltol:
             status = 'Solved'
             history = np.vstack([np.asarray(pobjs) - np.asarray(dobjs),
                                  pobjs, dobjs, sts, pflgs]).transpose()

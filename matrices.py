@@ -1,7 +1,12 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 import numpy as np
 import sys
 import math
 import os
+
+# Regular expression search
+import re
+
 
 from matrices1 import *
 import sts
@@ -4703,7 +4708,7 @@ def load_from_matlab(name, delim=','):
   full_path = os.path.join(mat_dir, name)
   return np.loadtxt(full_path, delimiter=delim)
 
-mat_dir = os.path.join(config.root_dir, 'mats/')
+mat_dir = config.mat_dir
 optimized_M_94_960_2 = load_from_matlab('optimized_M_94_960_2.txt')
 
 # Test matrix used for NCBS experiments
@@ -4734,6 +4739,111 @@ optimized_M_21_70_STS = sts.sts(21)
 optimized_M_20_1140_1 = load_from_matlab("optimized_M_20_1140_1.txt",
         delim=None)
 
+#optimized_M_36_99_social_golfer = load_from_matlab("optimized_M_36_99_social_golfer.txt",
+#        delim=None)
+
+#optimized_M_18_153_social_golfer = load_from_matlab("optimized_M_18_153_social_golfer.txt",
+#        delim=None)
+
+#optimized_M_27_117_social_golfer = load_from_matlab("optimized_M_27_117_social_golfer.txt",
+#        delim=None)
+
+optimized_M_48_384_social_golfer = load_from_matlab("optimized_M_48_384_social_golfer.txt",
+        delim=None)
+
+optimized_M_384_4096_social_golfer = load_from_matlab("optimized_M_384_4096_social_golfer.txt",
+        delim=None)
+
+optimized_M_384_8192_social_golfer = load_from_matlab("optimized_M_384_8192_social_golfer.txt",
+        delim=None)
+
+optimized_M_384_16384_social_golfer = load_from_matlab("optimized_M_384_16384_social_golfer.txt",
+        delim=None)
+
+optimized_M_96_1312_social_golfer = load_from_matlab("optimized_M_96_1312_social_golfer.txt",
+        delim=None)
+
+optimized_M_192_5120_social_golfer = load_from_matlab("optimized_M_192_5120_social_golfer.txt",
+        delim=None)
+
+#optimized_M_45_285_social_golfer = load_from_matlab("optimized_M_45_285_social_golfer.txt",
+#        delim=None)
+
+#optimized_M_45_105_social_golfer = optimized_M_45_285_social_golfer[:, :105]
+#optimized_M_45_195_social_golfer = optimized_M_45_285_social_golfer[:, :195]
+
+# loads and adds all kirkman matrices as variables in this module
+def add_kirkman_matrices():
+  global kirkman_mlabels
+  kirkman_mlabels = []
+  variables = globals()
+  kirkman_dir = os.path.join(config.mat_dir, "kirkman")
+  for name in os.listdir(kirkman_dir):
+    full_path = os.path.join(kirkman_dir, name)
+    vname = name.replace(".txt", "")
+    kirkman_mlabels.append(vname)
+    #print(name, vname, full_path)
+    variables[vname] = np.loadtxt(full_path)
+
+def validate_kirkman():
+  for mlabel in kirkman_mlabels:
+    size = [int(item) for item in re.findall(r'\d+', mlabel)]
+    t = size[0]
+    n = size[1]
+    d = t / 6
+    infection_rate = 100 * d / n
+    print(f"Validating: {mlabel} of size {t}x{n}, d = {d}, infection_rate ="
+        f" {infection_rate:.1f}, gain = {n/t:.1f}x")
+    assert t % 3 == 0
+    assert n % (t//3) == 0
+    
+    M = MDict[mlabel]
+    assert t == M.shape[0]
+    assert n == M.shape[1]
+
+    # Kirkman number of groups and number of weeks
+    g = t // 3
+    w = n // g
+
+    col_sums = np.sum(M, axis=0)
+    col_sparsity = np.max(col_sums)
+    min_col_sparsity = np.min(col_sums)
+    assert col_sparsity == 3
+    assert min_col_sparsity == 3
+    for k in range(1, w+1):
+      # Get first k*g columns of M
+      cols = k*g
+      A = M[:, :cols]
+
+      row_sums = np.sum(A, axis=1)
+      row_sparsity = np.max(row_sums)
+      min_row_sparsity = np.min(row_sums)
+
+      #print(k, row_sparsity, min_row_sparsity)
+      assert row_sparsity == k
+      assert min_row_sparsity == k
+
+add_kirkman_matrices()
+
+# These will be used in deployment
+optimized_M_45_105_kirkman = optimized_M_45_285_kirkman[:, :105]
+optimized_M_45_195_kirkman = optimized_M_45_285_kirkman[:, :195]
+optimized_M_63_399_kirkman = optimized_M_63_546_kirkman[:, :399]
+optimized_M_93_961_kirkman = optimized_M_93_1240_kirkman[:, :961]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #######    All Matrices Must be added before this line     ############
@@ -4755,7 +4865,65 @@ for m in MList:
 #print('Writing to optimized_M_16_40_ncbs[3,2]')
 #optimized_M_16_40_ncbs[3,2] = 9
 
+# Take n_strides strides of size n / 2 each and create a matrix of size
+# n_strides*t x n * n_strides / 2
+def strided_matrix(A, n_strides):
+  t = A.shape[0]
+  n = A.shape[1]
+  assert n % 2 == 0
+  N = n * n_strides // 2
+  pad = N - n
+  A = np.pad(A, ((0,0), (0, pad)), constant_values=0)
+  mlist = [np.roll(A, i * n//2, axis=1) for i in range(0, n_strides)]
+  A = np.concatenate(mlist, axis=0)
+  return A
+
+# Take n_strides strides of size n / 2 each and create a matrix of size
+# n_strides*t x n * n_strides / 2. Permute cols of each A
+def strided_randomized_matrix(A, n_strides):
+  t = A.shape[0]
+  n = A.shape[1]
+  assert n % 2 == 0
+  N = n * n_strides // 2
+  pad = N - n
+  idx = np.arange(n)
+  mlist = []
+  for i in range(0, n_strides):
+    idx_perm = np.random.permutation(idx)
+    B = A[:, idx_perm]
+    B = np.pad(B, ((0,0), (0, pad)), constant_values=0)
+    mlist.append(np.roll(B, i * n//2, axis=1))
+
+  A = np.concatenate(mlist, axis=0)
+  return A
+
+#optimized_M_384_1320_strided_sts = strided_matrix(sts.sts(45), 8)
+#optimized_M_360_1320_strided_sts = strided_randomized_matrix(sts.sts(45), 8)
+
+def print_matrix_stats(M, label):
+  row_sums = np.sum(M, axis=1)
+  col_sums = np.sum(M, axis=0)
+  row_sparsity = np.max(row_sums)
+  min_row_sparsity = np.min(row_sums)
+  col_sparsity = np.max(col_sums)
+  min_col_sparsity = np.min(col_sums)
+  total_sparsity = np.sum(row_sums)
+  print(label, M.shape, 'Row sparsity: ', row_sparsity, 'Col sparsity: ', col_sparsity,
+      'Min Row sparsity: ', min_row_sparsity, 'Min Col sparsity', min_col_sparsity,
+      'Total sparsity: ', total_sparsity)
+
 if __name__ == '__main__':
+  #validate_kirkman()
+  #sys.exit(1)
+  A = np.arange(8).reshape((2,4)) + 1
+  #A = sts.sts(45)
+  #n_strides = 4
+  #B = strided_randomized_matrix(A, n_strides)
+  #print(A)
+  #print(B)
+  #print(A.shape)
+  #print(B.shape)
+  #sys.exit(1)
   #int_coded_matrix(4, 15)
   #print(int_coded_M_6_63.shape)
   # Uncomment following code if you want to convert these matrices to matlab

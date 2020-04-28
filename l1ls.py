@@ -5,15 +5,18 @@ import math
 def l1ls_cv(A, y, sigval, tau):
   
   [m,n] = A.shape
-  mr = math.ceil(0.9*m);
+  mr = math.ceil(0.7*m);
+  mr = min(mr, m - 1)
   mcv = m-mr;
+  print("mcv = ", mcv, "m = ", m, "mr = ", mr)
   
   yr = y[0:mr-1]
-  ycv = y[mr:m-1]
+  ycv = y[mr:m]
   Ar = A[0:mr-1,:]
   Acv = A[mr:m,:]
 
-  lambda_min = max(sigval * math.sqrt(math.log(n)) - 5, 0)
+  lambda_min = max(sigval * math.sqrt(math.log(n)) - 5, 0.000001)
+  #lambda_min = max(sigval * math.sqrt(math.log(n)) - 5, 0)
   lambda_max = sigval * math.sqrt(math.log(n)) + 5
   lambdas = np.arange(lambda_min, lambda_max, 0.05)
   l_lambdas = len(lambdas)

@@ -1,4 +1,4 @@
-# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 ### Get the results for a given test. Implemented in function get_test_results() ###
 
 # The actual get_test_results() is present in app_utils.py
@@ -34,14 +34,30 @@ import numpy as np
 # a str.
 MSizeToLabelDict = {
     "16x40":     ("optimized_M_16_40_ncbs", 3, 7.5),
-    "21x70":     ("optimized_M_21_70_STS", 4, 6),
+
+    #"21x70":     ("optimized_M_21_70_STS", 4, 6),
+    "21x70":     ("optimized_M_21_70_kirkman", 4, 6),
+
     #"24x60":     ("optimized_M_3", 4, 6),
-    "45x105":    ("optimized_M_45_105_STS_1", 8, 8),
-    "45x195":    ("optimized_M_45_195_STS_1", 8, 4),
-    "63x399":    ("optimized_M_63_399_STS_1", 10, 2.5),
-    "93x961":    ("optimized_M_93_961_STS_1", 10, 1),
-    "20x1140":   ("optimized_M_20_1140_1", 2, 2)
+
+    "27x117":     ("optimized_M_27_117_kirkman", 5, 4.5),
+
+    #"45x105":    ("optimized_M_45_105_STS_1", 8, 8),
+    "45x105":    ("optimized_M_45_105_kirkman", 8, 8),
+
+    #"45x195":    ("optimized_M_45_195_STS_1", 8, 4),
+    "45x195":    ("optimized_M_45_195_kirkman", 8, 4),
+
+    #"63x399":    ("optimized_M_63_399_STS_1", 10, 2.5),
+    "63x399":    ("optimized_M_63_399_kirkman", 10, 2.5),
+
+    #"93x961":    ("optimized_M_93_961_STS_1", 10, 1),
+    "93x961":    ("optimized_M_93_961_kirkman", 10, 1),
+
+    "20x1140":   ("optimized_M_20_1140_1", 2, 0.2)
+
     #"46x96":    ("optimized_M_46_96_1", 10, 10)
+
     #"46x192":   "optimized_M_46_192_1",
     }
 
@@ -51,14 +67,29 @@ MSizeToLabelDict = {
 #
 # WARNING: Once a codename is deployed it cannot be changed or removed!!!
 mat_codenames = {
-    'optimized_M_16_40_ncbs':   'RABBIT',
-    #'optimized_M_3':            'FOX',  # 24x60
-    'optimized_M_21_70_STS':    'BEAR',
-    "optimized_M_45_105_STS_1": 'LION',
-    "optimized_M_45_195_STS_1": 'TIGER',
-    "optimized_M_63_399_STS_1": 'RHINO',
-    "optimized_M_93_961_STS_1": 'CROC',
-    "optimized_M_20_1140_1":    'MANTIS',
+    'optimized_M_16_40_ncbs':                   'RABBIT',
+
+    #'optimized_M_3':                           'FOX',  # 24x60
+
+    'optimized_M_21_70_STS':                    'BEAR',
+    'optimized_M_21_70_kirkman':                'WOLF',
+
+    'optimized_M_27_117_kirkman':               'OTTER',
+
+    "optimized_M_45_105_STS_1":                 'LION',
+    "optimized_M_45_105_kirkman":               'PUMA',
+
+    "optimized_M_45_195_STS_1":                 'TIGER',
+    "optimized_M_45_195_kirkman":               'JAGUAR',
+
+    "optimized_M_63_399_STS_1":                 'RHINO',
+    "optimized_M_63_399_kirkman":               'HIPPO',
+
+    "optimized_M_93_961_STS_1":                 'CROC',
+    "optimized_M_93_961_kirkman":               'ELEPHANT',
+
+    "optimized_M_20_1140_1":                    'MANTIS',
+
     #"optimized_M_46_192_1":     'IGUANA',
     }
 
@@ -195,7 +226,7 @@ def get_result_string_from_lists(sure_list, unsure_list, neg_list, x, n):
 # *******            happen and a notification must be sent.          ********
 def at_deployment():
   sanity_check_for_matrices()
-  matrix_pdfs_sanity_check()
+  #matrix_pdfs_sanity_check()
   api_sanity_checks()
   test_harvard_data()
   fake_data_test()
@@ -314,6 +345,20 @@ def sanity_check_for_matrices():
     else:
       print(f'No codename exist for {msize} matrix {mlabel}       <------------')
       error = True
+  # Now check if codenames collide
+  codenames = list(mat_codenames.values())
+  for name in codenames:
+    if codenames.count(name) > 1:
+      print(f'Codename {name} exists more than once               <------------')
+      error = True
+
+  # Now check if labels collide in the size to labels dict
+  labels = list(MSizeToLabelDict.values())
+  for label in labels:
+    if labels.count(name) > 1:
+      print(f'label {name} exists more than once               <------------')
+      error = True
+
   if error:
     print("\nGot Error :(\n")
     raise ValueError("Some error in matrix setup")

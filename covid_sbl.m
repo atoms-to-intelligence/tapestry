@@ -1,7 +1,9 @@
-%% Initialization
 clear;
 clc;
 matrices;
+
+%% Refer to SLide 31 of http://math.iisc.ernet.in/~nmi/Chandra%20Murthy.pdf for algorithm
+%% Initialization
 [m,n] = size (M2); A = M2;
 
 % m = 40;
@@ -19,6 +21,7 @@ noFP_count = 0; noFN_count=0; noError_count=0;
 
 for kk = 1:nsignals
     x = zeros(n,1);
+    % Generate random signals,x with desired sparsity, s
     indices = randperm(n); x(indices(1:s)) = 999*rand(s,1)+1; true_supp = indices(1:s);
     Ax = A*x;
     y = Ax;
@@ -37,6 +40,8 @@ for kk = 1:nsignals
                             % tau will be required to remove insignificant entries of x_est.
 
     %% Pre-Processing
+    % As all A_ij and x_j are positive, for any y_i=0 implies that for all j s.t A_ij=1, x_j=0. 
+    % This reduces problem dimension.
     nz_index = find(y);
     z_index = find(~y);
     red_y = y(nz_index);
@@ -57,7 +62,11 @@ for kk = 1:nsignals
         x_est = zeros(red_n,1);
     else
         inv_Gamma = eye(red_n);
-
+        % E-step
+        %   mu is estimated mean of posterior distribution x|y, and so is the estimated red_x computed iteratively
+        %   Sigma is variance of posterior distribution of x|y
+        % M-step
+        %   Gamma is the prior variance of x, inv_Gamma is saved as E-step only requires the inverse
         mu_old = ones(red_n,1);
         mu = zeros(red_n,1);
         while norm(mu_old-mu,2)/norm(mu,2)>1e-4
@@ -67,7 +76,7 @@ for kk = 1:nsignals
             Sigma = inv(inv_Sigma);
             gamma = mu.^2 + diag(Sigma);
             inv_Gamma = diag(1./gamma);
-            rmse = norm(mu-red_x,2)/norm(red_x,2);
+            rmse = norm(mu-red_x,2)/norm(red_x,2); %RMS error of estimation compared to true signal
 %             fprintf("\n Iter: %d, rmse= %f",iter,rmse)s
         end
         x_est = zeros(n,1);

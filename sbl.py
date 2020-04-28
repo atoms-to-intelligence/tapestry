@@ -2,10 +2,18 @@ import numpy as np
 import math
 
 def sbl(A, y, sigval, tau, eps=1e-4):
-  
+  '''
+  Refer to SLide 31 of http://math.iisc.ernet.in/~nmi/Chandra%20Murthy.pdf for algorithm
+  Inputs:
+  A = measurement matrix
+  y = measurements
+  sigval = variance of noise in measurement
+  tau = threshold on signal
+  '''
   [m,n] = A.shape
   
   # Pre-Processing
+  # As all A_ij and x_j are positive, for any y_i=0 implies that for all j s.t A_ij=1, x_j=0. This reduces problem dimension.
   nz_index = (np.where(y != 0))[0]
   z_index = (np.where(y == 0))[0]
   red_y = y[nz_index]
@@ -23,6 +31,11 @@ def sbl(A, y, sigval, tau, eps=1e-4):
     x_est = np.zeros(n)
     #print('inside if')
   else:
+    #E-step
+      #   mu is estimated mean of posterior distribution x|y, and so is the estimated red_x computed iteratively
+      #   Sigma is variance of posterior distribution of x|y
+    # M-step
+      #   Gamma is the prior variance of x, inv_Gamma is saved as E-step only requires the inverse
     inv_Gamma = np.identity(red_n)
     mu_old = np.ones(red_n)
     mu = np.zeros(red_n)
