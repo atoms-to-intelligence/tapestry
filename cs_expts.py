@@ -418,7 +418,7 @@ def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos,
     t = M.shape[0]
     add_noise = True
     matrix = M
-    n_jobs = 1
+    n_jobs = 4
     explist = run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos,
         d_range, n_jobs, xslist=[None for d in d_range], mlabel=label)
     all_exps_list.append(explist)
@@ -755,9 +755,9 @@ def generate_expts_deployed_matrices(only_these_labels=None, save=True):
 
 def run_stats_for_these_matrices(labels, save):
   mats = [MDict[label] for label in labels]
-  d_ranges = [ (list(range(1, 16)) + [20, 25]) for item  in labels]
+  d_ranges = [ list(range(1, 16)) + [20, 25, 30, 35, 40] for item  in labels]
 
-  num_expts = 1000
+  num_expts = 100
   algos = ['COMP']
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
       num_expts, save)
@@ -776,13 +776,7 @@ if __name__=='__main__':
   #compare_different_mats(M, mlabels)
   #run_many_parallel_expts()
   run_stats_for_these_matrices(
-      [
-        "optimized_M_27_117_kirkman",
-        #"optimized_M_63_399_STS_1",
-        #"optimized_M_63_399_kirkman",
-        #"optimized_M_93_961_STS_1",
-        #"optimized_M_93_961_kirkman"
-      ],
+      massive_pooling_matrices,
       save=False
     )
 

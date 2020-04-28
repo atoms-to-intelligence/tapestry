@@ -4777,12 +4777,22 @@ def add_kirkman_matrices():
   global kirkman_mlabels
   kirkman_mlabels = []
   variables = globals()
-  kirkman_dir = os.path.join(config.mat_dir, "kirkman")
-  for name in os.listdir(kirkman_dir):
-    full_path = os.path.join(kirkman_dir, name)
+  for name in os.listdir(config.kirkman_dir):
+    full_path = os.path.join(config.kirkman_dir, name)
     vname = name.replace(".txt", "")
     kirkman_mlabels.append(vname)
     #print(name, vname, full_path)
+    variables[vname] = np.loadtxt(full_path)
+
+def add_sts_matrices():
+  global sts_mlabels
+  sts_mlabels = []
+  variables = globals()
+  for name in os.listdir(config.sts_dir):
+    full_path = os.path.join(config.sts_dir, name)
+    vname = name.replace(".txt", "")
+    sts_mlabels.append(vname)
+    print(name, vname, full_path)
     variables[vname] = np.loadtxt(full_path)
 
 def validate_kirkman():
@@ -4824,6 +4834,7 @@ def validate_kirkman():
       assert min_row_sparsity == k
 
 add_kirkman_matrices()
+add_sts_matrices()
 
 # These will be used in deployment
 optimized_M_45_105_kirkman = optimized_M_45_285_kirkman[:, :105]
@@ -4831,6 +4842,15 @@ optimized_M_45_195_kirkman = optimized_M_45_285_kirkman[:, :195]
 optimized_M_63_399_kirkman = optimized_M_63_546_kirkman[:, :399]
 optimized_M_93_961_kirkman = optimized_M_93_1240_kirkman[:, :961]
 
+# These may be used for massive pooling
+massive_pooling_matrices = [
+    "optimized_M_96_1312_social_golfer",
+    "optimized_M_93_1426_STS",
+    "optimized_M_192_5120_social_golfer",
+    "optimized_M_189_5922_STS",
+    "optimized_M_384_16384_social_golfer",
+    "optimized_M_381_24130_STS",
+    ]
 
 
 
