@@ -67,6 +67,12 @@ noise_model = 'exponential_gaussian'
 
 # Pickle files containing stats. Stats are first written to tmp and then
 # finally copied
-stats_pickle = os.path.join(root_dir, "expt_stats.p.gz")
-stats_pickle_tmp = os.path.join(root_dir, "expt_stats_temp.p.gz")
+stats_pickle_name = "expt_stats.p.gz"
+stats_pickle_tmp_name = "expt_stats_temp.p.gz"
+stats_pickle = os.path.join(root_dir, stats_pickle_name) 
+stats_pickle_tmp = os.path.join(root_dir, stats_pickle_tmp_name)
+
+# Stats directory
+#stats_dir_name = "expt_stats"
+stats_dir = os.path.join(root_dir, "expt_stats")
 
