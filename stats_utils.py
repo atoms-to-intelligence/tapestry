@@ -3,7 +3,7 @@
 
 import config
 from cs_expts import CSExpts
-from pickle_manager import stats_manager
+from pickle_manager import stats_manager, expt_stats_pickle_manager
 from matrices import kirkman_mlabels, MDict
 
 import numpy as np
@@ -147,6 +147,14 @@ def get_stats_for_these_matrices(sizes, labels, ds, algos):
           n_batches=120, keys=['precision', 'recall', 'specificity'])
       s = json.dumps(combined, indent=2)
       print(s)
+
+# Migrate from using single PickleManager to a directory structure
+def migrate_stats_from_dict_to_directory():
+  stats = expt_stats_pickle_manager.load_stats()
+  for mlabel in stats:
+    for algo in stats[mlabel]:
+      for d in stats[mlabel][algo]:
+        stats_manager.save(mlabel, algo, d, stats[mlabel][algo][d])
 
 if __name__ == '__main__':
   #get_stats_for_deployed_matrices()
