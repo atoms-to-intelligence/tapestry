@@ -4792,7 +4792,7 @@ def add_sts_matrices():
     full_path = os.path.join(config.sts_dir, name)
     vname = name.replace(".txt", "")
     sts_mlabels.append(vname)
-    print(name, vname, full_path)
+    #print(name, vname, full_path)
     variables[vname] = np.loadtxt(full_path)
 
 def validate_kirkman():
