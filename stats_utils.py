@@ -4,6 +4,7 @@
 import config
 from cs_expts import CSExpts
 from pickle_manager import stats_manager
+from matrices import kirkman_mlabels, MDict
 
 import numpy as np
 import json
@@ -126,11 +127,21 @@ def get_stats_for_deployed_matrices():
   ds = [tup[1] for tup in tups]
   algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv', 'combined_COMP_l1ls_cv']
 
+  get_stats_for_these_matrices(sizes, labels, ds, algos)
+
+def get_stats_for_kirkman_matrices():
+  labels = kirkman_mlabels
+  sizes = [f"{M.shape[0]}x{M.shape[1]}" for M in [MDict[label] for label in
+    labels]]
+  ds = [ 3 for label in labels]
+  algos = ['COMP', 'SBL']
+  get_stats_for_these_matrices(sizes, labels, ds, algos)
+
+def get_stats_for_these_matrices(sizes, labels, ds, algos):
   for size, label, d in zip(sizes, labels, ds):
     print(f"Matrix: {size}, d = {d}")
     for algo in algos:
       print(f"Algo: {algo}")
-      #explist = stats[label][algo][d]
       explist = stats_manager.load(label, algo, d)
       combined = parse_stats_and_get_confidence_intervals(explist, k=3,
           n_batches=120, keys=['precision', 'recall', 'specificity'])
@@ -138,7 +149,8 @@ def get_stats_for_deployed_matrices():
       print(s)
 
 if __name__ == '__main__':
-  get_stats_for_deployed_matrices()
+  #get_stats_for_deployed_matrices()
+  get_stats_for_kirkman_matrices()
   #print(make_many_batches([1, 2, 3], 10))
   #pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
   #stats = pm.get_stats_dict()
