@@ -1,4 +1,4 @@
-# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 # Utility methods to parse stats dictionary
 
 import config

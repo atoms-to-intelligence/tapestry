@@ -1,13 +1,14 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 import os
 import gzip
 import pickle
 import shutil
 
 class PickleManager:
-  def __init__(self, main_pickle, tmp_pickle):
+  def __init__(self, main_pickle, tmp_pickle, default):
     self.main_pickle = main_pickle
     self.tmp_pickle = tmp_pickle
-    self.default = {}
+    self.default = default
 
 
   # helper to load pickle
@@ -38,4 +39,17 @@ class PickleManager:
     shutil.copy2(self.tmp_pickle, self.main_pickle)
     os.remove(self.tmp_pickle)
 
+# Manage experimental stats using a directory based structure instead of
+# having a single pickle for all stats
+#
+# Top-level stats dir: expt_stats/
+# One dir for each matrix: e.g. optimized_M_45_330_kirkman/
+# Inside it, one dir for each algo: e.g. COMP/ or SBL/
+# Inside it, one dir for each 'd': e.g. 1/ 2/ 3/ etc
+# Inside it, one pickle containing list of SingleExpt.__dict__, 1000 expts.
+class DirectoryStatsManager:
+  pass
 
+
+expt_stats_pickle_manager = PickleManager(config.stats_pickle,
+        config.stats_pickle_tmp, default={})
