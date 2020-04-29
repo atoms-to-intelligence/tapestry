@@ -1,6 +1,6 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
 from cs import *
-from pickle_manager import PickleManager
+from pickle_manager import stats_manager
 
 import json
 import pandas as pd
@@ -31,16 +31,16 @@ class SingleExpt:
     self.score = score
 
     # Experimental setting and returned value
-    self.x_idx = np.array(np.where(x), dtype=np.uint8)
+    self.x_idx = np.array(np.where(x), dtype=np.uint16)
     self.x = np.array(x[self.x_idx], dtype=np.float32)
-    self.y_idx = np.array(np.where(y), dtype=np.uint8)
+    self.y_idx = np.array(np.where(y), dtype=np.uint16)
     self.y = np.array(y[self.y_idx], dtype=np.float32)
 
-    self.x_est_idx = np.array(np.where(x_est), dtype=np.uint8)
+    self.x_est_idx = np.array(np.where(x_est), dtype=np.uint16)
     self.x_est = np.array(x_est[self.x_est_idx], dtype=np.float32)
 
-    self.infected_idx = np.array(np.where(infected), dtype=np.uint8)
-    self.infected_dd_idx = np.array(np.where(infected_dd), dtype=np.uint8)
+    self.infected_idx = np.array(np.where(infected), dtype=np.uint16)
+    self.infected_dd_idx = np.array(np.where(infected_dd), dtype=np.uint16)
 
     # Global settings common for many expts
     self.n = n
@@ -404,16 +404,17 @@ def get_small_random_matrix(t, n, col_sparsity):
 # Runs many parallel experiments and save stats
 def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos,
     num_expts, save):
-  if save:
-    pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
-    # stats is a 3-deep dictionary
-    # stats[matrix][algo][d] points to list of 1000 experiments
-    stats = pm.get_stats_dict()
+  #if save:
+  #  #pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
+  #  # stats is a 3-deep dictionary
+  #  # stats[matrix][algo][d] points to list of 1000 experiments
+  #  #stats = pm.get_stats_dict()
+  #  #stats = stats_manager.load()
   all_exps_list = []
   for M, label, d_range in zip(mats, mlabels, d_ranges):
-    if save:
-      if not label in stats:
-        stats[label] = {}
+    #if save:
+    #  if not label in stats:
+    #    stats[label] = {}
     n = M.shape[1]
     t = M.shape[0]
     add_noise = True
@@ -424,15 +425,17 @@ def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos,
     all_exps_list.append(explist)
     if save:
       for algo, expts in zip(algos, explist):
-        if not algo in stats[label]:
-          stats[label][algo] = {}
+        #if not algo in stats[label]:
+        #  stats[label][algo] = {}
         for d, expt in zip(d_range, expts):
-          stats[label][algo][d] = [item.__dict__ for item in expt.single_expts]
+          #stats[label][algo][d] = [item.__dict__ for item in expt.single_expts]
+          stats_manager.save(label, algo, d, [item.__dict__ for item in
+            expt.single_expts])
 
       # Now that this matrix is done, we want to save the stats
       # We do this after every matrix so that even if the entire process is
       # cancelled, stats are still saved
-      pm.carefully_save_stats(stats)
+      #pm.carefully_save_stats(stats)
 
   for M, label, explist in zip(mats, mlabels, all_exps_list):
     n = M.shape[1]
@@ -755,10 +758,11 @@ def generate_expts_deployed_matrices(only_these_labels=None, save=True):
 
 def run_stats_for_these_matrices(labels, save):
   mats = [MDict[label] for label in labels]
-  d_ranges = [ list(range(1, 16)) + [20, 25, 30, 35, 40] for item  in labels]
+  #d_ranges = [ list(range(1, 16)) + [20, 25, 30, 35, 40] for item  in labels]
+  d_ranges = [list(range(1, 6)) for label in labels]
 
-  num_expts = 100
-  algos = ['COMP']
+  num_expts = 5
+  algos = ['COMP', 'SBL']
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
       num_expts, save)
 
@@ -775,9 +779,13 @@ if __name__=='__main__':
 
   #compare_different_mats(M, mlabels)
   #run_many_parallel_expts()
+  #run_stats_for_these_matrices(
+  #    massive_pooling_matrices,
+  #    save=False
+  #  )
   run_stats_for_these_matrices(
-      massive_pooling_matrices,
-      save=False
+      kirkman_mlabels,
+      save=True
     )
 
 

@@ -3,7 +3,7 @@
 
 import config
 from cs_expts import CSExpts
-from pickle_manager import PickleManager
+from pickle_manager import stats_manager
 
 import numpy as np
 import json
@@ -115,8 +115,8 @@ def convert_scalar_to_simple_type(val):
     return val
 
 def get_stats_for_deployed_matrices():
-  pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
-  stats = pm.get_stats_dict()
+  #pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
+  #stats = pm.get_stats_dict()
   #explist = stats["optimized_M_1"]["COMP"][2]
 
   from get_test_results import MSizeToLabelDict
@@ -130,7 +130,8 @@ def get_stats_for_deployed_matrices():
     print(f"Matrix: {size}, d = {d}")
     for algo in algos:
       print(f"Algo: {algo}")
-      explist = stats[label][algo][d]
+      #explist = stats[label][algo][d]
+      explist = stats_manager.load(label, algo, d)
       combined = parse_stats_and_get_confidence_intervals(explist, k=3,
           n_batches=120, keys=['precision', 'recall', 'specificity'])
       s = json.dumps(combined, indent=2)
