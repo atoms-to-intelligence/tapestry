@@ -157,8 +157,9 @@ def migrate_stats_from_dict_to_directory():
         stats_manager.save(mlabel, algo, d, stats[mlabel][algo][d])
 
 if __name__ == '__main__':
+  migrate_stats_from_dict_to_directory()
   #get_stats_for_deployed_matrices()
-  get_stats_for_kirkman_matrices()
+  #get_stats_for_kirkman_matrices()
   #print(make_many_batches([1, 2, 3], 10))
   #pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
   #stats = pm.get_stats_dict()
