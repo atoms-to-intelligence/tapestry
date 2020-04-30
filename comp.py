@@ -67,7 +67,7 @@ def scomp(A,y):
     for i in range(subA.shape[0]):
       row = subA[i,idx]
       if row > 0:
-        print(removeRows, i)
+        #print(removeRows, i)
         removeRows = list(set().union(removeRows, [i]))
     
     subA = np.delete(subA, removeRows, 0)
