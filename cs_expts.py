@@ -571,9 +571,10 @@ def compare_sts_vs_kirkman():
 def compare_different_ns():
   explist = []
   t = 192
-  ns = list(range(400, 1000, 200)) + list(range(1000, 5000, 500)) + [5120]
+  #ns = list(range(400, 1000, 200)) + list(range(1000, 5000, 500)) + [5120]
+  ns = list(range(400, 1000, 200))
   M = optimized_M_192_5120_social_golfer
-  num_expts = 100
+  num_expts = 50
   for n in ns:
     expts = run_with_matrix_n(M, t, n, True, num_expts)
     explist.append(expts)
@@ -615,7 +616,8 @@ def run_with_matrix_n(M, t, n, ret_explist=False, num_expts=1, d_range=None,
   algos = ['COMP']
   #d_range = list(range(5, 16)) + list(range(20, 41, 5))
   if not d_range:
-    d_range = list(range(1, 16))
+    #d_range = list(range(1, 16)) + [20, 25, 30, 35]
+    d_range = [5, 10, 15, 20, 25, 30, 35]
     assert not xslist
     xslist = [None for d in d_range]
   n_jobs = 4
@@ -771,7 +773,7 @@ if __name__=='__main__':
   #mr = None
   #do_many_expts(200, 6, 46, num_expts=100, M=None,
   #    add_noise=True,algo='combined_COMP_NNOMP_random_cv', mr=mr)
-  #compare_different_ns()
+  compare_different_ns()
   #M = [optimized_M_45_105_STS_1, optimized_M_45_285_social_golfer[:, :105]]
   #mlabels = ['optimized_M_45_105_STS_1', 'optimized_M_45_285_social_golfer[:, :105]']
   #M = [optimized_M_45_195_STS_1, optimized_M_45_285_social_golfer[:, :195]]
@@ -783,10 +785,10 @@ if __name__=='__main__':
   #    massive_pooling_matrices,
   #    save=False
   #  )
-  run_stats_for_these_matrices(
-      kirkman_mlabels,
-      save=True
-    )
+  #run_stats_for_these_matrices(
+  #    kirkman_mlabels,
+  #    save=True
+  #  )
 
 
   #compare_sts_vs_kirkman()
