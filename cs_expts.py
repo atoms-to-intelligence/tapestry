@@ -110,6 +110,14 @@ class CSExpts:
       overdetermined = 0
       wrongly_undetected = 0
       x_est = np.zeros(cs.n)
+    elif algo == 'SCOMP':
+      infected, infected_dd, score, tp, fp, fn, surep, unsurep,\
+          num_infected_in_test = cs.decode_scomp(bool_y)
+      uncon_negs = 0
+      determined = 0
+      overdetermined = 0
+      wrongly_undetected = 0
+      x_est = np.zeros(cs.n)
     else:
       x_est, infected, infected_dd, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\
           overdetermined, surep, unsurep, wrongly_undetected, \
@@ -451,11 +459,11 @@ def run_many_parallel_expts():
   #from experimental_data_manager import parse_israel_matrix
   #optimized_M_48_384_israel = parse_israel_matrix()
 
-  num_expts = 1000
-  t = 45
-  n = 105
+  num_expts = 10
+  t = 16
+  n = 40
   add_noise = True
-  matrix = optimized_M_45_105_STS_1
+  matrix = optimized_M_16_40_ncbs
 
   #t = 45
   #n = t * (t - 1) // 6
@@ -466,6 +474,7 @@ def run_many_parallel_expts():
 
   algos = []
   algos.extend(['COMP'])
+  algos.extend(['SCOMP'])
   #algos.extend(['SBL'])
   #algos.append('NNOMP')
   #algos.append('combined_COMP_NNOMP')
@@ -476,12 +485,12 @@ def run_many_parallel_expts():
   #algos.append('l1ls_cv')
   #algos.append('combined_COMP_l1ls_cv')
   #algos.append('combined_COMP_l1ls')
-  d_range = list(range(8, 11))
+  d_range = list(range(1, 4))
   #d_range = list(range(10, 101, 10))
   #d_range = list(range(10, 101, 10))
   #d_range = [1]
   #d_range.extend([15, 20, 25, 30])
-  n_jobs = 4
+  n_jobs = 1
 
   run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos,
       d_range, n_jobs, xslist=[None for d in d_range],
@@ -773,14 +782,14 @@ if __name__=='__main__':
   #mr = None
   #do_many_expts(200, 6, 46, num_expts=100, M=None,
   #    add_noise=True,algo='combined_COMP_NNOMP_random_cv', mr=mr)
-  compare_different_ns()
+  #compare_different_ns()
   #M = [optimized_M_45_105_STS_1, optimized_M_45_285_social_golfer[:, :105]]
   #mlabels = ['optimized_M_45_105_STS_1', 'optimized_M_45_285_social_golfer[:, :105]']
   #M = [optimized_M_45_195_STS_1, optimized_M_45_285_social_golfer[:, :195]]
   #mlabels = ['optimized_M_45_195_STS_1', 'optimized_M_45_285_social_golfer[:, :195]']
 
   #compare_different_mats(M, mlabels)
-  #run_many_parallel_expts()
+  run_many_parallel_expts()
   #run_stats_for_these_matrices(
   #    massive_pooling_matrices,
   #    save=False
