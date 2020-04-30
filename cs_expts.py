@@ -770,10 +770,12 @@ def generate_expts_deployed_matrices(only_these_labels=None, save=True):
 def run_stats_for_these_matrices(labels, save):
   mats = [MDict[label] for label in labels]
   #d_ranges = [ list(range(1, 16)) + [20, 25, 30, 35, 40] for item  in labels]
-  d_ranges = [list(range(1, 6)) for label in labels]
+  ts = [M.shape[0] for M in mats]
+  d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
+  #d_ranges = [list(range(1, 6)) for label in labels]
 
-  num_expts = 5
-  algos = ['COMP', 'SBL']
+  num_expts = 1000
+  algos = ['COMP']
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
       num_expts, save)
 
@@ -789,15 +791,16 @@ if __name__=='__main__':
   #mlabels = ['optimized_M_45_195_STS_1', 'optimized_M_45_285_social_golfer[:, :195]']
 
   #compare_different_mats(M, mlabels)
-  run_many_parallel_expts()
+  #run_many_parallel_expts()
   #run_stats_for_these_matrices(
   #    massive_pooling_matrices,
   #    save=False
   #  )
-  #run_stats_for_these_matrices(
-  #    kirkman_mlabels,
-  #    save=True
-  #  )
+  #print(kirkman_mlabels)
+  run_stats_for_these_matrices(
+      kirkman_mlabels,
+      save=True
+    )
 
 
   #compare_sts_vs_kirkman()
