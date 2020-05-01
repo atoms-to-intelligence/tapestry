@@ -4777,7 +4777,7 @@ def add_kirkman_matrices():
   global kirkman_mlabels
   kirkman_mlabels = []
   variables = globals()
-  for name in os.listdir(config.kirkman_dir):
+  for name in sorted(os.listdir(config.kirkman_dir)):
     full_path = os.path.join(config.kirkman_dir, name)
     vname = name.replace(".txt", "")
     kirkman_mlabels.append(vname)

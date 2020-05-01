@@ -8,7 +8,7 @@ def l1ls_cv(A, y, sigval, tau):
   mr = math.ceil(0.7*m);
   mr = min(mr, m - 1)
   mcv = m-mr;
-  print("mcv = ", mcv, "m = ", m, "mr = ", mr)
+  #print("mcv = ", mcv, "m = ", m, "mr = ", mr)
   
   yr = y[0:mr-1]
   ycv = y[mr:m]
