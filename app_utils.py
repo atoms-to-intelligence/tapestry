@@ -1,3 +1,4 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 import numpy as np
 
 import config
@@ -91,8 +92,8 @@ def _get_lists_from_infected(infected, infected_dd, n):
 
 if __name__ == '__main__':
   # These imports and functions are for testing purposes only
-  from matrices import optimized_M_3
-  from experimental_data_manager import read_harvard_data_cts
+  from matrices import *
+  from experimental_data_manager import read_harvard_data_cts, read_standard_cts
 
   # Test using Harvard and ncbs data
   def run_tests():
@@ -118,5 +119,25 @@ if __name__ == '__main__':
     print("Neg list:", neg_list)
     print("x:", x)
 
-  run_tests()
+  def harvard_30_120_test():
+    cts = read_standard_cts("harvard_30_120.txt")
+    M = optimized_M_30_120_kirkman
+    config.app_algo = 'COMP'
+    print('COMP')
+    sure_list, unsure_list, neg_list, x = get_test_results(M, cts)
+    print("Sure list:", sure_list)
+    print("Unsure list:", unsure_list)
+    print("Neg list:", neg_list)
+    print("x:", x)
+
+    config.app_algo = 'SBL'
+    print('SBL')
+    sure_list, unsure_list, neg_list, x = get_test_results(M, cts)
+    print("Sure list:", sure_list)
+    print("Unsure list:", unsure_list)
+    print("Neg list:", neg_list)
+    print("x:", x)
+
+  #run_tests()
+  harvard_30_120_test()
 

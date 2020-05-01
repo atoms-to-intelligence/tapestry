@@ -1,4 +1,4 @@
-# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 import pandas as pd
 import numpy as np
 import math
@@ -8,6 +8,17 @@ import os
 import config
 
 from matrices import MDict
+
+# Standard format
+# 1 entry per line
+def read_standard_cts(fname):
+  data_dir = config.root_dir
+  data_file = os.path.join(data_dir, fname)
+  with open(data_file, "r") as f:
+    cts = [ float(item.strip()) for item in f.readlines() ]
+  cts = np.array(cts)
+  cts[cts == 0] = config.cycle_time_cutoff + 1
+  return cts
 
 def read_harvard_data_cts():
   t = 24
