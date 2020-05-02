@@ -8,6 +8,73 @@
 import numpy as np
 import sys
 
+def scomp(A,y):
+  idx = -1
+  zeroY = []
+  nonZeroY = []
+  samps = list(range(A.shape[1]))
+  for yTest in y:
+    idx = idx+1
+    if yTest == 0:
+      zeroY.append(idx)
+    if yTest > 0:
+      nonZeroY.append(idx)
+
+  #yZero = find(~y); subA = A; colsRemove = [];
+  removeCols = []
+  for i in zeroY:
+    row = A[i,:]
+    idx = -1
+    for cols in row:
+      idx = idx+1
+      if cols > 0:
+        removeCols = list(set().union(removeCols, [idx]))
+
+  nonZeroSamps = list(set(samps) - set(removeCols))
+  #print(nonZeroSamps)
+  subA = np.copy(A)
+  #subA = np.delete(subA, removeCols, 1)
+  subA[:,removeCols] = 0
+  subA = np.delete(subA, zeroY, 0)
+  #print(subA.shape)
+  greedyCover = []
+  
+  surePos = []
+  for i in range(subA.shape[0]):
+    row = subA[i,:]
+    if np.sum(row) == 1:
+      idx = -1
+      for j in row:
+        idx = idx + 1
+        if j > 0:
+          break
+      surePos = list(set().union(surePos,[idx]))
+  
+  removeRows = []
+  for i in range(subA.shape[0]):
+    row = subA[i,surePos]
+    if np.sum(row) > 0:
+      removeRows = list(set().union(removeRows,[i]))
+  
+  subA = np.delete(subA, removeRows, 0)
+  greedyCover = surePos
+
+  while subA.shape[0] > 0:
+    idx = np.argmax(np.sum(subA, axis = 0))
+    greedyCover = list(set().union(greedyCover, [idx]))
+    removeRows = []
+
+    for i in range(subA.shape[0]):
+      row = subA[i,idx]
+      if row > 0:
+        #print(removeRows, i)
+        removeRows = list(set().union(removeRows, [i]))
+    
+    subA = np.delete(subA, removeRows, 0)
+  
+  return greedyCover
+
+
 def create_infection_array_with_prob(n, p):
   arr = np.random.binomial(1, p, n)
   #while sum(arr) == 0:
@@ -67,20 +134,8 @@ class COMP:
     return infected
 
 
-
-  def decode_comp_new(self, infections, compute_stats=True):
-    assert np.all(np.logical_or(infections == 0, infections == 1))
-    infected = np.all(self.M * infections == self.M, axis=1).astype(np.int32)
-    infected_dd = self.get_infected_dd(infected, infections)
-    assert np.all(infected_dd - infected <= 0)
-
-    num_infected_in_test = np.zeros(self.t, dtype=np.int32)
-    for test in range(self.t):
-      for person in range(self.n):
-        if infected[person] > 0 and self.M[person, test] == 1:
-          num_infected_in_test[test] += 1
-    
-    if compute_stats:
+  def compute_stats(self, infected, infected_dd, compute=True):
+    if compute:
       tpos = (infected * self.arr)
       fneg = (1 - infected) * self.arr
       fpos = infected * (1 - self.arr)
@@ -101,7 +156,26 @@ class COMP:
       fn = 0
       surep = 0
       unsurep = 0
+    return tp, fp, fn, surep, unsurep
 
+  def compute_num_infected_in_test(self, infected):
+    num_infected_in_test = np.zeros(self.t, dtype=np.int32)
+    for test in range(self.t):
+      for person in range(self.n):
+        if infected[person] > 0 and self.M[person, test] == 1:
+          num_infected_in_test[test] += 1
+    return num_infected_in_test
+
+  def decode_comp_new(self, infections, compute_stats=True):
+    assert np.all(np.logical_or(infections == 0, infections == 1))
+    infected = np.all(self.M * infections == self.M, axis=1).astype(np.int32)
+    infected_dd = self.get_infected_dd(infected, infections)
+    assert np.all(infected_dd - infected <= 0)
+
+    num_infected_in_test = self.compute_num_infected_in_test(infected)
+
+    tp, fp, fn, surep, unsurep = self.compute_stats(infected, infected_dd,
+        compute=compute_stats)
     return infected, infected_dd, 0., tp, fp, fn, surep, unsurep,\
         num_infected_in_test
 
@@ -113,7 +187,22 @@ class COMP:
   #    the definite defect columns.
   # 4. Goto step 1
   def decode_scomp(self, infections, compute_stats=True):
-    pass
+    A = self.M.T
+    y = infections
+    infected_idx = scomp(A, y)
+    infected = np.zeros(self.n, dtype=np.int32)
+    infected[infected_idx] = 1
+    infected_comp = np.all(self.M * infections == self.M, axis=1).astype(np.int32)
+    infected_dd = self.get_infected_dd(infected_comp, infections)
+    assert np.all(infected_dd - infected <= 0)
+
+    num_infected_in_test = self.compute_num_infected_in_test(infected)
+
+    tp, fp, fn, surep, unsurep = self.compute_stats(infected, infected_dd,
+        compute=compute_stats)
+    return infected, infected_dd, 0., tp, fp, fn, surep, unsurep,\
+        num_infected_in_test
+
 
   # Ax = y
   # x -> infected
