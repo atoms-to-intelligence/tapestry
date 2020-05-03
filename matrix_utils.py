@@ -12,7 +12,7 @@ def load_extra_mats(variables, extra_mlabels):
     full_path = os.path.join(config.extra_mat_dir, name)
     vname = name[:-4]
     extra_mlabels.append(vname)
-    print(name, vname, full_path)
+    #print(name, vname, full_path)
     # is filename .txt or .mat?
     if name[-4:] == ".txt":
       print("txt")
