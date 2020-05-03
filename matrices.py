@@ -4836,6 +4836,11 @@ def validate_kirkman():
 add_kirkman_matrices()
 add_sts_matrices()
 
+# Load matrices from mats/extra for simulation only
+variables = globals() # Dict of module-level var names and value
+extra_mlabels = [] # Easy access to extra matrices using a list
+load_extra_mats(variables, extra_mlabels)
+
 # These will be used in deployment
 optimized_M_45_105_kirkman = optimized_M_45_285_kirkman[:, :105]
 optimized_M_45_195_kirkman = optimized_M_45_285_kirkman[:, :195]
