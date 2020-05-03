@@ -9,6 +9,7 @@ import re
 
 
 from matrices1 import *
+import matrix_utils
 import sts
 
 import config
@@ -4836,6 +4837,12 @@ def validate_kirkman():
 add_kirkman_matrices()
 add_sts_matrices()
 
+# Load matrices from mats/extra for simulation only
+variables = globals() # Dict of module-level var names and value
+extra_mlabels = [] # Easy access to extra matrices using a list
+matrix_utils.load_extra_mats(variables, extra_mlabels)
+extra_mats_dict = {mlabel: variables[mlabel] for mlabel in extra_mlabels}
+
 # These will be used in deployment
 optimized_M_45_105_kirkman = optimized_M_45_285_kirkman[:, :105]
 optimized_M_45_195_kirkman = optimized_M_45_285_kirkman[:, :195]
@@ -4933,6 +4940,10 @@ def print_matrix_stats(M, label):
       'Total sparsity: ', total_sparsity)
 
 if __name__ == '__main__':
+  print(extra_mlabels)
+  for mlabel in extra_mlabels:
+    print_matrix_stats(extra_mats_dict[mlabel], mlabel)
+
   #validate_kirkman()
   #sys.exit(1)
   A = np.arange(8).reshape((2,4)) + 1
