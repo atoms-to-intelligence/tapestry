@@ -1,4 +1,4 @@
-# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 import numpy as np
 import math
 from sklearn.linear_model import Lasso, LassoLars, LassoCV, LassoLarsCV
@@ -6,12 +6,14 @@ import pylops
 from joblib import Parallel, delayed
 
 from comp import create_infection_array_with_num_cases, COMP
-from matrices import *
 import nnompcv
 import sbl
 import l1ls
+import algos
 
 import config
+
+from matrices import *
 
 # Numpy configuration
 np.set_printoptions(precision=3)
@@ -178,6 +180,10 @@ class CS(COMP):
         answer = np.zeros(self.n)
       else:
         answer = l1ls.l1ls_cv(A, y, sigval, self.tau)
+    elif algo in algos.algo_dict:
+      params = { 'A' : self.M.T, 'y' : results }
+      res = algos.algo_dict[algo](params)
+      answer = res["x_est"]
     else:
       raise ValueError('No such algorithm %s' % algo)
 
