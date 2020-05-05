@@ -1,3 +1,4 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 from cs import *
 import pandas as pd
 
@@ -66,6 +67,7 @@ def print_results_COMP():
   #convert_matlab_format(M, sys.stdout)
   filenames = ['test1.txt', 'test2.txt', 'test3.txt', 'test4.txt', 'test5.txt']
   for i, filename in enumerate(filenames):
+    filename = os.path.join(config.data_dir, "ncbs", filename)
     print('Test %d:\n' % (i+1))
     cts = load_cycle_times(filename)
     #bool_y = (cts < 33.479).astype(np.int32)
@@ -81,6 +83,7 @@ def find_max_positive_cycle_time():
   positive_cts = []
   filenames = ['test1.txt', 'test2.txt', 'test3.txt', 'test4.txt', 'test5.txt']
   for i, filename in enumerate(filenames):
+    filename = os.path.join(config.data_dir, "ncbs", filename)
     cts = load_cycle_times(filename)
     CTS.append(cts)
     bool_cts = (cts < cutoff).astype(np.int32)
@@ -171,7 +174,7 @@ def run_harvard_data():
   y = bool_y
   print_infected_people(y, bool_y, 'COMP')
 
-  df = pd.read_csv("harvard_test1.csv")
+  df = pd.read_csv(os.path.join(config.data_dir, "harvard", "harvard_test1.csv"))
   #cts = df.values[:, 0]
   fl = df.values[:, 1:]
 
@@ -203,4 +206,4 @@ def run_harvard_data():
   print_infected_people(y, bool_y, 'combined_COMP_NNOMP_random_cv')
 
 run_on_list_of_files()
-#run_harvard_data()
+run_harvard_data()
