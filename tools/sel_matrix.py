@@ -1,3 +1,6 @@
+import sys
+sys.path.append(".")
+
 from cs_expts import *
 import pickle
 
@@ -29,11 +32,11 @@ t = 16
 #Ms = [np.random.binomial(1, 0.5, size=(t, n)) for i in range(10)]
 #Ms = [optimized_M for i in range(10)]
 Ms = []
+Ms.append(optimized_M_1)
 Ms.append(optimized_M_2)
-#Ms.append(optimized_M_4)
 ss = []
 for d in range(1, 11):
-  stats = find_best_matrix(n, d, t, Ms, num_expts=1000)
+  stats = find_best_matrix(n, d, t, Ms, num_expts=1)
   ss.extend(stats)
   #for stat, M in zip(stats, Ms):
   #  if stat['precision'] >= 0.80 and stat['recall'] >= 0.90:
