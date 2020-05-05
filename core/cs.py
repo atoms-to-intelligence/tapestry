@@ -5,7 +5,7 @@ from sklearn.linear_model import Lasso, LassoLars, LassoCV, LassoLarsCV
 import pylops
 from joblib import Parallel, delayed
 
-from comp import create_infection_array_with_num_cases, COMP
+from core.comp import create_infection_array_with_num_cases, COMP
 from inbuilt_algos import nnompcv
 from inbuilt_algos import sbl
 from inbuilt_algos import l1ls
@@ -13,7 +13,7 @@ import algos
 
 import config
 
-from matrices import *
+from core.matrices import *
 
 # Numpy configuration
 np.set_printoptions(precision=3)
