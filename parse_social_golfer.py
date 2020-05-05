@@ -1,7 +1,8 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
+import config
+
 import string
 import numpy as np
-from config import mat_dir
 import os
 import sys
 
@@ -22,7 +23,7 @@ def parse_social_golfer_wolfram():
   #M = np.zeros((36, 99), dtype=np.int32)
   #M = np.zeros((18, 153), dtype=np.int32)
   M = np.zeros((27, 117), dtype=np.int32)
-  with open('27x117_social_golfer.txt') as f:
+  with open(os.path.join(config.unparsed_mat_dir, 'social_golfers', '27x117_social_golfer.txt')) as f:
     lines = f.readlines()
     col = 0
     for line in lines:
@@ -43,14 +44,14 @@ def write_matrix(M, fname):
   print(np.sum(M, axis=1))
   print(np.sum(M, axis=0))
 
-  full_path = os.path.join(mat_dir, fname)
+  full_path = os.path.join(config.mat_dir, fname)
   np.savetxt(full_path, M, fmt="%d")
 
 def parse_social_golfer_github(t, n, block_size):
   count = 0
   #f = open("48x384_social_golfer.txt")
   #f = open("384_4096.txt")
-  f = open(f"{t}_{n}.txt", "r")
+  f = open(os.path.join(config.unparsed_mat_dir, 'social_golfers', f"{t}_{n}.txt"), "r")
   A = np.zeros((t,n), dtype=np.int32)
   for line in f:
     if line.strip() == '':
@@ -99,7 +100,8 @@ def parse_social_golfer_github(t, n, block_size):
   #assert count*4 == n
   write_matrix(A, f"optimized_M_{t}_{n}_social_golfer.txt")
 
-#parse_social_golfer_github(96, 1312, 32)
-parse_social_golfer_github(45, 285, 15)
+parse_social_golfer_wolfram()
+parse_social_golfer_github(96, 1312, 32)
+#parse_social_golfer_github(45, 285, 15)
 
 
