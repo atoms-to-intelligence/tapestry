@@ -120,7 +120,8 @@ if __name__ == '__main__':
     print("x:", x)
 
   def harvard_30_120_test():
-    cts = read_standard_cts("harvard_30_120.txt")
+    data_file = os.path.join(config.data_dir, 'harvard', "harvard_30_120.txt") 
+    cts = read_standard_cts(data_file)
     M = optimized_M_30_120_kirkman
     config.app_algo = 'COMP'
     print('COMP')
