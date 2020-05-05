@@ -4,7 +4,7 @@
 import sys
 sys.path.append(".")
 
-import config
+from core import config
 from core.cs_expts import CSExpts
 from utils.pickle_manager import stats_manager, expt_stats_pickle_manager
 from core.matrices import kirkman_mlabels, MDict

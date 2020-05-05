@@ -7,7 +7,7 @@ sys.path.append(".")
 
 from get_test_results import mat_codenames, MSizeToLabelDict, MLabelToMatrixDict
 import itertools as it
-import config
+from core import config
 
 import numpy as np
 import pandas as pd

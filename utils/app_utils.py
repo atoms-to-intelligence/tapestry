@@ -4,7 +4,7 @@ if __name__ == '__main__':
 
 import numpy as np
 
-import config
+from core import config
 from core.cs import CS
 
 # Get results given a matrix M and cycle times cts

@@ -2,7 +2,7 @@
 import sys
 sys.path.append(".")
 
-from get_test_results import at_deployment, mat_codenames
+from core.get_test_results import at_deployment, mat_codenames
 from core.cs_expts import run_many_parallel_expts_internal, do_many_expts
 from core.matrices import MDict, validate_kirkman
 

@@ -3,7 +3,7 @@
 
 # The actual get_test_results() is present in app_utils.py
 from utils import app_utils
-import config
+from core import config
 
 
 # Import the dictionary of matrix labels to the actual numpy matrices

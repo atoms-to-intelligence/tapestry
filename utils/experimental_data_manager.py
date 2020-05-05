@@ -9,7 +9,7 @@ import math
 
 import os
 
-import config
+from core import config
 
 from core.matrices import MDict
 

@@ -1,4 +1,4 @@
-import sbl
+from inbuilt_algos import sbl
 import math
 import numpy as np
 

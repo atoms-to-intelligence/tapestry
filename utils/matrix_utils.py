@@ -1,6 +1,6 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 
-import config
+from core import config
 
 import os
 import numpy as np

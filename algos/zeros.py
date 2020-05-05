@@ -4,7 +4,7 @@
 
 # config.py is one directory up. You can import it and other needed files from
 # the parent directory like this. Typically you won't need anything
-import config
+from core import config
 
 # Any standard import works as usual
 import numpy as np

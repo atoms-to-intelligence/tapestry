@@ -2,7 +2,7 @@
 import sys
 sys.path.append(".")
 
-import config
+from core import config
 
 import string
 import numpy as np

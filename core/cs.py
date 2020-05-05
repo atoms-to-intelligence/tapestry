@@ -11,7 +11,7 @@ from inbuilt_algos import sbl
 from inbuilt_algos import l1ls
 import algos
 
-import config
+from core import config
 
 from core.matrices import *
 
