@@ -1,4 +1,4 @@
-import l1_ls_nonneg
+from . import l1_ls_nonneg
 import numpy as np
 import math
 
