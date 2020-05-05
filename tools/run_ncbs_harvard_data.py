@@ -2,7 +2,7 @@
 import sys
 sys.path.append(".")
 
-from cs import *
+from core.cs import *
 import pandas as pd
 
 def load_cycle_times(filename):

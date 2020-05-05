@@ -1,7 +1,7 @@
 import sys
 sys.path.append(".")
 
-from cs_expts import *
+from core.cs_expts import *
 import pickle
 
 import json

@@ -5,7 +5,7 @@ raise ValueError("This is deprecated. Server has its own code to generate these"
 import sys
 sys.path.append(".")
 
-from get_test_results import mat_codenames, MSizeToLabelDict, MLabelToMatrixDict
+from core.get_test_results import mat_codenames, MSizeToLabelDict, MLabelToMatrixDict
 import itertools as it
 from core import config
 
