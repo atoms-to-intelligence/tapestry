@@ -4888,6 +4888,13 @@ for m in MList:
   M.flags.writeable = False
   MDict[m] = M
 
+# Add matrices from mats/extra since they may have arbitrary names
+for m in extra_mlabels:
+  if m not in MDict:
+    M = variables[m]
+    M.flags.writeable = False
+    MDict[m] = M
+
 #print('optimized_M_16_40_ncbs[3,2] =', optimized_M_16_40_ncbs[3,2])
 #print('Writing to optimized_M_16_40_ncbs[3,2]')
 #optimized_M_16_40_ncbs[3,2] = 9
@@ -4940,9 +4947,9 @@ def print_matrix_stats(M, label):
       'Total sparsity: ', total_sparsity)
 
 if __name__ == '__main__':
-  print(extra_mlabels)
-  for mlabel in extra_mlabels:
-    print_matrix_stats(extra_mats_dict[mlabel], mlabel)
+  #print(extra_mlabels)
+  #for mlabel in extra_mlabels:
+  #  print_matrix_stats(extra_mats_dict[mlabel], mlabel)
 
   #validate_kirkman()
   #sys.exit(1)
@@ -4987,8 +4994,8 @@ if __name__ == '__main__':
   #MList = [item for item in dir() if item.startswith("optimized_M_")]
   #for M in [optimized_M_1, optimized_M_2, optimized_M_3, optimized_M_4]:
   variables = globals()
-  for m in MList:
-    M = variables[m]
+  for m in MDict:
+    M = MDict[m]
     row_sums = np.sum(M, axis=1)
     col_sums = np.sum(M, axis=0)
     row_sparsity = np.max(row_sums)
