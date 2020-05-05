@@ -47,7 +47,7 @@ def read_harvard_data_cts():
   return pos_idx, cts
 
 def get_israel_data_cts():
-  data_file = os.path.join(config.root_dir, "israel_2_positives_cts.txt")
+  data_file = os.path.join(config.data_dir, 'israel', "israel_2_positives_cts.txt")
   with open(data_file, "r") as f:
     cts = [float(item.strip()) for item in f.readlines()]
     print('positive ys:', np.argwhere(cts) + 1)
