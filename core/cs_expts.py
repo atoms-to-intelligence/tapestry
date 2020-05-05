@@ -4,7 +4,7 @@ if __name__=='__main__':
 
 from matrix_gen import sts
 from core.cs import *
-from pickle_manager import stats_manager
+from utils.pickle_manager import stats_manager
 
 import json
 import pandas as pd

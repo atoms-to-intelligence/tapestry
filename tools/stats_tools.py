@@ -1,10 +1,13 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 # Utility methods to parse stats dictionary
 
+import sys
+sys.path.append(".")
+
 import config
-from cs_expts import CSExpts
-from pickle_manager import stats_manager, expt_stats_pickle_manager
-from matrices import kirkman_mlabels, MDict
+from core.cs_expts import CSExpts
+from utils.pickle_manager import stats_manager, expt_stats_pickle_manager
+from core.matrices import kirkman_mlabels, MDict
 
 import numpy as np
 import json
@@ -157,9 +160,9 @@ def migrate_stats_from_dict_to_directory():
         stats_manager.save(mlabel, algo, d, stats[mlabel][algo][d])
 
 if __name__ == '__main__':
-  migrate_stats_from_dict_to_directory()
+  #migrate_stats_from_dict_to_directory()
   #get_stats_for_deployed_matrices()
-  #get_stats_for_kirkman_matrices()
+  get_stats_for_kirkman_matrices()
   #print(make_many_batches([1, 2, 3], 10))
   #pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
   #stats = pm.get_stats_dict()
@@ -169,4 +172,6 @@ if __name__ == '__main__':
 
   #s = json.dumps(combined, indent=2)
   #print(s)
+else:
+  raise ValueError("This is not a library file. Can't import this. Use standalone.")
 

@@ -3,8 +3,8 @@ import sys
 sys.path.append(".")
 
 from get_test_results import at_deployment, mat_codenames
-from cs_expts import run_many_parallel_expts_internal, do_many_expts
-from matrices import MDict, validate_kirkman
+from core.cs_expts import run_many_parallel_expts_internal, do_many_expts
+from core.matrices import MDict, validate_kirkman
 
 def test_get_test_results():
   at_deployment()
@@ -34,7 +34,7 @@ def test_all_matrices_and_algos():
     num_expts=1
     add_noise = True
     d_range = list(range(0,11))
-    n_jobs = len(d_range)
+    n_jobs = 4 #len(d_range)
 
     run_many_parallel_expts_internal(num_expts, n, t, add_noise, M, algos,
             d_range, n_jobs, xslist=[None for d in d_range], mlabel=mlabel)
