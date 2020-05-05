@@ -12,7 +12,7 @@ if __name__ == '__main__':
   print(np.sum(A, axis=1))
   print(np.sum(A, axis=0))
   from utils.app_utils import get_test_results
-  from get_test_results import get_result_string_from_lists
+  from core.get_test_results import get_result_string_from_lists
 
   n = 384
   config.app_algo = 'SBL'
