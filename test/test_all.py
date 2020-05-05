@@ -1,4 +1,7 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
+import sys
+sys.path.append(".")
+
 from get_test_results import at_deployment, mat_codenames
 from cs_expts import run_many_parallel_expts_internal, do_many_expts
 from matrices import MDict, validate_kirkman
