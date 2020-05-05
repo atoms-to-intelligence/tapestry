@@ -1,3 +1,9 @@
+
+raise ValueError("This file is deprecated. Please do not use this.")
+
+
+
+
 import numpy as np
 import math
 from sklearn.linear_model import Lasso, LassoLars, LassoCV, LassoLarsCV
