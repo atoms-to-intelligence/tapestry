@@ -1,5 +1,10 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
+raise ValueError("This is deprecated. Server has its own code to generate these")
+
 #from matrices import *
+import sys
+sys.path.append(".")
+
 from get_test_results import mat_codenames, MSizeToLabelDict, MLabelToMatrixDict
 import itertools as it
 import config
