@@ -1,10 +1,12 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
+import sys
+sys.path.append(".")
+
 import config
 
 import string
 import numpy as np
 import os
-import sys
 
 def parse_social_golfer_wolfram():
   row_map = {}
