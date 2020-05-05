@@ -1,4 +1,8 @@
-from . import l1_ls_nonneg
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
+if __name__=='__main__':
+  raise ValueError('This is a library file. Import this in a test file and run.')
+
+from inbuilt_algos import l1_ls_nonneg
 import numpy as np
 import math
 

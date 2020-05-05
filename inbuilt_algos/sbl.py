@@ -1,3 +1,6 @@
+if __name__=='__main__':
+  raise ValueError('This is a library file. Import this in a test file and run.')
+
 import numpy as np
 import math
 

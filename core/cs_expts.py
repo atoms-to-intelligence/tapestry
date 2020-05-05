@@ -1,4 +1,4 @@
-# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 if __name__=='__main__':
   raise ValueError('Use tools/run_expts.py. This is a library file.')
 
