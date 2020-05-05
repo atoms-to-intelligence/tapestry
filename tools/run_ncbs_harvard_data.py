@@ -1,4 +1,7 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
+import sys
+sys.path.append(".")
+
 from cs import *
 import pandas as pd
 
