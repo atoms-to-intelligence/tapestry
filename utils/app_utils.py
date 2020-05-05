@@ -1,8 +1,11 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
+if __name__ == '__main__':
+  raise ValueError('Run utils/test_app_utils.py. This is a library file.')
+
 import numpy as np
 
 import config
-from cs import CS
+from core.cs import CS
 
 # Get results given a matrix M and cycle times cts
 def get_test_results(M, cts):
@@ -89,56 +92,4 @@ def _get_lists_from_infected(infected, infected_dd, n):
       neg_list.append(i+1)
 
   return sure_list, unsure_list, neg_list
-
-if __name__ == '__main__':
-  # These imports and functions are for testing purposes only
-  from matrices import *
-  from experimental_data_manager import read_harvard_data_cts, read_standard_cts
-
-  # Test using Harvard and ncbs data
-  def run_tests():
-    pos_idx, cts = read_harvard_data_cts()
-    print('cts:')
-    print(cts)
-    y = _get_y_from_cts(cts)
-    print('y:')
-    print(y)
-
-    for algo in ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv']:
-      config.app_algo = algo
-      print("\nUsing algorithm %s \n" % config.app_algo)
-      harvard_test()
-
-  def harvard_test():
-    print("Test on Harvard Dataset")
-    pos_idx, cts = read_harvard_data_cts()
-    M = optimized_M_3
-    sure_list, unsure_list, neg_list, x = get_test_results(M, cts)
-    print("Sure list:", sure_list)
-    print("Unsure list:", unsure_list)
-    print("Neg list:", neg_list)
-    print("x:", x)
-
-  def harvard_30_120_test():
-    data_file = os.path.join(config.data_dir, 'harvard', "harvard_30_120.txt") 
-    cts = read_standard_cts(data_file)
-    M = optimized_M_30_120_kirkman
-    config.app_algo = 'COMP'
-    print('COMP')
-    sure_list, unsure_list, neg_list, x = get_test_results(M, cts)
-    print("Sure list:", sure_list)
-    print("Unsure list:", unsure_list)
-    print("Neg list:", neg_list)
-    print("x:", x)
-
-    config.app_algo = 'SBL'
-    print('SBL')
-    sure_list, unsure_list, neg_list, x = get_test_results(M, cts)
-    print("Sure list:", sure_list)
-    print("Unsure list:", unsure_list)
-    print("Neg list:", neg_list)
-    print("x:", x)
-
-  run_tests()
-  harvard_30_120_test()
 

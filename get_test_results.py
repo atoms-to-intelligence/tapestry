@@ -2,7 +2,7 @@
 ### Get the results for a given test. Implemented in function get_test_results() ###
 
 # The actual get_test_results() is present in app_utils.py
-import app_utils
+from utils import app_utils
 import config
 
 
@@ -10,7 +10,7 @@ import config
 #
 # This dictionary is **auto-generated** by looking at all the variables named
 # optimized_M_* in matrices.py and matrices1.py
-from matrices import MDict as MLabelToMatrixDict
+from core.matrices import MDict as MLabelToMatrixDict
 
 # For paths
 import os
@@ -480,7 +480,7 @@ def api_sanity_checks():
 # configured algorithm. Useful for sanity check. Should not throw an
 # exception.
 def test_harvard_data():
-  from experimental_data_manager import read_harvard_data_cts
+  from utils.experimental_data_manager import read_harvard_data_cts
   print('Testing Harvard data with config.app_algo =', config.app_algo)
   pos_idx, cts = read_harvard_data_cts()
   res = get_test_results("optimized_M_3", cts)
@@ -535,7 +535,7 @@ def test_harvard_data():
     assert idx in pos_list
 
 def fake_data_test():
-  from experimental_data_manager import get_random_fake_test_data
+  from utils.experimental_data_manager import get_random_fake_test_data
   size_to_label_dict = get_matrix_sizes_and_labels()
   label_to_M_dict = get_matrix_labels_and_matrices()
   for msize in size_to_label_dict:
