@@ -27,13 +27,15 @@ prefer_recall = False
 # set_root_dir is now called for root dir changes. Either call this from your
 # code or do the changes in this function yourself
 def set_root_dir(new_root_dir):
-  global root_dir, mat_pdf_dir, mat_dir, kirkman_dir, sts_dir, extra_mat_dir
+  global root_dir, mat_pdf_dir, mat_dir, kirkman_dir, sts_dir, extra_mat_dir,\
+          data_dir
   root_dir = new_root_dir
   mat_pdf_dir = os.path.join(root_dir, 'mat_pdfs')
   mat_dir = os.path.join(root_dir, 'mats')
   kirkman_dir = os.path.join(mat_dir, "kirkman")
   sts_dir = os.path.join(mat_dir, "sts")
   extra_mat_dir = os.path.join(mat_dir, 'extra')
+  data_dir = os.path.join(root_dir, 'data')
 
 set_root_dir('.')
 

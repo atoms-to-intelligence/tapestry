@@ -11,9 +11,9 @@ from matrices import MDict
 
 # Standard format
 # 1 entry per line
-def read_standard_cts(fname):
-  data_dir = config.root_dir
-  data_file = os.path.join(data_dir, fname)
+def read_standard_cts(data_file):
+  #data_dir = config.data_dir
+  #data_file = os.path.join(data_dir, fname)
   with open(data_file, "r") as f:
     cts = [ float(item.strip()) for item in f.readlines() ]
   cts = np.array(cts)
@@ -22,7 +22,7 @@ def read_standard_cts(fname):
 
 def read_harvard_data_cts():
   t = 24
-  harvard_data_file = os.path.join(config.root_dir, "harvard_test1.csv")
+  harvard_data_file = os.path.join(config.data_dir, 'harvard', "harvard_test1.csv")
   df = pd.read_csv(harvard_data_file)
   #cts = df.values[:, 0]
   fl = df.values[:, 1:]

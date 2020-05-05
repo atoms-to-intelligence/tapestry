@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
   # Test using Harvard and ncbs data
   def run_tests():
-    cts = read_harvard_data_cts()
+    pos_idx, cts = read_harvard_data_cts()
     print('cts:')
     print(cts)
     y = _get_y_from_cts(cts)
@@ -111,7 +111,7 @@ if __name__ == '__main__':
 
   def harvard_test():
     print("Test on Harvard Dataset")
-    cts = read_harvard_data_cts()
+    pos_idx, cts = read_harvard_data_cts()
     M = optimized_M_3
     sure_list, unsure_list, neg_list, x = get_test_results(M, cts)
     print("Sure list:", sure_list)
@@ -138,6 +138,6 @@ if __name__ == '__main__':
     print("Neg list:", neg_list)
     print("x:", x)
 
-  #run_tests()
+  run_tests()
   harvard_30_120_test()
 
