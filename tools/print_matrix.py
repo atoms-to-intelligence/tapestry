@@ -1,5 +1,7 @@
-from matrices import *
 import sys
+sys.path.append(".")
+
+from matrices import *
 
 def convert_printable_format(M, f):
   n = M.shape[1]
