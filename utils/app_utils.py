@@ -9,13 +9,13 @@ from core.cs import CS
 
 # Get results given a matrix M and cycle times cts
 def get_test_results(M, cts):
-  y = _get_y_from_cts(cts)
+  y = get_y_from_cts(cts)
   sure_list, unsure_list, neg_list, x = _get_infected_lists(M, y)
   return sure_list, unsure_list, neg_list, x
 
 
 # Get y (viral loads in each test) from cycle times
-def _get_y_from_cts(cts):
+def get_y_from_cts(cts):
   # First get the min cycle time. This corresponds to the test with the
   # maximum viral load. This sample will have the least amount of variance
   # in cycle time, so good to choose this as the baseline

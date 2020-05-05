@@ -12,7 +12,7 @@ if __name__ == '__main__':
     pos_idx, cts = read_harvard_data_cts()
     print('cts:')
     print(cts)
-    y = _get_y_from_cts(cts)
+    y = get_y_from_cts(cts)
     print('y:')
     print(y)
 
