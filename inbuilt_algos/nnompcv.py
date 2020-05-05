@@ -1,3 +1,4 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 import numpy as np
 import math
 from sklearn.preprocessing import normalize
@@ -43,20 +44,4 @@ def nnomp(A, Acv, y, ycv, d, cv=False):
     return minx, minepscv, min_i, errors
   else:
     return x1
-
-if __name__=='__main__':
-  from matrices import *
-  A=optimized_M_3
-  print(np.shape(A))
-  print('**')
-  x = np.random.rand(A.shape[1])
-  x[np.random.permutation(A.shape[1])[0:A.shape[1]-5]]=0
-  y=np.matmul(A,x)
-  xe=nnomp(A,0,y,0,8)
-  print(np.nonzero(xe))
-  print(np.nonzero(x))
-
-
-
-
 
