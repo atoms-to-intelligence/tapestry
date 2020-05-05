@@ -1,6 +1,6 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 
-import config
+from core import config
 
 import os
 import numpy as np
@@ -27,8 +27,4 @@ def load_extra_mats(variables, extra_mlabels):
       raise ValueError('Invalid extension')
 
 if __name__ == '__main__':
-  d = {}
-  extra_mlabels = []
-  load_extra_mats(d, extra_mlabels)
-  print(extra_mlabels)
-  print([ (key, d[key].shape) for key in d])
+  raise ValueError('This is a library file. Please call test_matrix_utils.py instead')
