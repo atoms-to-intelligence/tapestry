@@ -57,7 +57,7 @@ def get_israel_data_cts():
 
 def parse_israel_matrix():
   A = np.zeros((48,384), dtype=np.int32)
-  data_file = os.path.join(config.mat_dir, "israel_48_384_matrix.txt")
+  data_file = os.path.join(config.mat_dir, "unparsed", "israel_48_384_matrix.txt")
   with open(data_file) as f:
     for line in f.readlines()[1:]:
       words = line.strip().split()
