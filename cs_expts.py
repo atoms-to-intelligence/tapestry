@@ -1,4 +1,5 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=2
+from matrix_gen import sts
 from cs import *
 from pickle_manager import stats_manager
 
@@ -427,7 +428,7 @@ def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos,
     t = M.shape[0]
     add_noise = True
     matrix = M
-    n_jobs = 4
+    n_jobs = 1
     explist = run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix, algos,
         d_range, n_jobs, xslist=[None for d in d_range], mlabel=label)
     all_exps_list.append(explist)
@@ -552,7 +553,7 @@ def print_expts(expts, num_expts, t):
 
 def compare_sts_vs_kirkman():
   t = 27
-  M = optimized_M_27_117_social_golfer
+  M = optimized_M_27_117_kirkman
 
   best_ds_kirkman = [run_with_matrix_n(M, t, n) for n in [50, 60, 70, 80, 90, 100, 110,
     117]]
@@ -774,10 +775,10 @@ def run_stats_for_these_matrices(labels, save):
   #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
   #d_ranges = [list(range(1, 6)) for label in labels]
 
-  num_expts = 100
+  num_expts = 1
   #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',
   #    'combined_COMP_l1ls_cv']
-  algos = ['SCOMP']
+  algos = ['SBL', 'ZEROS', 'l1ls', 'l1ls_cv']
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
       num_expts, save)
 

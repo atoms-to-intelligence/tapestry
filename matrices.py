@@ -10,7 +10,7 @@ import re
 
 from matrices1 import *
 import matrix_utils
-import sts
+from matrix_gen import sts
 
 import config
 
