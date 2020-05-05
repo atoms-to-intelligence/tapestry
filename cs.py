@@ -7,7 +7,7 @@ from joblib import Parallel, delayed
 
 from comp import create_infection_array_with_num_cases, COMP
 import nnompcv
-import sbl
+from inbuilt_algos import sbl
 import l1ls
 import algos
 
