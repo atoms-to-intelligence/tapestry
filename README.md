@@ -1,4 +1,15 @@
 # Compressed Sensing Algorithms for Pooled Sampling and Testing using qPCR 
+<!-- vim-markdown-toc GFM -->
+
+* [Installation and Setup](#installation-and-setup)
+* [Running Synthetic Experiments](#running-synthetic-experiments)
+* [Adding Sensing Matrices](#adding-sensing-matrices)
+  * [Deployed Matrices](#deployed-matrices)
+* [Adding Algorithms](#adding-algorithms)
+  * [Detailed instructions for adding algorithms](#detailed-instructions-for-adding-algorithms)
+* [Running Algorithms on Lab Experiments](#running-algorithms-on-lab-experiments)
+
+<!-- vim-markdown-toc -->
 
 Code for the algorithms used in the following paper:
 https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
@@ -20,10 +31,10 @@ Install dependencies using:
 pip3 install -r requirements.txt
 ```
 
-# Running Experiments
+# Running Synthetic Experiments
 
 Experiments are run with the script `tools/run_expts.py`, with an invocation
-of the function `run_stats_for_these_matrices()`. An examples invocation of
+of the function `run_stats_for_these_matrices()`. An example invocation of
 this is:
 
 ```python
@@ -35,8 +46,9 @@ this is:
     )
 ```
 
-Here `"optimized_M_45_105_kirkman"` and `"optimized_M_45_195_kirkman"` are
-labels of matrices.
+Here `"optimized_M_45_105_kirkman"` and `"optimized_M_93_961_kirkman"` are
+labels of matrices, of size 45x105 and 93x961 respectively. This function runs many
+experiments for each of the matrices
 
 # Adding Sensing Matrices
 
@@ -62,6 +74,12 @@ corresponding function to be called.
 
 Detailed instructions for adding new algorithms can be found in
 `algos/__init__.py` and `algos/zeros.py`
+
+# Running Algorithms on Lab Experiments
+
+The script `tools/run_ncbs_harvard_data.py` runs the algorithms `COMP`, `SBL`, and
+`combined_COMP_NNOMP_random_cv` on these datasets. Please modify this script
+and add any algorithms you may want to run.
 
 <!---
 ![Python application](https://github.com/ssgosh/group-test/workflows/Python%20application/badge.svg)
