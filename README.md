@@ -88,7 +88,10 @@ def run_stats_for_these_matrices(labels, save):
       num_expts, save)
 
 ```
-For each matrix, all `d` 
+This function first finds the numpy matrices corresponding to the given matrix labels
+(from MDict) and puts them in the list `mat`. It then finds the number of
+rows `t` for each matrix. The number of infections for which each matrix
+must be run is given in 
 
 ## Data Model
 
