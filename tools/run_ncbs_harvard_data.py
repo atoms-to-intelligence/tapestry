@@ -114,17 +114,21 @@ def run_on_list_of_files():
   p = 0.93
   ys = []
   bool_ys = []
-  for cts in positive_cts:
+  for i, cts in enumerate(positive_cts):
     bool_y = (cts > 0).astype(np.int32)
     y = (1+p) ** (m - cts)
     y = y * bool_y
-    #print(y)
     #print((m - cts) * bool_y)
     ys.append(y)
     bool_ys.append(bool_y)
+    print('Test', i + 1)
+    print(y)
+    print(bool_y)
 
   #for i, y in enumerate(ys):
   #  print('Test', i + 1)
+  #print(ys)
+  #print(bool_ys)
   #convert_matlab_format(ys, sys.stdout)
 
   #sys.exit(1)
@@ -185,7 +189,7 @@ def run_harvard_data():
   cts = np.zeros(t)
   for j in range(t):
     if bool_y[j] == 0:
-      print('Skipping', j)
+      #print('Skipping', j)
       continue
 
     for i in range(fl.shape[0]):
