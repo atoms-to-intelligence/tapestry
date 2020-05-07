@@ -4937,6 +4937,25 @@ def strided_randomized_matrix(A, n_strides):
 #optimized_M_384_1320_strided_sts = strided_matrix(sts.sts(45), 8)
 #optimized_M_360_1320_strided_sts = strided_randomized_matrix(sts.sts(45), 8)
 
+def hasDuplicateSlices(M, axis):
+  [m, n] = M.shape
+  if axis not in ['row', 'col']:
+    raise Exception("Only argument values 'row' or 'col' acceptable")
+  if axis == 'row':
+    M_filt = np.unique(M, axis=0)
+    m_new = M_filt.shape[0]
+    if m_new < m:
+      return True
+    else:
+      return False
+  else:
+    M_filt = np.unique(M, axis=1)
+    n_new = M_filt.shape[1]
+    if n_new < n:
+      return True
+    else:
+      return False
+
 def print_matrix_stats(M, label):
   row_sums = np.sum(M, axis=1)
   col_sums = np.sum(M, axis=0)
