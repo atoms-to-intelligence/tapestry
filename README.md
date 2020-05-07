@@ -11,8 +11,12 @@ https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
 * [Adding Sensing Matrices](#adding-sensing-matrices)
   * [Deployed Matrices](#deployed-matrices)
 * [Adding Algorithms](#adding-algorithms)
+  * [Available algorithms](#available-algorithms)
   * [Detailed instructions for adding algorithms](#detailed-instructions-for-adding-algorithms)
 * [Running Algorithms on Lab Experiments](#running-algorithms-on-lab-experiments)
+  * [Experimental data location](#experimental-data-location)
+* [Advanced Behaviour / Details](#advanced-behaviour--details)
+  * [Statistics](#statistics)
 
 <!-- vim-markdown-toc -->
 
@@ -136,6 +140,17 @@ New algorithms can be easily added to the `algos/` folder. Please edit
 `algos_dict` to add your algorithm name and register the function
 corresponding function to be called.
 
+## Available algorithms
+
+Inbuilt algorithms are in `inbuilt/` folder. The following algorithms are
+available: `'COMP', 'SBL', 'l1ls', 'l1ls_cv', 'NNOMP', 'NNOMP_random_cv'`. You
+may also run algorithms like `'combined_COMP_l1ls', 'combined_COMP_NNOMP'` etc,
+which first run COMP and filter out the columns corresponding to negative
+samples (as well as rows which correspond to negative tests).
+
+Following inbuilt algorithms are deprecated: 
+  `'lasso', 'lasso_cv', 'ista', 'fista'`
+
 ## Detailed instructions for adding algorithms
 
 Detailed instructions for adding new algorithms can be found in
@@ -146,6 +161,32 @@ Detailed instructions for adding new algorithms can be found in
 The script `tools/run_ncbs_harvard_data.py` runs the algorithms `COMP`, `SBL`, and
 `combined_COMP_NNOMP_random_cv` on these datasets. Please modify this script
 and add any algorithms you may want to run.
+
+The script `tools/experimental_data_manager.py` contains methods which return
+data from experiments
+
+## Experimental data location
+
+# Advanced Behaviour / Details
+
+## Statistics
+
+Stat for each individual experiment may be saved by setting `save=True` when invoking 
+`run_many_parallel_expts_many_matrices() or run_stats_for_these_matrices()`.
+These are saved in a directory structure under the folder `expts_stats/`. This
+folder *must not be added* to the repo, since its contents can be of the order
+of several hundred MegaBytes. 
+
+The directory structure for this is of the form
+`expt_stats/[matrix_label]/[algo]/[d]/expt_stats.p.gz`. `expt_stats.p.gz`
+contains a list containing the stats for each individual experiment. 
+
+These stats can be used to perform post-facto analysis, such as finding
+confidence intervals for various stats or finding why a particular algorithm fails on a
+particular 'x'.
+
+The script `tools/stats_tools.py` finds confidence intervals using these
+pickled experiments.
 
 <!---
 ![Python application](https://github.com/ssgosh/group-test/workflows/Python%20application/badge.svg)
