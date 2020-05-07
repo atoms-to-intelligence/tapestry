@@ -105,12 +105,12 @@ from 0.
 
 Once we have 'x', then given a t x n matrix A, we may generate 'y', the vector
 of test results. In the noiseless case, `y = Ax`. In the noisy case, `y =
-Ax(1+p)^eps. Here p = 0.95 and eps = vector of independent Gaussians with mean
+Ax(1+p)^eps`. Here p = 0.95 and eps = vector of independent Gaussians with mean
 0 and standard deviation 0.1. This model comes from the PCR amplification
 process, where we can only observe cycle times for a given threshold
 fluorescence value. The observed cycle time itself has some variability, which
 eps is modelling.  Essentially, log y is Gaussian. This is found in
-`cs.py::
+`core/cs.py::get_quantitative_results()`
                                                                              
 
 # Adding Sensing Matrices
