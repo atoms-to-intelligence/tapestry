@@ -5,7 +5,9 @@ https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
 <!-- vim-markdown-toc GFM -->
 
 * [Installation and Setup](#installation-and-setup)
+* [Code Layout](#code-layout)
 * [Running Synthetic Experiments](#running-synthetic-experiments)
+  * [Data Model](#data-model)
 * [Adding Sensing Matrices](#adding-sensing-matrices)
   * [Deployed Matrices](#deployed-matrices)
 * [Adding Algorithms](#adding-algorithms)
@@ -30,11 +32,22 @@ Install dependencies using:
 ```
 pip3 install -r requirements.txt
 ```
+# Code Layout
+
+Code is layed out in subdirectories like this:
+
+* `core/`: The core functionality, such as loading matrices, data model, performing
+experiments etc are exposed as libraries.
+* `tools/`: Executable scripts which use this functionality. These are the
+ones you should run.
+* `algos/`: pluggable algorithms can be added to this folder and be used.
+* `inbuilt_algos/`: algorithms already written are in this folder.
+* `utils/`: various utility methods and helpers.
 
 # Running Synthetic Experiments
 
-Synthetic experiments are run by generating 1000 'x' values from our noise
-model. See details of the noise model in the paper or 
+Synthetic experiments are run by generating 1000 'x' values from our data
+model.
 
 Experiments are run with the script `tools/run_expts.py`, with an invocation
 of the function `run_stats_for_these_matrices()`. An example invocation of
@@ -75,7 +88,30 @@ def run_stats_for_these_matrices(labels, save):
       num_expts, save)
 
 ```
-For each matrix, all `d`
+For each matrix, all `d` 
+
+## Data Model
+
+The data model is following. Say there are 'n' samples, out of which 'd' are
+infected. Then we create a 0/1 vector of infections such that each choice of
+'d' infections is equally likely. This is found in
+`core/comp.py::create_infection_array_with_num_cases()`. Let's call this `bool_x`
+
+'x', the vector of viral loads in each sample, is generated from `bool_x`. The
+positive values of 'x' are drawn from the range `[1/32768, 1]`
+uniformly at random. Notice that this 1) has high dynamic range, spanning many
+orders of magnitude as we may expect in real viral loads 2) is bounded away
+from 0.
+
+Once we have 'x', then given a t x n matrix A, we may generate 'y', the vector
+of test results. In the noiseless case, `y = Ax`. In the noisy case, `y =
+Ax(1+p)^eps. Here p = 0.95 and eps = vector of independent Gaussians with mean
+0 and standard deviation 0.1. This model comes from the PCR amplification
+process, where we can only observe cycle times for a given threshold
+fluorescence value. The observed cycle time itself has some variability, which
+eps is modelling.  Essentially, log y is Gaussian. This is found in
+`cs.py::
+                                                                             
 
 # Adding Sensing Matrices
 
