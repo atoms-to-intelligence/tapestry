@@ -1,4 +1,8 @@
 # vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
+
+if __name__=='__main__':
+  raise ValueError('Use core/test_get_test_results.py. This is a library file.')
+
 ### Get the results for a given test. Implemented in function get_test_results() ###
 
 # The actual get_test_results() is present in app_utils.py
@@ -549,15 +553,3 @@ def fake_data_test():
     for idx in bool_x:
       assert idx in pos_list
 
-if __name__ == '__main__':
-  #matrix_pdfs_sanity_check()
-  #sanity_check_for_matrices()
-  #test_harvard_data()
-  #api_sanity_checks()
-  #fake_data_test()
-  at_deployment()
-
-  #import numpy as np
-  #test_get_result_string_from_lists()
-
-  
