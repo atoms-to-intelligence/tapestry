@@ -228,19 +228,23 @@ TBD
 
 # Adding Algorithms
 
-New algorithms can be easily added to the `algos/` folder. Please edit
-`algos_dict` to add your algorithm name and register the corresponding
-function to be called.
+New algorithms can be easily added to the `algos/` folder. Please edit `algos_dict`
+to add your algorithm name and register the corresponding function to be called.
+For example, to add an algorithm called `MY_ALG`, add a python file called
+`my_alg.py`, with the following content: 
+
+```python
+```
 
 ## Running synthetic expts with new algorithm
 
 ## Inbuilt algorithms
 
 Inbuilt algorithms are in `inbuilt/` folder. The following algorithms are
-available: `'COMP', 'SBL', 'l1ls', 'l1ls_cv', 'NNOMP', 'NNOMP_random_cv'`. You
-may also run algorithms like `'combined_COMP_l1ls', 'combined_COMP_NNOMP'` etc,
-which first run COMP and filter out the columns corresponding to negative
-samples (as well as rows which correspond to negative tests).
+available: `'COMP', 'SBL', 'l1ls', 'l1ls_cv', 'NNOMP', 'NNOMP_random_cv'`. You may
+also run algorithms like `'combined_COMP_l1ls', 'combined_COMP_NNOMP'` etc, which
+first run COMP and filter out the columns corresponding to negative samples 
+(as well as rows which correspond to negative tests).
 
 Following inbuilt algorithms are deprecated: 
   `'lasso', 'lasso_cv', 'ista', 'fista'`
