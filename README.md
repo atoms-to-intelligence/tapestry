@@ -168,7 +168,9 @@ the predicted positives are classified as `unsurep`. `surep` is computed using
 the Definite Defects algorithm.
 
 If you want to modify the columns which are printed in the above table, see
-`core/cs_expts.py::print_expts()`
+`core/cs_expts.py::print_expts()`. Many more statistics are already computed.
+See `__init__()`, `print_stats()` and `return_stats()` methods of class `CSExpts` defined in 
+`core/cs_expts.py`.
 
 ### Saving the output
 
@@ -181,8 +183,8 @@ python3 tools/run_expts.py > output_MY_MATRIX_MY_ALG.txt
 
 Stats for individual experiments may be saved as in [Detailed Statistics](#detailed-statistics).
 
-Saving the aggregate stats in a dictionary for later perusal is also desirable
-but not currently implemented.
+Saving the aggregate stats in a dictionary for later perusal also desirable
+but not currently implemented. 
 
 ## Data Model
 
@@ -217,14 +219,18 @@ delimiters of any kind. This is the default format used by `numpy.loadtxt` and
 `numpy.savetxt`.
 
 All matrices are added to the matrices dictionary `MDict` in `core/matrices.py`.
+Matrix labels are also available as python variable names in `tools/run_expts.py`
+and other relevant places.
 
 ## Deployed Matrices
+
+TBD
 
 # Adding Algorithms
 
 New algorithms can be easily added to the `algos/` folder. Please edit
-`algos_dict` to add your algorithm name and register the function
-corresponding function to be called.
+`algos_dict` to add your algorithm name and register the corresponding
+function to be called.
 
 ## Running synthetic expts with new algorithm
 
