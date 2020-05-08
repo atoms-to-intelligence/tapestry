@@ -130,7 +130,8 @@ def run_stats_for_these_matrices(labels, save):
   some cases
 
 These are then passed to the method `run_many_parallel_expts_many_matrices()`.
-The `save` flag saves each experiment
+The `save` flag saves each experiment. See [Detailed Statistics](#detailed-statistics)
+for detail.
 
 For each experiment, 'x' (viral load vector for each sample) is sampled from
 our [data model](#data-model), `y = Ax` is computed (A being the matrix), and
@@ -166,10 +167,22 @@ expt. `surep` is the average number of positives we are sure about, and rest of
 the predicted positives are classified as `unsurep`. `surep` is computed using
 the Definite Defects algorithm.
 
+If you want to modify the columns which are printed in the above table, see
+`core/cs_expts.py::print_expts()`
+
 ### Saving the output
 
 Typically, the output tables may be saved in a text file using redirection.
 e.g.:
+
+```bash
+python3 tools/run_expts.py > output_MY_MATRIX_MY_ALG.txt
+```
+
+Stats for individual experiments may be saved as in [Detailed Statistics](#detailed-statistics).
+
+Saving the aggregate stats in a dictionary for later perusal is also desirable
+but not currently implemented.
 
 ## Data Model
 
