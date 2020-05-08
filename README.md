@@ -56,6 +56,9 @@ ones you should run.
 * `algos/`: pluggable algorithms can be added to this folder and be used.
 * `inbuilt_algos/`: algorithms already written are in this folder.
 * `utils/`: various utility methods and helpers.
+* `matrix_gen/`: code for generating sensing matrices.
+* `test/`: Code which runs tests
+* `matlab/`: some algorithm implementation in matlab. These are not actively maintained.
 
 Data and other files are layed out like this:
 
@@ -299,6 +302,8 @@ algo_dict = {
     }
 ```
 
+## Testing your new algorithm
+
 ## Running synthetic expts with new algorithm
 
 Once the algorithm is added, modify `core/cs.py::run_stats_for_these_matrices()`
@@ -383,6 +388,15 @@ Data is located in the `data/` folder, with subfolders indicating the source of 
 data (such as `harvard`, `ncbs`). These are in various formats, and may contain raw
 flourescence values for each well and cycle or cycle time thresholds for a given
 flourescence. 
+
+# Running Tests
+
+`test/test_all.py` performs various sanity checks for deployed matrices and also runs
+each deployed matrix on various algorithms. Do add your algorithm to file so that
+tests are run on it.
+
+Some smaller tests are also present in various files, such as `inbuilt_algos/test_sbl.py`,
+`core/test_get_test_results.py` etc.
 
 # Advanced Behaviour / Details
 
