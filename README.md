@@ -13,6 +13,8 @@ https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
 * [Adding Sensing Matrices](#adding-sensing-matrices)
   * [Deployed Matrices](#deployed-matrices)
 * [Adding Algorithms](#adding-algorithms)
+  * [Adding an algorithm file to `algos/` folder](#adding-an-algorithm-file-to-algos-folder)
+  * [Adding Algorithm to `algo_dict`](#adding-algorithm-to-algo_dict)
   * [Running synthetic expts with new algorithm](#running-synthetic-expts-with-new-algorithm)
   * [Inbuilt algorithms](#inbuilt-algorithms)
   * [Detailed instructions for adding algorithms](#detailed-instructions-for-adding-algorithms)
@@ -211,32 +213,113 @@ eps is modelling.  Essentially, log y is Gaussian. This is found in
 # Adding Sensing Matrices
 
 Matrices are present in the `mats/` subfolder in the form of txt files which are
-loaded at startup by `core/matrices.py`. You may drop your own matrices in
-`mats/extra/` folder, which will be automatically loaded and assigned a
+loaded at startup by `core/matrices.py`. *You may copy your own matrices in
+`mats/extra/` folder*, which will be automatically loaded and assigned a
 matrix label, which is the name of the matrix file minus the extension. Matrix
 txt files must have one line per row, space-separated values and no other
-delimiters of any kind. This is the default format used by `numpy.loadtxt` and
-`numpy.savetxt`.
+delimiters of any kind. This is the default format used by `numpy.loadtxt()` and
+`numpy.savetxt()`.
 
 All matrices are added to the matrices dictionary `MDict` in `core/matrices.py`.
 Matrix labels are also available as python variable names in `tools/run_expts.py`
 and other relevant places.
 
+Matrix labels for matrices `mats/extra/` are also found in the variable
+`extra_mlabels`, and the dictionary `extra_mats_dict`. Kirkman matrices are found
+in `kirkman_mlabels`, while sts matrices are found in `sts_mlabels`. 
+
+STS matrices are generated using the Bose construction. Code is found in
+`matrix_gen/sts.py`.
+
+All matrices have their `writeable` flag set to `False`, so that they are not
+accidentally written to. If you want to modify a matrix at runtime, it is best to
+work with a copy of that matrix. Doing something like `A = A / some_constant` is ok
+since it creates a copy and reassigns the variable `A` to that copy.
+
 ## Deployed Matrices
 
-TBD
+Currently deployed matrices in our Android app BYOM Smart Testing are found in
+`core/get_test_results.py` in the dictionary `MSizeToLabelDict`. All matrices ever
+deployed form the keys of the dictionary `mat_codenames` in the same file.
 
 # Adding Algorithms
 
 New algorithms can be easily added to the `algos/` folder. Please edit `algos_dict`
 to add your algorithm name and register the corresponding function to be called.
+
+## Adding an algorithm file to `algos/` folder
+
 For example, to add an algorithm called `MY_ALG`, add a python file called
 `my_alg.py`, with the following content: 
 
 ```python
+# core/config.py contains various configs like noise model, some global
+# hyperparameters like tau
+from core import config
+
+def my_alg(params):
+  A = params["A"]
+  y = params["y"]
+
+  A_bool = (A > 0).astype(np.int32)
+  y_bool = (y > 0).astype(np.int32)
+
+  # Your code goes here. it produces x_est, an n-length numpy array containing the
+  # estimated viral loads
+  res = {'x_est' : x_est}
+  return res
+```
+
+The input `params` is a dictionary containing the matrix A and the observed viral load
+vector `y`. Both `A` and `y` can contain float values, so if you need only 0/1
+values, you should convert and use `A_bool` and `y_bool` as shown above.
+
+If the algorithm you're using doesn't give exact 0's for the 0-entries of `x_est`,
+you will need to convert it using.
+
+```python
+x_est[x_est < tau] = 0
+```
+where `tau` is an appropriately chosen threshold. A good rule of thumb for `tau` is
+`0.01 * np.min(y/row_sums)`, where `row_sums = np.sum(A, axis=-1)`. 
+
+## Adding Algorithm to `algo_dict`
+
+Add your `MY_ALG` to algos/__init__.py as follows:
+
+```python
+# import your file here
+from . import my_alg
+
+# Add to the algo_dict
+algo_dict = {
+    "ZEROS" : zeros.zeros,
+    "ZEROS_cv" : zeros.zeros_cv,
+    "MY_ALG" : my_alg.my_alg, # "ALGO_NAME" : module_name.function_name
+    }
 ```
 
 ## Running synthetic expts with new algorithm
+
+Once the algorithm is added, modify `core/cs.py::run_stats_for_these_matrices()`
+
+```python
+def run_stats_for_these_matrices(labels, save):
+
+  .......
+
+  algos = ['MY_ALG']
+
+  run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
+      num_expts, save)
+
+```
+
+and run
+
+```bash
+python3 tools/run_expts.py
+```
 
 ## Inbuilt algorithms
 
@@ -251,8 +334,9 @@ Following inbuilt algorithms are deprecated:
 
 ## Detailed instructions for adding algorithms
 
-Detailed instructions for adding new algorithms can be found in
-`algos/__init__.py` and `algos/zeros.py`
+Detailed instructions for adding new algorithms can also be found in
+`algos/__init__.py` and `algos/zeros.py`. The latter implements a trivial algorithm
+which returns all 0's as `x_est`.
 
 ## Combining With COMP or Definite Defects
 
@@ -263,8 +347,8 @@ algorithm and removes negative tests and columns corresponding to samples
 which are definitely negative according to COMP. Typically this reduces the
 size of the problem drastically and better performance is observed.
 
-The Definite Defects algorithm is run on top of any algorithm by
-default and the final predictions are the union of the predictions made by the
+The Definite Defects algorithm *is run on top of any algorithm by
+default* and the final predictions are the union of the predictions made by the
 internal algorithm and the definite defects algorithm. This behaviour can be
 changed by commenting out the following line:
 
@@ -275,8 +359,12 @@ from `core/cs.py::CS::decode_lasso()`.
 
 ## Performing Cross-validation for your algorithm
 
-It is a good idea to perform cross-validation for your algorithms to determine
-the ideal hyperparameter settings. It is 
+It is a good idea to perform cross-validation for your algorithms to determine the
+ideal hyperparameter settings given the data. Currently cross validation must be
+done separately for each algorithm. You should add a separate function in
+`my_alg.py` called `my_alg_cv()` which performs the cross-validation using subsets
+of the data. A separate algo name called `MY_ALG_cv` must be added to `algo_dict`
+for the cross-validation algo to be visible to rest of the code.
 
 # Running Algorithms on Lab Experiments
 
@@ -284,10 +372,17 @@ The script `tools/run_ncbs_harvard_data.py` runs the algorithms `COMP`, `SBL`, a
 `combined_COMP_NNOMP_random_cv` on these datasets. Please modify this script
 and add any algorithms you may want to run.
 
-The script `tools/experimental_data_manager.py` contains methods which return
-data from experiments
+The file `tools/experimental_data_manager.py` contains methods which return
+data from experiments performed at Harvard. Any new experimental data will be added
+to this file. It also contains a method to generate synthetic data using our noise
+model.
 
 ## Experimental data location
+
+Data is located in the `data/` folder, with subfolders indicating the source of the
+data (such as `harvard`, `ncbs`). These are in various formats, and may contain raw
+flourescence values for each well and cycle or cycle time thresholds for a given
+flourescence. 
 
 # Advanced Behaviour / Details
 
