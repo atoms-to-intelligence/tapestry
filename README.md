@@ -7,7 +7,8 @@ https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
 * [Installation and Setup](#installation-and-setup)
 * [Code Layout](#code-layout)
 * [Running Synthetic Experiments](#running-synthetic-experiments)
-  * [Output](#output)
+  * [Output Statistics](#output-statistics)
+    * [Saving the output](#saving-the-output)
   * [Data Model](#data-model)
 * [Adding Sensing Matrices](#adding-sensing-matrices)
   * [Deployed Matrices](#deployed-matrices)
@@ -21,6 +22,7 @@ https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
   * [Experimental data location](#experimental-data-location)
 * [Advanced Behaviour / Details](#advanced-behaviour--details)
   * [Detailed Statistics](#detailed-statistics)
+  * [Other directory Layout](#other-directory-layout)
   * [Core code layout](#core-code-layout)
 
 <!-- vim-markdown-toc -->
@@ -53,14 +55,35 @@ ones you should run.
 * `inbuilt_algos/`: algorithms already written are in this folder.
 * `utils/`: various utility methods and helpers.
 
+Data and other files are layed out like this:
+
+* `mats/`: Matrices in ".txt" format.
+  * `mats/extra`: Extra matrices automatically loaded.
+  * `mats/kirman`: Kirkman matrices
+  * `mats/sts`: STS matrices
+  * `mats/unparsed`: 
+* `stats/`: Various text files containing statistics for various runs.
+* `data/`: Contains data from wet lab experiments - either done by us or
+  elsewhere.
+* `expt_stats/`: This is not part of the repo, but may be automatically
+  created later. See [Detailed Statistics](#detailed-statistics) section.
+
 # Running Synthetic Experiments
 
 Synthetic experiments are run by generating 1000 'x' values from our data
 model.
 
-Experiments are run with the script `tools/run_expts.py`, with an invocation
-of the function `run_stats_for_these_matrices()`. An example invocation of
-this is:
+Experiments are run with the script `tools/run_expts.py` as
+
+```
+python3 tools/run_expts.py
+```
+
+Be careful to stay on the top-level directory and invoke the script from
+there - else the script may not be able to find other modules, matrices etc.
+
+This script invokes function `run_stats_for_these_matrices()`. An
+example invocation of this function is:
 
 ```python
   run_stats_for_these_matrices(
@@ -87,7 +110,7 @@ def run_stats_for_these_matrices(labels, save):
   #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
   #d_ranges = [list(range(1, 6)) for label in labels]
 
-  num_expts = 1
+  num_expts = 1000
 
   #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',
   #    'combined_COMP_l1ls_cv']
@@ -97,12 +120,25 @@ def run_stats_for_these_matrices(labels, save):
       num_expts, save)
 
 ```
-This function first finds the numpy matrices corresponding to the given matrix labels
-(from MDict) and puts them in the list `mat`. It then finds the number of
-rows `t` for each matrix. The number of infections for which each matrix
-must be run is given in 
 
-## Output
+* `mat`: numpy matrices corresponding to the matrix labels.
+* `algos`: which algorithms to run 
+* `d_ranges`: list of lists. Specifies for each matrix which 'd' values to run experiments for.
+* `num_expts`: (=1000 by default) These many independent experiments are run for each 
+  (matrix, algo, d) triplet.
+* `ts`: list of number of rows in each matrix. Useful for specifying 'd' in
+  some cases
+
+These are then passed to the method `run_many_parallel_expts_many_matrices()`.
+The `save` flag saves each experiment
+
+For each experiment, 'x' (viral load vector for each sample) is sampled from
+our [data model](#data-model), `y = Ax` is computed (A being the matrix), and
+noise is added to y according to our noise model.  Only `y` and `A` are passed
+to the algorithm. The result `x_est`, the estimated `x`, is compared with the
+ground-truth `x` and statistics are computed as below.
+
+## Output Statistics
 
 For each matrix label and algoithm pair, one table is printed listing various
 stats. One such table is shown below:
@@ -129,7 +165,12 @@ Rate) are computed. `false_pos` is the average number of false positives per
 expt. `surep` is the average number of positives we are sure about, and rest of
 the predicted positives are classified as `unsurep`. `surep` is computed using
 the Definite Defects algorithm.
-.
+
+### Saving the output
+
+Typically, the output tables may be saved in a text file using redirection.
+e.g.:
+
 ## Data Model
 
 The data model is following. Say there are 'n' samples, out of which 'd' are
@@ -246,8 +287,9 @@ confidence intervals for various stats or finding why a particular algorithm fai
 particular 'x'.
 
 The script `tools/stats_tools.py` finds confidence intervals using these
-pickled experiments.
+pickled experiments via bootstrapping.
 
+## Other directory Layout
 ## Core code layout
 
 TBD
