@@ -150,8 +150,7 @@ Ax(1+p)^eps`. Here p = 0.95 and eps = vector of independent Gaussians with mean
 process, where we can only observe cycle times for a given threshold
 fluorescence value. The observed cycle time itself has some variability, which
 eps is modelling.  Essentially, log y is Gaussian. This is found in
-`core/cs.py::CS::get_quantitative_results()`
-                                                                             
+`core/cs.py::CS::get_quantitative_results()`.
 
 # Adding Sensing Matrices
 
@@ -194,7 +193,11 @@ Detailed instructions for adding new algorithms can be found in
 ## Combining With COMP or Definite Defects
 
 If you have registered an algorithm (say `MY_ALG`) in `algos/__init__.py`,
-then 
+then the core code automatially also recognizes an algorithm by the name
+`combined_COMP_MY_ALG`. This algorithm performs preprocessing using the `COMP`
+algorithm and removes negative tests and columns corresponding to samples
+which are definitely negative according to COMP. Typically this reduces the
+size of the problem drastically and better performance is observed.
 
 The Definite Defects algorithm is run on top of any algorithm by
 default and the final predictions are the union of the predictions made by the
@@ -208,6 +211,8 @@ from `core/cs.py::CS::decode_lasso()`.
 
 ## Performing Cross-validation for your algorithm
 
+It is a good idea to perform cross-validation for your algorithms to determine
+the ideal hyperparameter settings. It is 
 
 # Running Algorithms on Lab Experiments
 
@@ -228,7 +233,9 @@ Stat for each individual experiment may be saved by setting `save=True` when inv
 `run_many_parallel_expts_many_matrices() or run_stats_for_these_matrices()`.
 These are saved in a directory structure under the folder `expts_stats/`. This
 folder *must not be added* to the repo, since its contents can be of the order
-of several hundred MegaBytes. 
+of several hundred MegaBytes. Please use separate backup mechanisms such as
+Google Drive, Dropbox or disk backup to save experiments. The files saved in
+this directory come precompressed with gzip.
 
 The directory structure for this is of the form
 `expt_stats/[matrix_label]/[algo]/[d]/expt_stats.p.gz`. `expt_stats.p.gz`
@@ -241,8 +248,9 @@ particular 'x'.
 The script `tools/stats_tools.py` finds confidence intervals using these
 pickled experiments.
 
-
 ## Core code layout
+
+TBD
 
 <!---
 ![Python application](https://github.com/ssgosh/group-test/workflows/Python%20application/badge.svg)
