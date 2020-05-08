@@ -8,13 +8,14 @@ https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
 * [Code Layout](#code-layout)
 * [Running Synthetic Experiments](#running-synthetic-experiments)
   * [Output Statistics](#output-statistics)
-    * [Saving the output](#saving-the-output)
+  * [Saving the output](#saving-the-output)
   * [Data Model](#data-model)
 * [Adding Sensing Matrices](#adding-sensing-matrices)
   * [Deployed Matrices](#deployed-matrices)
 * [Adding Algorithms](#adding-algorithms)
   * [Adding an algorithm file to `algos/` folder](#adding-an-algorithm-file-to-algos-folder)
   * [Adding Algorithm to `algo_dict`](#adding-algorithm-to-algo_dict)
+  * [Unit Testing your new algorithm](#unit-testing-your-new-algorithm)
   * [Running synthetic expts with new algorithm](#running-synthetic-expts-with-new-algorithm)
   * [Inbuilt algorithms](#inbuilt-algorithms)
   * [Detailed instructions for adding algorithms](#detailed-instructions-for-adding-algorithms)
@@ -22,6 +23,7 @@ https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
   * [Performing Cross-validation for your algorithm](#performing-cross-validation-for-your-algorithm)
 * [Running Algorithms on Lab Experiments](#running-algorithms-on-lab-experiments)
   * [Experimental data location](#experimental-data-location)
+* [Running Tests](#running-tests)
 * [Advanced Behaviour / Details](#advanced-behaviour--details)
   * [Detailed Statistics](#detailed-statistics)
   * [Other directory Layout](#other-directory-layout)
@@ -177,7 +179,7 @@ If you want to modify the columns which are printed in the above table, see
 See `__init__()`, `print_stats()` and `return_stats()` methods of class `CSExpts` defined in 
 `core/cs_expts.py`.
 
-### Saving the output
+## Saving the output
 
 Typically, the output tables may be saved in a text file using redirection.
 e.g.:
@@ -302,7 +304,45 @@ algo_dict = {
     }
 ```
 
-## Testing your new algorithm
+## Unit Testing your new algorithm
+
+It is recommended that for every algorithm you add a test file which tests that
+algorithm in isolation. For `algos/my_alg.py`, add `algos/test_my_alg.py`. For
+example:
+
+```python
+import sys
+# Following hack is needed for importing core/matrices.py etc in this test file. If you
+don't need to import anything from the top level directory then you may skip this.
+sys.path.append('.')
+
+import my_alg
+
+# Following to be added if you want to use any matrices defined in mats/
+from core.matrices import *
+
+def test_my_alg():
+  # test code goes here
+
+if __name__ == '__main__':
+  test_my_alg()
+```
+
+Please see `inbuilt_algos/test_nnompcv.py` and `inbuilt_algos/test_sbl.py` as
+examples.
+
+Run the file as:
+
+```bash
+python3 algos/test_my_alg.py
+```
+
+Also add an import guard in `my_alg.py`. This is so that it is never run directly. 
+
+```python
+if __name__ == '__main__':
+  raise ValueError('Please run algos/test_my_alg.py. This is a library file')
+```
 
 ## Running synthetic expts with new algorithm
 
@@ -422,6 +462,7 @@ The script `tools/stats_tools.py` finds confidence intervals using these
 pickled experiments via bootstrapping.
 
 ## Other directory Layout
+
 ## Core code layout
 
 TBD
