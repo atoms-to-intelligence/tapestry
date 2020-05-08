@@ -1,4 +1,4 @@
-import inbuilt_algos.nnompcv as nnompcv
+import nnompcv
 if __name__=='__main__':
   import sys
   # This is a hack needed so that you can directly run this file as 
