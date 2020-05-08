@@ -7,16 +7,21 @@ https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
 * [Installation and Setup](#installation-and-setup)
 * [Code Layout](#code-layout)
 * [Running Synthetic Experiments](#running-synthetic-experiments)
+  * [Output](#output)
   * [Data Model](#data-model)
 * [Adding Sensing Matrices](#adding-sensing-matrices)
   * [Deployed Matrices](#deployed-matrices)
 * [Adding Algorithms](#adding-algorithms)
-  * [Available algorithms](#available-algorithms)
+  * [Running synthetic expts with new algorithm](#running-synthetic-expts-with-new-algorithm)
+  * [Inbuilt algorithms](#inbuilt-algorithms)
   * [Detailed instructions for adding algorithms](#detailed-instructions-for-adding-algorithms)
+  * [Combining With COMP or Definite Defects](#combining-with-comp-or-definite-defects)
+  * [Performing Cross-validation for your algorithm](#performing-cross-validation-for-your-algorithm)
 * [Running Algorithms on Lab Experiments](#running-algorithms-on-lab-experiments)
   * [Experimental data location](#experimental-data-location)
 * [Advanced Behaviour / Details](#advanced-behaviour--details)
-  * [Statistics](#statistics)
+  * [Detailed Statistics](#detailed-statistics)
+  * [Core code layout](#core-code-layout)
 
 <!-- vim-markdown-toc -->
 
@@ -97,6 +102,34 @@ This function first finds the numpy matrices corresponding to the given matrix l
 rows `t` for each matrix. The number of infections for which each matrix
 must be run is given in 
 
+## Output
+
+For each matrix label and algoithm pair, one table is printed listing various
+stats. One such table is shown below:
+
+```
+t = 21, n = 70, matrix = optimized_M_21_70_kirkman
+
+COMP
+	d	Precision	Recall (Sensitivity) 	Specificity	surep	unsurep	false_pos
+	1	1.000			1.000		1.000		 1.0	  0.0	    0.0
+	2	1.000			1.000		1.000		 2.0	  0.0	    0.0
+	3	0.760			1.000		0.986		 2.7	  1.2	    0.9
+	4	0.571			1.000		0.955		 1.7	  5.3	    3.0
+	5	0.454			1.000		0.908		 0.6	 10.4	    6.0
+	6	0.376			1.000		0.844		 0.1	 15.9	   10.0
+	7	0.334			1.000		0.778		 0.0	 21.0	   14.0
+```
+
+Each row of the above table corresponds to a different value of 'd', the
+number of infections (1- 7 in this case) out of 'n' (70). For each 'd', 1000
+expts have been done. From those 1000, aggregate statistics such as Precision,
+Recall (Sensitivity or True Poitive Rate) and Specificity (or True Negative
+Rate) are computed. `false_pos` is the average number of false positives per
+expt. `surep` is the average number of positives we are sure about, and rest of
+the predicted positives are classified as `unsurep`. `surep` is computed using
+the Definite Defects algorithm.
+.
 ## Data Model
 
 The data model is following. Say there are 'n' samples, out of which 'd' are
@@ -117,7 +150,7 @@ Ax(1+p)^eps`. Here p = 0.95 and eps = vector of independent Gaussians with mean
 process, where we can only observe cycle times for a given threshold
 fluorescence value. The observed cycle time itself has some variability, which
 eps is modelling.  Essentially, log y is Gaussian. This is found in
-`core/cs.py::get_quantitative_results()`
+`core/cs.py::CS::get_quantitative_results()`
                                                                              
 
 # Adding Sensing Matrices
@@ -140,7 +173,9 @@ New algorithms can be easily added to the `algos/` folder. Please edit
 `algos_dict` to add your algorithm name and register the function
 corresponding function to be called.
 
-## Available algorithms
+## Running synthetic expts with new algorithm
+
+## Inbuilt algorithms
 
 Inbuilt algorithms are in `inbuilt/` folder. The following algorithms are
 available: `'COMP', 'SBL', 'l1ls', 'l1ls_cv', 'NNOMP', 'NNOMP_random_cv'`. You
@@ -156,6 +191,24 @@ Following inbuilt algorithms are deprecated:
 Detailed instructions for adding new algorithms can be found in
 `algos/__init__.py` and `algos/zeros.py`
 
+## Combining With COMP or Definite Defects
+
+If you have registered an algorithm (say `MY_ALG`) in `algos/__init__.py`,
+then 
+
+The Definite Defects algorithm is run on top of any algorithm by
+default and the final predictions are the union of the predictions made by the
+internal algorithm and the definite defects algorithm. This behaviour can be
+changed by commenting out the following line:
+
+```python
+infected = (infected + infected_dd > 0).astype(np.int32)
+```
+from `core/cs.py::CS::decode_lasso()`.
+
+## Performing Cross-validation for your algorithm
+
+
 # Running Algorithms on Lab Experiments
 
 The script `tools/run_ncbs_harvard_data.py` runs the algorithms `COMP`, `SBL`, and
@@ -169,7 +222,7 @@ data from experiments
 
 # Advanced Behaviour / Details
 
-## Statistics
+## Detailed Statistics
 
 Stat for each individual experiment may be saved by setting `save=True` when invoking 
 `run_many_parallel_expts_many_matrices() or run_stats_for_these_matrices()`.
@@ -187,6 +240,9 @@ particular 'x'.
 
 The script `tools/stats_tools.py` finds confidence intervals using these
 pickled experiments.
+
+
+## Core code layout
 
 <!---
 ![Python application](https://github.com/ssgosh/group-test/workflows/Python%20application/badge.svg)
