@@ -104,7 +104,7 @@ example invocation of this function is:
 Here `"optimized_M_45_105_kirkman"` and `"optimized_M_93_961_kirkman"` are
 labels of matrices, of size 45x105 and 93x961 respectively. This function runs many
 experiments for each of the matrices. We look deeper into the implementation
-of `run_stats_for_these_matrices()`:
+of `run_stats_for_these_matrices()`, which is in file `core/cs_expts.py`:
 
 ```python
 def run_stats_for_these_matrices(labels, save):
@@ -346,7 +346,7 @@ if __name__ == '__main__':
 
 ## Running synthetic expts with new algorithm
 
-Once the algorithm is added, modify `core/cs.py::run_stats_for_these_matrices()`
+Once the algorithm is added, modify `core/cs_expts.py::run_stats_for_these_matrices()`
 
 ```python
 def run_stats_for_these_matrices(labels, save):
