@@ -8,13 +8,14 @@ https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
 * [Code Layout](#code-layout)
 * [Running Synthetic Experiments](#running-synthetic-experiments)
   * [Output Statistics](#output-statistics)
-    * [Saving the output](#saving-the-output)
+  * [Saving the output](#saving-the-output)
   * [Data Model](#data-model)
 * [Adding Sensing Matrices](#adding-sensing-matrices)
   * [Deployed Matrices](#deployed-matrices)
 * [Adding Algorithms](#adding-algorithms)
   * [Adding an algorithm file to `algos/` folder](#adding-an-algorithm-file-to-algos-folder)
   * [Adding Algorithm to `algo_dict`](#adding-algorithm-to-algo_dict)
+  * [Unit Testing your new algorithm](#unit-testing-your-new-algorithm)
   * [Running synthetic expts with new algorithm](#running-synthetic-expts-with-new-algorithm)
   * [Inbuilt algorithms](#inbuilt-algorithms)
   * [Detailed instructions for adding algorithms](#detailed-instructions-for-adding-algorithms)
@@ -22,6 +23,7 @@ https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
   * [Performing Cross-validation for your algorithm](#performing-cross-validation-for-your-algorithm)
 * [Running Algorithms on Lab Experiments](#running-algorithms-on-lab-experiments)
   * [Experimental data location](#experimental-data-location)
+* [Running Tests](#running-tests)
 * [Advanced Behaviour / Details](#advanced-behaviour--details)
   * [Detailed Statistics](#detailed-statistics)
   * [Other directory Layout](#other-directory-layout)
@@ -102,7 +104,7 @@ example invocation of this function is:
 Here `"optimized_M_45_105_kirkman"` and `"optimized_M_93_961_kirkman"` are
 labels of matrices, of size 45x105 and 93x961 respectively. This function runs many
 experiments for each of the matrices. We look deeper into the implementation
-of `run_stats_for_these_matrices()`:
+of `run_stats_for_these_matrices()`, which is in file `core/cs_expts.py`:
 
 ```python
 def run_stats_for_these_matrices(labels, save):
@@ -177,7 +179,7 @@ If you want to modify the columns which are printed in the above table, see
 See `__init__()`, `print_stats()` and `return_stats()` methods of class `CSExpts` defined in 
 `core/cs_expts.py`.
 
-### Saving the output
+## Saving the output
 
 Typically, the output tables may be saved in a text file using redirection.
 e.g.:
@@ -302,11 +304,49 @@ algo_dict = {
     }
 ```
 
-## Testing your new algorithm
+## Unit Testing your new algorithm
+
+It is recommended that for every algorithm you add a test file which tests that
+algorithm in isolation. For `algos/my_alg.py`, add `algos/test_my_alg.py`. For
+example:
+
+```python
+import sys
+# Following hack is needed for importing core/matrices.py etc in this test file. If you
+don't need to import anything from the top level directory then you may skip this.
+sys.path.append('.')
+
+import my_alg
+
+# Following to be added if you want to use any matrices defined in mats/
+from core.matrices import *
+
+def test_my_alg():
+  # test code goes here
+
+if __name__ == '__main__':
+  test_my_alg()
+```
+
+Please see `inbuilt_algos/test_nnompcv.py` and `inbuilt_algos/test_sbl.py` as
+examples.
+
+Run the file as:
+
+```bash
+python3 algos/test_my_alg.py
+```
+
+Also add an import guard in `my_alg.py`. This is so that it is never run directly. 
+
+```python
+if __name__ == '__main__':
+  raise ValueError('Please run algos/test_my_alg.py. This is a library file')
+```
 
 ## Running synthetic expts with new algorithm
 
-Once the algorithm is added, modify `core/cs.py::run_stats_for_these_matrices()`
+Once the algorithm is added, modify `core/cs_expts.py::run_stats_for_these_matrices()`
 
 ```python
 def run_stats_for_these_matrices(labels, save):
@@ -422,6 +462,7 @@ The script `tools/stats_tools.py` finds confidence intervals using these
 pickled experiments via bootstrapping.
 
 ## Other directory Layout
+
 ## Core code layout
 
 TBD
