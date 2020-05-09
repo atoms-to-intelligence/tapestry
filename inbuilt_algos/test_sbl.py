@@ -1,4 +1,15 @@
-import sbl
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
+if __name__=='__main__':
+  import sys
+  # This is a hack needed so that you can directly run this file as 
+  # python inbuilt_algos/nnompcv.py.
+  # 
+  # This is needed because we want to import "matrices" from one level up, but python
+  # does not know about one level up. Please only use this hack in test files
+  # and not in files which are meant to be imported from other code.
+  sys.path.append(".")
+
+import inbuilt_algos.sbl as sbl
 import math
 import numpy as np
 
