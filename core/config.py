@@ -69,6 +69,18 @@ bit_flip_prob = 0.
 noise_model = 'exponential_gaussian'
 #noise_model = 'variable_gaussian'
 
+
+# Data Model Parameters are here
+#
+# Should x_low and x_high be scaled? This should be either 1 or 32768
+scale = 32768.
+
+# lowest value of x
+x_low = 1. / scale
+
+# highest value of x
+x_high = 32768. / scale
+
 # Pickle files containing stats. Stats are first written to tmp and then
 # finally copied
 stats_pickle_name = "expt_stats.p.gz"

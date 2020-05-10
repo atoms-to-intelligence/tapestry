@@ -83,14 +83,16 @@ class CS(COMP):
   # Initial concentration of RNA in each sample
   def create_conc_matrix_from_infection_array(self, arr):
     # Fix tau to 0.01 * minimum value we expect in x
-    self.tau = 0.01 * 1 / 32768.
+    # XXX: Actually tau should be defined by the algorithm.
+    self.tau = 0.01 * 1 / config.scale
     #self.tau = 0.01 * 0.1
     #conc = 1 + np.random.poisson(lam=5, size=self.n)
     conc = np.random.randint(low=1, high=32769, size=self.n) / 32768
+    #conc = np.random.uniform(config.x_low, config.x_high, size=self.n)
     #conc = 0.1 + 0.9 * np.random.rand(self.n)
     #conc = np.random.randint(low=1, high=11, size=self.n) / 10.
     #conc = np.ones(self.n)
-    self.conc = conc * arr # Only keep those entries which are 
+    self.conc = conc * arr # Only keep those entries which are non-zero in arr
 
   # Solve the CS problem using Lasso
   #
@@ -161,9 +163,11 @@ class CS(COMP):
       # This sigval computation was not correct
       #sigval = 0.01 * np.linalg.norm(y, 2)
       #sigval = 0.01 * np.mean(y1)
+      #y = y / 32768.
       sigval = 0.01 * np.mean(y)
       #answer = sbl.sbl(A1, y1, sigval, self.tau)
       answer = sbl.sbl(A, y, sigval, self.tau)
+      #answer = answer * 32768.
       #print(answer)
     elif algo == 'l1ls':
       A = self.M.T

@@ -18,9 +18,12 @@ def specificity(precision, recall, n, d, preds):
     assert recall != 0
   return 1 - (recall * d * ( (1 / precision) - 1) / (n - d)) 
 
+def compute_rmse(x, x_est):
+    return np.linalg.norm(x - x_est) / np.linalg.norm(x)
+
 class SingleExpt:
   def __init__(self, tp, fp, fn, uncon_negs, determined, overdetermined, surep,
-      unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
+      unsurep, wrongly_undetected, score, rmse, x, bool_x, y, bool_y, x_est,
       infected, infected_dd, n, d, t, mr, algo, mlabel):
     # computed stats
     self.tp = tp
@@ -33,6 +36,7 @@ class SingleExpt:
     self.unsurep = unsurep
     self.wrongly_undetected = wrongly_undetected
     self.score = score
+    self.rmse = rmse
 
     # Experimental setting and returned value
     self.x_idx = np.array(np.where(x), dtype=np.uint16)
@@ -82,14 +86,15 @@ class CSExpts:
     self.num_expts_2_stage = 0
     self.wrongly_undetected = 0
     self.total_score = 0
+    self.total_rmse = 0
     self.single_expts = []
 
   # manage stats for a single expt
   def record_single_expt(self, tp, fp, fn, uncon_negs, determined, overdetermined, surep,
-      unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
+      unsurep, wrongly_undetected, score, rmse, x, bool_x, y, bool_y, x_est,
       infected, infected_dd):
     single_expt = SingleExpt(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
-      unsurep, wrongly_undetected, score, x, bool_x, y, bool_y, x_est,
+      unsurep, wrongly_undetected, score, rmse, x, bool_x, y, bool_y, x_est,
       infected, infected_dd, self.n, self.d, self.t, self.mr, self.algo, self.mlabel)
 
     self.single_expts.append(single_expt)
@@ -114,6 +119,7 @@ class CSExpts:
       overdetermined = 0
       wrongly_undetected = 0
       x_est = np.zeros(cs.n)
+      rmse = 1.
     elif algo == 'SCOMP':
       infected, infected_dd, score, tp, fp, fn, surep, unsurep,\
           num_infected_in_test = cs.decode_scomp(bool_y)
@@ -127,20 +133,22 @@ class CSExpts:
           overdetermined, surep, unsurep, wrongly_undetected, \
           num_infected_in_test = cs.decode_lasso(y, algo,
           prefer_recall=False)
+      rmse = compute_rmse(cs.conc, x_est)
 
     # Save this single experiment's settings and stats
     self.record_single_expt(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
-      unsurep, wrongly_undetected, score, cs.conc, (cs.conc > 0).astype(int), y, bool_y, x_est,
+      unsurep, wrongly_undetected, score, rmse, cs.conc, (cs.conc > 0).astype(int), y, bool_y, x_est,
       infected, infected_dd)
 
-    sys.stdout.write('\riter = %d / %d score: %.2f tp = %d fp = %d fn = %d' %
-        (i, num_expts, score, tp, fp, fn))
+    sys.stdout.write('\riter = %d / %d rmse: %.2f tp = %d fp = %d fn = %d' %
+        (i, num_expts, rmse, tp, fp, fn))
+    sys.stdout.flush()
     
     self.add_stats(tp, fp, fn, uncon_negs, determined, overdetermined, surep,
-        unsurep, wrongly_undetected, score)
+        unsurep, wrongly_undetected, score, rmse)
 
   def add_stats(self, tp, fp, fn, uncon_negs, determined, overdetermined,
-      surep, unsurep, wrongly_undetected, score):
+      surep, unsurep, wrongly_undetected, score, rmse):
     #print('%s iter = %d score: %.2f' % (self.name, i, score), 'tp = ', tp, 'fp =', fp, 'fn = ', fn)
     if fp == 0 and fn == 0:
       self.no_error += 1
@@ -159,6 +167,7 @@ class CSExpts:
     self.num_expts_2_stage += (unsurep > 0)
     self.wrongly_undetected += wrongly_undetected
     self.total_score += score
+    self.total_rmse += rmse
 
   def print_stats(self, num_expts, header=False):
     preds = self.total_tp + self.total_fp
@@ -233,6 +242,7 @@ class CSExpts:
     # Specificity is True Negative Rate
     self.specificity = specificity(self.precision, self.recall, self.n, self.d, preds)
     self.avg_score = self.total_score / self.expts
+    self.rmse = self.total_rmse / self.expts
     return stats
 
 def do_many_expts(n, d, t, num_expts=1000, xs=None, M=None,
@@ -540,14 +550,15 @@ def run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix,
   return explist
 
 def print_expts(expts, num_expts, t):
-  print('\td\tPrecision\tRecall (Sensitivity) \tSpecificity\tsurep\tunsurep\tfalse_pos')
+  print('\td\tPrecision\tRecall (Sensitivity)\tSpecificity\tsurep\tunsurep\tfalse_pos\tRMSE')
   for expt in expts:
     if expt.precision == 0:
       total_tests = t + expt.n
     else:
       total_tests = t + expt.d / expt.precision
-    print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f' % (expt.d, expt.precision,
-      expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep, expt.total_fp / num_expts))
+    print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t\t%.2f' % (expt.d, expt.precision,
+      expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep,
+      expt.total_fp / num_expts, expt.rmse))
     #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
     #  expt.recall, total_tests, expt.determined, expt.overdetermined))
     #print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
@@ -778,10 +789,10 @@ def run_stats_for_these_matrices(labels, save):
   #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
   #d_ranges = [list(range(1, 6)) for label in labels]
 
-  num_expts = 1
+  num_expts = 100
   #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',
   #    'combined_COMP_l1ls_cv']
-  algos = ['SBL', 'ZEROS', 'l1ls', 'l1ls_cv']
+  algos = ['COMP', 'SBL', ]
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
       num_expts, save)
 
