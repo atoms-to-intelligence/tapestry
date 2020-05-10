@@ -158,26 +158,17 @@ class CS(COMP):
     elif algo == 'SBL':
       A = self.M.T
       y = results
+
+      tau = 0. #0.01 * np.min(y/np.sum(A, axis=-1))
+
       y_max = np.max(y)
       A = A / y_max
       y = y / y_max
-      #assert np.all(y!=0)
-      #A1 = A/y[:, None]
-      #y1 = np.ones(y.shape)
-      # This sigval computation was not correct
-      #sigval = 0.01 * np.linalg.norm(y, 2)
-      #sigval = 0.01 * np.mean(y1)
+
       pos_y = y[y>0.]
       pos_A = A[y>0.]
-      #sigval = np.std(y/np.sum(A, axis=-1))
       sigval = np.std(pos_y/np.sum(pos_A, axis=-1))
-      #sigval = np.std(pos_y)
-      #answer = sbl.sbl(A1, y1, sigval, self.tau)
-      #tau = 0.01 * np.min(pos_y/np.sum(pos_A, axis=-1))
-      tau = 0.
       answer = sbl.sbl(A, y, sigval, tau)
-      #answer = answer * 32768.
-      #print(answer)
     elif algo == 'l1ls':
       A = self.M.T
       y = results
