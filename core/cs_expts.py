@@ -785,14 +785,15 @@ def run_stats_for_these_matrices(labels, save):
   mats = [MDict[label] for label in labels]
   #d_ranges = [ list(range(1, 16)) + [20, 25, 30, 35, 40] for item  in labels]
   ts = [M.shape[0] for M in mats]
-  d_ranges = [[5, 8, 12, 15, 17] for t in ts] #list(range(1, 4))
+  d_ranges = [[5, 8, 10, 12, 15, 17, 20] for t in ts] #list(range(1, 4))
+  #d_ranges = [[ 15 ] for t in ts] #list(range(1, 4))
   #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
   #d_ranges = [list(range(1, 6)) for label in labels]
 
   num_expts = 100
   #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',
   #    'combined_COMP_l1ls_cv']
-  algos = ['COMP', 'SBL', ]
+  algos = ['COMP', 'combined_COMP_SBL']
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
       num_expts, save)
 

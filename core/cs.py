@@ -87,8 +87,9 @@ class CS(COMP):
     self.tau = 0.01 * 1 / config.scale
     #self.tau = 0.01 * 0.1
     #conc = 1 + np.random.poisson(lam=5, size=self.n)
-    conc = np.random.randint(low=1, high=32769, size=self.n) / 32768
-    #conc = np.random.uniform(config.x_low, config.x_high, size=self.n)
+    #conc = np.random.randint(low=config.x_low * config.scale, high=config.x_high *
+    #    config.scale + 1, size=self.n) / config.scale
+    conc = np.random.uniform(config.x_low, config.x_high, size=self.n)
     #conc = 0.1 + 0.9 * np.random.rand(self.n)
     #conc = np.random.randint(low=1, high=11, size=self.n) / 10.
     #conc = np.ones(self.n)
@@ -157,16 +158,24 @@ class CS(COMP):
     elif algo == 'SBL':
       A = self.M.T
       y = results
+      y_max = np.max(y)
+      A = A / y_max
+      y = y / y_max
       #assert np.all(y!=0)
       #A1 = A/y[:, None]
       #y1 = np.ones(y.shape)
       # This sigval computation was not correct
       #sigval = 0.01 * np.linalg.norm(y, 2)
       #sigval = 0.01 * np.mean(y1)
-      #y = y / 32768.
-      sigval = 0.01 * np.mean(y)
+      pos_y = y[y>0.]
+      pos_A = A[y>0.]
+      #sigval = np.std(y/np.sum(A, axis=-1))
+      sigval = np.std(pos_y/np.sum(pos_A, axis=-1))
+      #sigval = np.std(pos_y)
       #answer = sbl.sbl(A1, y1, sigval, self.tau)
-      answer = sbl.sbl(A, y, sigval, self.tau)
+      #tau = 0.01 * np.min(pos_y/np.sum(pos_A, axis=-1))
+      tau = 0.
+      answer = sbl.sbl(A, y, sigval, tau)
       #answer = answer * 32768.
       #print(answer)
     elif algo == 'l1ls':
