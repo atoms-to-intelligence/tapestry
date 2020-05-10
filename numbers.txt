@@ -1,7 +1,0 @@
-Number of infected samples that can be found with false positive chance of 0.1 %
-
-Infected        Out of          Tests   PCR Rounds      Infected Percent
-10              1000            384     1               1 %
-17              10000           384*2   2               0.17 %
-26              10000           384*3   3               0.26 %
-35              10000           384*4   4               0.35 %
