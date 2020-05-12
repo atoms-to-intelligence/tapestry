@@ -25,10 +25,16 @@ if __name__=='__main__':
   #    kirkman_mlabels,
   #    save=True
   #  )
-  run_stats_for_these_matrices(
-      ["optimized_M_45_105_kirkman"],
-      save=True
-    )
+  #run_stats_for_these_matrices(
+  #    [
+  #        "optimized_M_27_117_kirkman",
+  #        "optimized_M_45_330_STS",
+  #        "optimized_M_60_500_kirkman",
+  #        "optimized_M_93_1240_kirkman",
+  #        ],
+  #    save=True
+  #  )
+  run_stats_for_these_matrices1()
 
 
   #compare_sts_vs_kirkman()

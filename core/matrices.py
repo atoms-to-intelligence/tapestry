@@ -4730,6 +4730,8 @@ optimized_M_45_105_STS_1 = load_from_matlab('optimized_M_45_105_STS_1.txt')
 # triplet selection
 optimized_M_45_195_STS_1 = load_from_matlab('optimized_M_45_195_STS_1.txt')
 
+optimized_M_45_330_STS = sts.sts(45, 330)
+
 # STS matrix 63x399 created by Rishi, carved from 63x651 Bose STS.
 optimized_M_63_399_STS_1 = load_from_matlab('optimized_M_63_399_STS_1.txt')
 

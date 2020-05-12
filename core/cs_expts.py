@@ -778,10 +778,56 @@ def run_stats_for_these_matrices(labels, save):
   #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
   #d_ranges = [list(range(1, 6)) for label in labels]
 
-  num_expts = 1
+  num_expts = 20
   #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',
   #    'combined_COMP_l1ls_cv']
-  algos = ['SBL', 'ZEROS', 'l1ls', 'l1ls_cv']
+  algos = ['COMP', 'combined_COMP_SBL', 'combined_COMP_NNOMP_random_cv']
+  run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
+      num_expts, save)
+
+def run_stats_for_these_matrices1():
+  labels = [
+      #"optimized_M_27_117_kirkman",
+      #"optimized_M_45_330_STS",
+      #"optimized_M_48_320_kirkman",
+      #"optimized_M_60_500_kirkman",
+      #"optimized_M_60_500_kirkman",
+      #"optimized_M_93_1240_kirkman",
+      "optimized_M_192_5120_social_golfer",
+      ]
+  ns = [
+      #117,
+      #300,
+      #304,
+      #300,
+      #500,
+      #500,
+		  1024,
+      ]
+  mats = [MDict[label][:, :n] for (label, n) in zip(labels, ns) ]
+  for i, n in enumerate(ns):
+    labels[i] = f"{labels[i]}[:, :{n}]"
+  #d_ranges = [ list(range(1, 16)) + [20, 25, 30, 35, 40] for item  in labels]
+  ts = [M.shape[0] for M in mats]
+  d_ranges = [
+      #[3, 4, 5, 7],
+      #[6, 8, 11, 13],
+      #[6, 8, 11, 13],
+      #[6, 8, 11, 13],
+      #[10, 13, 17, 19],
+      #[10, 13, 17, 19],
+      #[15, 20, 25, 30],
+      [ 30, 25, 20, 15 ],
+      ] #list(range(1, 4))
+  #d_ranges = [[ 15 ] for t in ts] #list(range(1, 4))
+  #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
+  #d_ranges = [list(range(1, 6)) for label in labels]
+
+  num_expts = 20
+  #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',
+  #    'combined_COMP_l1ls_cv']
+  algos = ['COMP', 'combined_COMP_SBL', ] #'combined_COMP_NNOMP_random_cv']
+  save = True
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
       num_expts, save)
 
