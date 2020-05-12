@@ -37,9 +37,9 @@ def sbl(A, y, sigval, tau, eps=1e-3):
   ind_nonzero_x = np.arange(n)
 
   # Sparse Bayesian Learning
-  if red_n == 0:
+  # Corner cases are when 0 samples or all ys are 0
+  if red_n == 0 or np.all(red_y == 0):
     x_est = np.zeros(n)
-    #print('inside if')
   else:
     #E-step
       #   mu is estimated mean of posterior distribution x|y, and so is the estimated red_x computed iteratively
