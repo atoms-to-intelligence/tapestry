@@ -8,9 +8,9 @@ from core import config
 from core.cs import CS
 
 # Get results given a matrix M and cycle times cts
-def get_test_results(M, cts):
+def get_test_results(M, cts, algo):
   y = get_y_from_cts(cts)
-  sure_list, unsure_list, neg_list, x = _get_infected_lists(M, y)
+  sure_list, unsure_list, neg_list, x = _get_infected_lists(M, y, algo)
   return sure_list, unsure_list, neg_list, x
 
 
@@ -33,7 +33,7 @@ def get_y_from_cts(cts):
 
 # This function calls the decoding algorithm in class CS
 # The algorithm chosen can be configured using config.app_algo
-def _get_infected_lists(M, y):
+def _get_infected_lists(M, y, algo):
   assert M is not None
 
   n = M.shape[1]
@@ -52,7 +52,7 @@ def _get_infected_lists(M, y):
   bool_y = (y > 0).astype(np.int32)
   cs = CS(n, t, s, d, l, arr, M, mr)
 
-  if config.app_algo == 'COMP':
+  if algo == 'COMP':
     infected, infected_dd, score, tp, fp, fn, surep, unsurep,\
         num_infected_in_test = \
         cs.decode_comp_new(bool_y, compute_stats=False)
@@ -60,7 +60,7 @@ def _get_infected_lists(M, y):
   else:
     x, infected, infected_dd, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\
         overdetermined, surep, unsurep, wrongly_undetected,\
-        num_infected_in_test = cs.decode_lasso(y, config.app_algo, prefer_recall=False,
+        num_infected_in_test = cs.decode_lasso(y, algo, prefer_recall=False,
             compute_stats=False)
 
   _detect_discrepancies_in_test(t, bool_y, num_infected_in_test)

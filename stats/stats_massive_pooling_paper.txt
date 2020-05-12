@@ -1,0 +1,313 @@
+
+n = 4096, d = 5, t = 384
+
+iter = 0 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 0 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 0 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 1 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 1 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 1 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 2 / 20 rmse: 1.00 tp = 5 fp = 1 fn = 0iter = 2 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 2 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 3 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 3 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 3 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 4 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 4 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 4 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 5 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 5 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 5 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 6 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 6 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 6 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 7 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 7 / 20 rmse: 0.01 tp = 5 fp = 0 fn = 0iter = 7 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 8 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 8 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 8 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 9 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 9 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 9 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 10 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 10 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 10 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 11 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 11 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 11 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 12 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 12 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 12 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 13 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 13 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 13 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 14 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 14 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 14 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 15 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 15 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 15 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 16 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 16 / 20 rmse: 0.01 tp = 5 fp = 0 fn = 0iter = 16 / 20 rmse: 0.06 tp = 5 fp = 0 fn = 0iter = 17 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 17 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 17 / 20 rmse: 0.07 tp = 5 fp = 0 fn = 0iter = 18 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 18 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 18 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 19 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 19 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 19 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0
+No errors in 19 / 20 cases
+No fp in 19 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.990099, recall = 1.000000
+total tp = 100.0 total fp =  1.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 1.000 avg fn = 0.000
+No errors in 20 / 20 cases
+No fp in 20 / 20 cases
+No fn in 20 / 20 cases
+precision = 1.000000, recall = 1.000000
+total tp = 100.0 total fp =  0.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 0.000 avg fn = 0.000
+No errors in 20 / 20 cases
+No fp in 20 / 20 cases
+No fn in 20 / 20 cases
+precision = 1.000000, recall = 1.000000
+total tp = 100.0 total fp =  0.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 0.000 avg fn = 0.000
+
+n = 4096, d = 10, t = 384
+
+iter = 0 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 0 / 20 rmse: 0.04 tp = 10 fp = 2 fn = 0iter = 0 / 20 rmse: 0.05 tp = 10 fp = 0 fn = 0iter = 1 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 1 / 20 rmse: 0.03 tp = 10 fp = 2 fn = 0iter = 1 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 2 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 2 / 20 rmse: 0.03 tp = 10 fp = 1 fn = 0iter = 2 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 3 / 20 rmse: 1.00 tp = 10 fp = 0 fn = 0iter = 3 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 3 / 20 rmse: 0.02 tp = 10 fp = 0 fn = 0iter = 4 / 20 rmse: 1.00 tp = 10 fp = 0 fn = 0iter = 4 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 4 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 5 / 20 rmse: 1.00 tp = 10 fp = 0 fn = 0iter = 5 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 5 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 6 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 6 / 20 rmse: 0.05 tp = 10 fp = 2 fn = 0iter = 6 / 20 rmse: 0.05 tp = 10 fp = 1 fn = 0iter = 7 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 7 / 20 rmse: 0.05 tp = 10 fp = 1 fn = 0iter = 7 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 8 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 8 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 8 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 9 / 20 rmse: 1.00 tp = 10 fp = 0 fn = 0iter = 9 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 9 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 10 / 20 rmse: 1.00 tp = 10 fp = 1 fn = 0iter = 10 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 10 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 11 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 11 / 20 rmse: 0.03 tp = 10 fp = 1 fn = 0iter = 11 / 20 rmse: 0.05 tp = 10 fp = 0 fn = 0iter = 12 / 20 rmse: 1.00 tp = 10 fp = 1 fn = 0iter = 12 / 20 rmse: 0.05 tp = 10 fp = 0 fn = 0iter = 12 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 13 / 20 rmse: 1.00 tp = 10 fp = 1 fn = 0iter = 13 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 13 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 14 / 20 rmse: 1.00 tp = 10 fp = 0 fn = 0iter = 14 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 14 / 20 rmse: 0.05 tp = 10 fp = 0 fn = 0iter = 15 / 20 rmse: 1.00 tp = 10 fp = 1 fn = 0iter = 15 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 15 / 20 rmse: 0.06 tp = 10 fp = 0 fn = 0iter = 16 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 16 / 20 rmse: 0.03 tp = 10 fp = 1 fn = 0iter = 16 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 17 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 17 / 20 rmse: 0.05 tp = 10 fp = 2 fn = 0iter = 17 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 18 / 20 rmse: 1.00 tp = 10 fp = 1 fn = 0iter = 18 / 20 rmse: 0.05 tp = 10 fp = 0 fn = 0iter = 18 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 19 / 20 rmse: 1.00 tp = 10 fp = 0 fn = 0iter = 19 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 19 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0
+No errors in 6 / 20 cases
+No fp in 6 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.896861, recall = 1.000000
+total tp = 200.0 total fp =  23.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 1.643 avg fn = 0.000
+No errors in 12 / 20 cases
+No fp in 12 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.943396, recall = 1.000000
+total tp = 200.0 total fp =  12.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 1.500 avg fn = 0.000
+No errors in 19 / 20 cases
+No fp in 19 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.995025, recall = 1.000000
+total tp = 200.0 total fp =  1.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 1.000 avg fn = 0.000
+
+n = 4096, d = 15, t = 384
+
+iter = 0 / 20 rmse: 1.00 tp = 15 fp = 6 fn = 0iter = 0 / 20 rmse: 0.04 tp = 15 fp = 3 fn = 0iter = 0 / 20 rmse: 0.09 tp = 15 fp = 1 fn = 0iter = 1 / 20 rmse: 1.00 tp = 15 fp = 5 fn = 0iter = 1 / 20 rmse: 0.08 tp = 15 fp = 4 fn = 0iter = 1 / 20 rmse: 0.04 tp = 15 fp = 0 fn = 0iter = 2 / 20 rmse: 1.00 tp = 15 fp = 6 fn = 0iter = 2 / 20 rmse: 0.04 tp = 15 fp = 4 fn = 0iter = 2 / 20 rmse: 0.06 tp = 15 fp = 1 fn = 0iter = 3 / 20 rmse: 1.00 tp = 15 fp = 4 fn = 0iter = 3 / 20 rmse: 0.04 tp = 15 fp = 3 fn = 0iter = 3 / 20 rmse: 0.05 tp = 15 fp = 2 fn = 0iter = 4 / 20 rmse: 1.00 tp = 15 fp = 3 fn = 0iter = 4 / 20 rmse: 0.06 tp = 15 fp = 2 fn = 0iter = 4 / 20 rmse: 0.05 tp = 15 fp = 0 fn = 0iter = 5 / 20 rmse: 1.00 tp = 15 fp = 9 fn = 0iter = 5 / 20 rmse: 0.07 tp = 15 fp = 4 fn = 0iter = 5 / 20 rmse: 0.04 tp = 15 fp = 0 fn = 0iter = 6 / 20 rmse: 1.00 tp = 15 fp = 3 fn = 0iter = 6 / 20 rmse: 0.05 tp = 15 fp = 2 fn = 0iter = 6 / 20 rmse: 0.05 tp = 15 fp = 0 fn = 0iter = 7 / 20 rmse: 1.00 tp = 15 fp = 1 fn = 0iter = 7 / 20 rmse: 0.06 tp = 15 fp = 1 fn = 0iter = 7 / 20 rmse: 0.04 tp = 15 fp = 0 fn = 0iter = 8 / 20 rmse: 1.00 tp = 15 fp = 1 fn = 0iter = 8 / 20 rmse: 0.05 tp = 15 fp = 1 fn = 0iter = 8 / 20 rmse: 0.03 tp = 15 fp = 0 fn = 0iter = 9 / 20 rmse: 1.00 tp = 15 fp = 7 fn = 0iter = 9 / 20 rmse: 0.04 tp = 15 fp = 4 fn = 0iter = 9 / 20 rmse: 0.04 tp = 15 fp = 4 fn = 0iter = 10 / 20 rmse: 1.00 tp = 15 fp = 4 fn = 0iter = 10 / 20 rmse: 0.04 tp = 15 fp = 0 fn = 0iter = 10 / 20 rmse: 0.05 tp = 14 fp = 0 fn = 1iter = 11 / 20 rmse: 1.00 tp = 15 fp = 3 fn = 0iter = 11 / 20 rmse: 0.05 tp = 15 fp = 2 fn = 0iter = 11 / 20 rmse: 0.03 tp = 15 fp = 1 fn = 0iter = 12 / 20 rmse: 1.00 tp = 15 fp = 5 fn = 0iter = 12 / 20 rmse: 0.05 tp = 15 fp = 1 fn = 0iter = 12 / 20 rmse: 0.04 tp = 15 fp = 0 fn = 0iter = 13 / 20 rmse: 1.00 tp = 15 fp = 6 fn = 0iter = 13 / 20 rmse: 0.06 tp = 15 fp = 2 fn = 0iter = 13 / 20 rmse: 0.04 tp = 15 fp = 0 fn = 0iter = 14 / 20 rmse: 1.00 tp = 15 fp = 3 fn = 0iter = 14 / 20 rmse: 0.04 tp = 15 fp = 1 fn = 0iter = 14 / 20 rmse: 0.04 tp = 15 fp = 0 fn = 0iter = 15 / 20 rmse: 1.00 tp = 15 fp = 6 fn = 0iter = 15 / 20 rmse: 0.04 tp = 15 fp = 3 fn = 0iter = 15 / 20 rmse: 0.04 tp = 15 fp = 0 fn = 0iter = 16 / 20 rmse: 1.00 tp = 15 fp = 4 fn = 0iter = 16 / 20 rmse: 0.06 tp = 15 fp = 4 fn = 0iter = 16 / 20 rmse: 0.04 tp = 15 fp = 1 fn = 0iter = 17 / 20 rmse: 1.00 tp = 15 fp = 4 fn = 0iter = 17 / 20 rmse: 0.04 tp = 15 fp = 3 fn = 0iter = 17 / 20 rmse: 0.02 tp = 15 fp = 1 fn = 0iter = 18 / 20 rmse: 1.00 tp = 15 fp = 2 fn = 0iter = 18 / 20 rmse: 0.05 tp = 15 fp = 0 fn = 0iter = 18 / 20 rmse: 0.05 tp = 15 fp = 0 fn = 0iter = 19 / 20 rmse: 1.00 tp = 15 fp = 5 fn = 0iter = 19 / 20 rmse: 0.04 tp = 15 fp = 4 fn = 0iter = 19 / 20 rmse: 0.05 tp = 15 fp = 1 fn = 0
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.775194, recall = 1.000000
+total tp = 300.0 total fp =  87.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 4.350 avg fn = 0.000
+No errors in 2 / 20 cases
+No fp in 2 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.862069, recall = 1.000000
+total tp = 300.0 total fp =  48.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 2.667 avg fn = 0.000
+No errors in 11 / 20 cases
+No fp in 12 / 20 cases
+No fn in 19 / 20 cases
+precision = 0.961415, recall = 0.996667
+total tp = 299.0 total fp =  12.0 total fn =  1.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 1.500 avg fn = 1.000
+
+n = 4096, d = 20, t = 384
+
+iter = 0 / 20 rmse: 1.00 tp = 20 fp = 10 fn = 0iter = 0 / 20 rmse: 0.03 tp = 20 fp = 6 fn = 0iter = 0 / 20 rmse: 0.04 tp = 20 fp = 0 fn = 0iter = 1 / 20 rmse: 1.00 tp = 20 fp = 17 fn = 0iter = 1 / 20 rmse: 0.05 tp = 20 fp = 8 fn = 0iter = 1 / 20 rmse: 0.04 tp = 20 fp = 0 fn = 0iter = 2 / 20 rmse: 1.00 tp = 20 fp = 14 fn = 0iter = 2 / 20 rmse: 0.05 tp = 20 fp = 9 fn = 0iter = 2 / 20 rmse: 0.06 tp = 20 fp = 0 fn = 0iter = 3 / 20 rmse: 1.00 tp = 20 fp = 5 fn = 0iter = 3 / 20 rmse: 0.04 tp = 20 fp = 3 fn = 0iter = 3 / 20 rmse: 0.06 tp = 20 fp = 2 fn = 0iter = 4 / 20 rmse: 1.00 tp = 20 fp = 12 fn = 0iter = 4 / 20 rmse: 0.04 tp = 20 fp = 9 fn = 0iter = 4 / 20 rmse: 0.04 tp = 20 fp = 0 fn = 0iter = 5 / 20 rmse: 1.00 tp = 20 fp = 9 fn = 0iter = 5 / 20 rmse: 0.05 tp = 20 fp = 6 fn = 0iter = 5 / 20 rmse: 0.05 tp = 20 fp = 0 fn = 0iter = 6 / 20 rmse: 1.00 tp = 20 fp = 8 fn = 0iter = 6 / 20 rmse: 0.04 tp = 20 fp = 5 fn = 0iter = 6 / 20 rmse: 0.06 tp = 20 fp = 0 fn = 0iter = 7 / 20 rmse: 1.00 tp = 20 fp = 10 fn = 0iter = 7 / 20 rmse: 0.04 tp = 20 fp = 2 fn = 0iter = 7 / 20 rmse: 0.06 tp = 20 fp = 0 fn = 0iter = 8 / 20 rmse: 1.00 tp = 20 fp = 8 fn = 0iter = 8 / 20 rmse: 0.05 tp = 20 fp = 3 fn = 0iter = 8 / 20 rmse: 0.03 tp = 20 fp = 0 fn = 0iter = 9 / 20 rmse: 1.00 tp = 20 fp = 11 fn = 0iter = 9 / 20 rmse: 0.05 tp = 20 fp = 5 fn = 0iter = 9 / 20 rmse: 0.06 tp = 20 fp = 3 fn = 0iter = 10 / 20 rmse: 1.00 tp = 20 fp = 10 fn = 0iter = 10 / 20 rmse: 0.04 tp = 20 fp = 2 fn = 0iter = 10 / 20 rmse: 0.06 tp = 19 fp = 1 fn = 1iter = 11 / 20 rmse: 1.00 tp = 20 fp = 13 fn = 0iter = 11 / 20 rmse: 0.07 tp = 20 fp = 6 fn = 0iter = 11 / 20 rmse: 0.08 tp = 20 fp = 2 fn = 0iter = 12 / 20 rmse: 1.00 tp = 20 fp = 14 fn = 0iter = 12 / 20 rmse: 0.05 tp = 20 fp = 7 fn = 0iter = 12 / 20 rmse: 0.06 tp = 20 fp = 1 fn = 0iter = 13 / 20 rmse: 1.00 tp = 20 fp = 16 fn = 0iter = 13 / 20 rmse: 0.06 tp = 20 fp = 12 fn = 0iter = 13 / 20 rmse: 0.06 tp = 20 fp = 2 fn = 0iter = 14 / 20 rmse: 1.00 tp = 20 fp = 8 fn = 0iter = 14 / 20 rmse: 0.04 tp = 20 fp = 3 fn = 0iter = 14 / 20 rmse: 0.04 tp = 20 fp = 0 fn = 0iter = 15 / 20 rmse: 1.00 tp = 20 fp = 8 fn = 0iter = 15 / 20 rmse: 0.05 tp = 20 fp = 2 fn = 0iter = 15 / 20 rmse: 0.06 tp = 20 fp = 4 fn = 0iter = 16 / 20 rmse: 1.00 tp = 20 fp = 5 fn = 0iter = 16 / 20 rmse: 0.06 tp = 20 fp = 4 fn = 0iter = 16 / 20 rmse: 0.07 tp = 20 fp = 2 fn = 0iter = 17 / 20 rmse: 1.00 tp = 20 fp = 13 fn = 0iter = 17 / 20 rmse: 0.05 tp = 20 fp = 7 fn = 0iter = 17 / 20 rmse: 0.04 tp = 20 fp = 0 fn = 0iter = 18 / 20 rmse: 1.00 tp = 20 fp = 11 fn = 0iter = 18 / 20 rmse: 0.04 tp = 20 fp = 3 fn = 0iter = 18 / 20 rmse: 0.06 tp = 20 fp = 0 fn = 0iter = 19 / 20 rmse: 1.00 tp = 20 fp = 15 fn = 0iter = 19 / 20 rmse: 0.05 tp = 20 fp = 9 fn = 0iter = 19 / 20 rmse: 0.04 tp = 20 fp = 0 fn = 0
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.648298, recall = 1.000000
+total tp = 400.0 total fp =  217.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 10.850 avg fn = 0.000
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.782779, recall = 1.000000
+total tp = 400.0 total fp =  111.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 5.550 avg fn = 0.000
+No errors in 12 / 20 cases
+No fp in 12 / 20 cases
+No fn in 19 / 20 cases
+precision = 0.959135, recall = 0.997500
+total tp = 399.0 total fp =  17.0 total fn =  1.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 2.125 avg fn = 1.000
+
+n = 4096, d = 25, t = 384
+
+iter = 0 / 20 rmse: 1.00 tp = 25 fp = 18 fn = 0iter = 0 / 20 rmse: 0.06 tp = 25 fp = 11 fn = 0iter = 0 / 20 rmse: 0.06 tp = 25 fp = 1 fn = 0iter = 1 / 20 rmse: 1.00 tp = 25 fp = 16 fn = 0iter = 1 / 20 rmse: 0.07 tp = 25 fp = 12 fn = 0iter = 1 / 20 rmse: 0.07 tp = 25 fp = 4 fn = 0iter = 2 / 20 rmse: 1.00 tp = 25 fp = 29 fn = 0iter = 2 / 20 rmse: 0.06 tp = 25 fp = 15 fn = 0iter = 2 / 20 rmse: 0.09 tp = 25 fp = 6 fn = 0iter = 3 / 20 rmse: 1.00 tp = 25 fp = 15 fn = 0iter = 3 / 20 rmse: 0.05 tp = 25 fp = 11 fn = 0iter = 3 / 20 rmse: 0.06 tp = 25 fp = 2 fn = 0iter = 4 / 20 rmse: 1.00 tp = 25 fp = 22 fn = 0iter = 4 / 20 rmse: 0.07 tp = 25 fp = 15 fn = 0iter = 4 / 20 rmse: 0.05 tp = 25 fp = 1 fn = 0iter = 5 / 20 rmse: 1.00 tp = 25 fp = 17 fn = 0iter = 5 / 20 rmse: 0.05 tp = 25 fp = 10 fn = 0iter = 5 / 20 rmse: 0.05 tp = 25 fp = 0 fn = 0iter = 6 / 20 rmse: 1.00 tp = 25 fp = 24 fn = 0iter = 6 / 20 rmse: 0.04 tp = 25 fp = 9 fn = 0iter = 6 / 20 rmse: 0.06 tp = 25 fp = 1 fn = 0iter = 7 / 20 rmse: 1.00 tp = 25 fp = 17 fn = 0iter = 7 / 20 rmse: 0.05 tp = 25 fp = 9 fn = 0iter = 7 / 20 rmse: 0.05 tp = 25 fp = 5 fn = 0iter = 8 / 20 rmse: 1.00 tp = 25 fp = 28 fn = 0iter = 8 / 20 rmse: 0.04 tp = 25 fp = 16 fn = 0iter = 8 / 20 rmse: 0.06 tp = 21 fp = 0 fn = 4iter = 9 / 20 rmse: 1.00 tp = 25 fp = 18 fn = 0iter = 9 / 20 rmse: 0.06 tp = 25 fp = 8 fn = 0iter = 9 / 20 rmse: 0.06 tp = 24 fp = 0 fn = 1iter = 10 / 20 rmse: 1.00 tp = 25 fp = 16 fn = 0iter = 10 / 20 rmse: 0.06 tp = 25 fp = 9 fn = 0iter = 10 / 20 rmse: 0.05 tp = 25 fp = 0 fn = 0iter = 11 / 20 rmse: 1.00 tp = 25 fp = 29 fn = 0iter = 11 / 20 rmse: 0.05 tp = 25 fp = 17 fn = 0iter = 11 / 20 rmse: 0.07 tp = 25 fp = 10 fn = 0iter = 12 / 20 rmse: 1.00 tp = 25 fp = 18 fn = 0iter = 12 / 20 rmse: 0.04 tp = 25 fp = 11 fn = 0iter = 12 / 20 rmse: 0.05 tp = 24 fp = 2 fn = 1iter = 13 / 20 rmse: 1.00 tp = 25 fp = 20 fn = 0iter = 13 / 20 rmse: 0.06 tp = 25 fp = 11 fn = 0iter = 13 / 20 rmse: 0.05 tp = 25 fp = 1 fn = 0iter = 14 / 20 rmse: 1.00 tp = 25 fp = 24 fn = 0iter = 14 / 20 rmse: 0.05 tp = 25 fp = 15 fn = 0iter = 14 / 20 rmse: 0.06 tp = 25 fp = 4 fn = 0iter = 15 / 20 rmse: 1.00 tp = 25 fp = 14 fn = 0iter = 15 / 20 rmse: 0.04 tp = 25 fp = 11 fn = 0iter = 15 / 20 rmse: 0.04 tp = 25 fp = 0 fn = 0iter = 16 / 20 rmse: 1.00 tp = 25 fp = 10 fn = 0iter = 16 / 20 rmse: 0.06 tp = 25 fp = 4 fn = 0iter = 16 / 20 rmse: 0.06 tp = 25 fp = 1 fn = 0iter = 17 / 20 rmse: 1.00 tp = 25 fp = 22 fn = 0iter = 17 / 20 rmse: 0.05 tp = 25 fp = 10 fn = 0iter = 17 / 20 rmse: 0.06 tp = 25 fp = 1 fn = 0iter = 18 / 20 rmse: 1.00 tp = 25 fp = 19 fn = 0iter = 18 / 20 rmse: 0.07 tp = 25 fp = 7 fn = 0iter = 18 / 20 rmse: 0.07 tp = 24 fp = 0 fn = 1iter = 19 / 20 rmse: 1.00 tp = 25 fp = 20 fn = 0iter = 19 / 20 rmse: 0.07 tp = 25 fp = 10 fn = 0iter = 19 / 20 rmse: 0.07 tp = 22 fp = 0 fn = 3
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.558036, recall = 1.000000
+total tp = 500.0 total fp =  396.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 19.800 avg fn = 0.000
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.693481, recall = 1.000000
+total tp = 500.0 total fp =  221.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 11.050 avg fn = 0.000
+No errors in 3 / 20 cases
+No fp in 7 / 20 cases
+No fn in 15 / 20 cases
+precision = 0.926276, recall = 0.980000
+total tp = 490.0 total fp =  39.0 total fn =  10.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 3.000 avg fn = 2.000
+
+n = 4096, d = 30, t = 384
+
+iter = 0 / 20 rmse: 1.00 tp = 30 fp = 32 fn = 0iter = 0 / 20 rmse: 0.04 tp = 30 fp = 15 fn = 0iter = 0 / 20 rmse: 0.05 tp = 30 fp = 3 fn = 0iter = 1 / 20 rmse: 1.00 tp = 30 fp = 22 fn = 0iter = 1 / 20 rmse: 0.04 tp = 30 fp = 10 fn = 0iter = 1 / 20 rmse: 0.05 tp = 30 fp = 1 fn = 0iter = 2 / 20 rmse: 1.00 tp = 30 fp = 45 fn = 0iter = 2 / 20 rmse: 0.12 tp = 30 fp = 21 fn = 0iter = 2 / 20 rmse: 0.09 tp = 30 fp = 17 fn = 0iter = 3 / 20 rmse: 1.00 tp = 30 fp = 30 fn = 0iter = 3 / 20 rmse: 0.06 tp = 30 fp = 17 fn = 0iter = 3 / 20 rmse: 0.07 tp = 29 fp = 6 fn = 1iter = 4 / 20 rmse: 1.00 tp = 30 fp = 42 fn = 0iter = 4 / 20 rmse: 0.10 tp = 30 fp = 31 fn = 0iter = 4 / 20 rmse: 0.09 tp = 30 fp = 14 fn = 0iter = 5 / 20 rmse: 1.00 tp = 30 fp = 37 fn = 0iter = 5 / 20 rmse: 0.08 tp = 29 fp = 22 fn = 1iter = 5 / 20 rmse: 0.10 tp = 28 fp = 21 fn = 2iter = 6 / 20 rmse: 1.00 tp = 30 fp = 25 fn = 0iter = 6 / 20 rmse: 0.06 tp = 30 fp = 16 fn = 0iter = 6 / 20 rmse: 0.06 tp = 30 fp = 3 fn = 0iter = 7 / 20 rmse: 1.00 tp = 30 fp = 34 fn = 0iter = 7 / 20 rmse: 0.06 tp = 30 fp = 21 fn = 0iter = 7 / 20 rmse: 0.07 tp = 30 fp = 17 fn = 0iter = 8 / 20 rmse: 1.00 tp = 30 fp = 29 fn = 0iter = 8 / 20 rmse: 0.06 tp = 30 fp = 17 fn = 0iter = 8 / 20 rmse: 0.06 tp = 30 fp = 9 fn = 0iter = 9 / 20 rmse: 1.00 tp = 30 fp = 51 fn = 0iter = 9 / 20 rmse: 0.07 tp = 29 fp = 28 fn = 1iter = 9 / 20 rmse: 0.07 tp = 29 fp = 11 fn = 1iter = 10 / 20 rmse: 1.00 tp = 30 fp = 32 fn = 0iter = 10 / 20 rmse: 0.05 tp = 30 fp = 21 fn = 0iter = 10 / 20 rmse: 0.07 tp = 30 fp = 7 fn = 0iter = 11 / 20 rmse: 1.00 tp = 30 fp = 25 fn = 0iter = 11 / 20 rmse: 0.06 tp = 30 fp = 20 fn = 0iter = 11 / 20 rmse: 0.05 tp = 30 fp = 1 fn = 0iter = 12 / 20 rmse: 1.00 tp = 30 fp = 24 fn = 0iter = 12 / 20 rmse: 0.05 tp = 30 fp = 13 fn = 0iter = 12 / 20 rmse: 0.05 tp = 30 fp = 2 fn = 0iter = 13 / 20 rmse: 1.00 tp = 30 fp = 31 fn = 0iter = 13 / 20 rmse: 0.05 tp = 30 fp = 21 fn = 0iter = 13 / 20 rmse: 0.07 tp = 30 fp = 9 fn = 0iter = 14 / 20 rmse: 1.00 tp = 30 fp = 36 fn = 0iter = 14 / 20 rmse: 0.07 tp = 29 fp = 21 fn = 1iter = 14 / 20 rmse: 0.06 tp = 29 fp = 3 fn = 1iter = 15 / 20 rmse: 1.00 tp = 30 fp = 28 fn = 0iter = 15 / 20 rmse: 0.05 tp = 30 fp = 16 fn = 0iter = 15 / 20 rmse: 0.04 tp = 30 fp = 1 fn = 0iter = 16 / 20 rmse: 1.00 tp = 30 fp = 21 fn = 0iter = 16 / 20 rmse: 0.09 tp = 30 fp = 11 fn = 0iter = 16 / 20 rmse: 0.07 tp = 29 fp = 2 fn = 1iter = 17 / 20 rmse: 1.00 tp = 30 fp = 33 fn = 0iter = 17 / 20 rmse: 0.07 tp = 30 fp = 20 fn = 0iter = 17 / 20 rmse: 0.06 tp = 30 fp = 3 fn = 0iter = 18 / 20 rmse: 1.00 tp = 30 fp = 39 fn = 0iter = 18 / 20 rmse: 0.06 tp = 30 fp = 20 fn = 0iter = 18 / 20 rmse: 0.10 tp = 29 fp = 12 fn = 1iter = 19 / 20 rmse: 1.00 tp = 30 fp = 31 fn = 0iter = 19 / 20 rmse: 0.04 tp = 30 fp = 16 fn = 0iter = 19 / 20 rmse: 0.08 tp = 30 fp = 12 fn = 0
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.481155, recall = 1.000000
+total tp = 600.0 total fp =  647.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 32.350 avg fn = 0.000
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 17 / 20 cases
+precision = 0.612936, recall = 0.995000
+total tp = 597.0 total fp =  377.0 total fn =  3.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 18.850 avg fn = 1.000
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 14 / 20 cases
+precision = 0.793842, recall = 0.988333
+total tp = 593.0 total fp =  154.0 total fn =  7.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 7.700 avg fn = 1.167
+
+n = 4096, d = 35, t = 384
+
+iter = 0 / 20 rmse: 1.00 tp = 35 fp = 45 fn = 0iter = 0 / 20 rmse: 0.07 tp = 35 fp = 29 fn = 0iter = 0 / 20 rmse: 0.09 tp = 34 fp = 6 fn = 1iter = 1 / 20 rmse: 1.00 tp = 35 fp = 50 fn = 0iter = 1 / 20 rmse: 0.08 tp = 35 fp = 27 fn = 0iter = 1 / 20 rmse: 0.06 tp = 34 fp = 8 fn = 1iter = 2 / 20 rmse: 1.00 tp = 35 fp = 53 fn = 0iter = 2 / 20 rmse: 0.05 tp = 35 fp = 30 fn = 0iter = 2 / 20 rmse: 0.08 tp = 35 fp = 17 fn = 0iter = 3 / 20 rmse: 1.00 tp = 35 fp = 49 fn = 0iter = 3 / 20 rmse: 0.10 tp = 35 fp = 21 fn = 0iter = 3 / 20 rmse: 0.04 tp = 35 fp = 3 fn = 0iter = 4 / 20 rmse: 1.00 tp = 35 fp = 38 fn = 0iter = 4 / 20 rmse: 0.07 tp = 35 fp = 28 fn = 0iter = 4 / 20 rmse: 0.07 tp = 35 fp = 16 fn = 0iter = 5 / 20 rmse: 1.00 tp = 35 fp = 48 fn = 0iter = 5 / 20 rmse: 0.07 tp = 35 fp = 27 fn = 0iter = 5 / 20 rmse: 0.09 tp = 34 fp = 16 fn = 1iter = 6 / 20 rmse: 1.00 tp = 35 fp = 30 fn = 0iter = 6 / 20 rmse: 0.06 tp = 35 fp = 19 fn = 0iter = 6 / 20 rmse: 0.07 tp = 35 fp = 3 fn = 0iter = 7 / 20 rmse: 1.00 tp = 35 fp = 57 fn = 0iter = 7 / 20 rmse: 0.05 tp = 35 fp = 30 fn = 0iter = 7 / 20 rmse: 0.08 tp = 35 fp = 25 fn = 0iter = 8 / 20 rmse: 1.00 tp = 35 fp = 58 fn = 0iter = 8 / 20 rmse: 0.08 tp = 35 fp = 34 fn = 0iter = 8 / 20 rmse: 0.09 tp = 35 fp = 14 fn = 0iter = 9 / 20 rmse: 1.00 tp = 35 fp = 64 fn = 0iter = 9 / 20 rmse: 0.06 tp = 35 fp = 41 fn = 0iter = 9 / 20 rmse: 0.13 tp = 34 fp = 27 fn = 1iter = 10 / 20 rmse: 1.00 tp = 35 fp = 53 fn = 0iter = 10 / 20 rmse: 0.05 tp = 35 fp = 28 fn = 0iter = 10 / 20 rmse: 0.08 tp = 34 fp = 15 fn = 1iter = 11 / 20 rmse: 1.00 tp = 35 fp = 45 fn = 0iter = 11 / 20 rmse: 0.07 tp = 35 fp = 22 fn = 0iter = 11 / 20 rmse: 0.09 tp = 35 fp = 17 fn = 0iter = 12 / 20 rmse: 1.00 tp = 35 fp = 42 fn = 0iter = 12 / 20 rmse: 0.04 tp = 35 fp = 19 fn = 0iter = 12 / 20 rmse: 0.08 tp = 35 fp = 18 fn = 0iter = 13 / 20 rmse: 1.00 tp = 35 fp = 32 fn = 0iter = 13 / 20 rmse: 0.07 tp = 35 fp = 18 fn = 0iter = 13 / 20 rmse: 0.09 tp = 35 fp = 9 fn = 0iter = 14 / 20 rmse: 1.00 tp = 35 fp = 43 fn = 0iter = 14 / 20 rmse: 0.09 tp = 35 fp = 26 fn = 0iter = 14 / 20 rmse: 0.06 tp = 35 fp = 11 fn = 0iter = 15 / 20 rmse: 1.00 tp = 35 fp = 51 fn = 0iter = 15 / 20 rmse: 0.05 tp = 35 fp = 29 fn = 0iter = 15 / 20 rmse: 0.08 tp = 35 fp = 20 fn = 0iter = 16 / 20 rmse: 1.00 tp = 35 fp = 39 fn = 0iter = 16 / 20 rmse: 0.07 tp = 35 fp = 24 fn = 0iter = 16 / 20 rmse: 0.11 tp = 34 fp = 10 fn = 1iter = 17 / 20 rmse: 1.00 tp = 35 fp = 52 fn = 0iter = 17 / 20 rmse: 0.07 tp = 35 fp = 28 fn = 0iter = 17 / 20 rmse: 0.07 tp = 34 fp = 21 fn = 1iter = 18 / 20 rmse: 1.00 tp = 35 fp = 54 fn = 0iter = 18 / 20 rmse: 0.06 tp = 35 fp = 26 fn = 0iter = 18 / 20 rmse: 0.10 tp = 35 fp = 24 fn = 0iter = 19 / 20 rmse: 1.00 tp = 35 fp = 54 fn = 0iter = 19 / 20 rmse: 0.10 tp = 35 fp = 25 fn = 0iter = 19 / 20 rmse: 0.06 tp = 33 fp = 16 fn = 2
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.422450, recall = 1.000000
+total tp = 700.0 total fp =  957.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 47.850 avg fn = 0.000
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.568643, recall = 1.000000
+total tp = 700.0 total fp =  531.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  19
+avg fp = 26.550 avg fn = 0.000
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 12 / 20 cases
+precision = 0.700101, recall = 0.987143
+total tp = 691.0 total fp =  296.0 total fn =  9.0 unconfident negs =  0 determined =  0 overdetermined =  19
+avg fp = 14.800 avg fn = 1.125
+
+n = 4096, d = 40, t = 384
+
+iter = 0 / 20 rmse: 1.00 tp = 40 fp = 69 fn = 0iter = 0 / 20 rmse: 0.12 tp = 39 fp = 44 fn = 1iter = 0 / 20 rmse: 0.10 tp = 39 fp = 26 fn = 1iter = 1 / 20 rmse: 1.00 tp = 40 fp = 61 fn = 0iter = 1 / 20 rmse: 0.09 tp = 40 fp = 22 fn = 0iter = 1 / 20 rmse: 0.09 tp = 40 fp = 23 fn = 0iter = 2 / 20 rmse: 1.00 tp = 40 fp = 66 fn = 0iter = 2 / 20 rmse: 0.10 tp = 40 fp = 33 fn = 0iter = 2 / 20 rmse: 0.10 tp = 38 fp = 13 fn = 2iter = 3 / 20 rmse: 1.00 tp = 40 fp = 53 fn = 0iter = 3 / 20 rmse: 0.09 tp = 39 fp = 24 fn = 1iter = 3 / 20 rmse: 0.09 tp = 39 fp = 18 fn = 1iter = 4 / 20 rmse: 1.00 tp = 40 fp = 81 fn = 0iter = 4 / 20 rmse: 0.11 tp = 39 fp = 40 fn = 1iter = 4 / 20 rmse: 0.09 tp = 40 fp = 30 fn = 0iter = 5 / 20 rmse: 1.00 tp = 40 fp = 77 fn = 0iter = 5 / 20 rmse: 0.08 tp = 40 fp = 42 fn = 0iter = 5 / 20 rmse: 0.10 tp = 38 fp = 17 fn = 2iter = 6 / 20 rmse: 1.00 tp = 40 fp = 74 fn = 0iter = 6 / 20 rmse: 0.11 tp = 40 fp = 41 fn = 0iter = 6 / 20 rmse: 0.09 tp = 39 fp = 20 fn = 1iter = 7 / 20 rmse: 1.00 tp = 40 fp = 67 fn = 0iter = 7 / 20 rmse: 0.08 tp = 40 fp = 38 fn = 0iter = 7 / 20 rmse: 0.08 tp = 39 fp = 17 fn = 1iter = 8 / 20 rmse: 1.00 tp = 40 fp = 68 fn = 0iter = 8 / 20 rmse: 0.09 tp = 40 fp = 29 fn = 0iter = 8 / 20 rmse: 0.13 tp = 40 fp = 28 fn = 0iter = 9 / 20 rmse: 1.00 tp = 40 fp = 79 fn = 0iter = 9 / 20 rmse: 0.07 tp = 40 fp = 42 fn = 0iter = 9 / 20 rmse: 0.10 tp = 37 fp = 31 fn = 3iter = 10 / 20 rmse: 1.00 tp = 40 fp = 56 fn = 0iter = 10 / 20 rmse: 0.10 tp = 39 fp = 31 fn = 1iter = 10 / 20 rmse: 0.07 tp = 40 fp = 18 fn = 0iter = 11 / 20 rmse: 1.00 tp = 40 fp = 67 fn = 0iter = 11 / 20 rmse: 0.08 tp = 39 fp = 40 fn = 1iter = 11 / 20 rmse: 0.09 tp = 38 fp = 16 fn = 2iter = 12 / 20 rmse: 1.00 tp = 40 fp = 68 fn = 0iter = 12 / 20 rmse: 0.07 tp = 40 fp = 31 fn = 0iter = 12 / 20 rmse: 0.10 tp = 40 fp = 27 fn = 0iter = 13 / 20 rmse: 1.00 tp = 40 fp = 78 fn = 0iter = 13 / 20 rmse: 0.08 tp = 40 fp = 40 fn = 0iter = 13 / 20 rmse: 0.09 tp = 38 fp = 22 fn = 2iter = 14 / 20 rmse: 1.00 tp = 40 fp = 65 fn = 0iter = 14 / 20 rmse: 0.07 tp = 39 fp = 31 fn = 1iter = 14 / 20 rmse: 0.10 tp = 39 fp = 24 fn = 1iter = 15 / 20 rmse: 1.00 tp = 40 fp = 65 fn = 0iter = 15 / 20 rmse: 0.07 tp = 40 fp = 36 fn = 0iter = 15 / 20 rmse: 0.12 tp = 40 fp = 24 fn = 0iter = 16 / 20 rmse: 1.00 tp = 40 fp = 68 fn = 0iter = 16 / 20 rmse: 0.07 tp = 39 fp = 45 fn = 1iter = 16 / 20 rmse: 0.12 tp = 39 fp = 32 fn = 1iter = 17 / 20 rmse: 1.00 tp = 40 fp = 63 fn = 0iter = 17 / 20 rmse: 0.06 tp = 40 fp = 37 fn = 0iter = 17 / 20 rmse: 0.08 tp = 40 fp = 25 fn = 0iter = 18 / 20 rmse: 1.00 tp = 40 fp = 70 fn = 0iter = 18 / 20 rmse: 0.07 tp = 40 fp = 42 fn = 0iter = 18 / 20 rmse: 0.11 tp = 40 fp = 20 fn = 0iter = 19 / 20 rmse: 1.00 tp = 40 fp = 64 fn = 0iter = 19 / 20 rmse: 0.07 tp = 40 fp = 35 fn = 0iter = 19 / 20 rmse: 0.10 tp = 40 fp = 25 fn = 0
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.370542, recall = 1.000000
+total tp = 800.0 total fp =  1359.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 67.950 avg fn = 0.000
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 13 / 20 cases
+precision = 0.523087, recall = 0.991250
+total tp = 793.0 total fp =  723.0 total fn =  7.0 unconfident negs =  0 determined =  1 overdetermined =  3
+avg fp = 36.150 avg fn = 1.000
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 9 / 20 cases
+precision = 0.631961, recall = 0.978750
+total tp = 783.0 total fp =  456.0 total fn =  17.0 unconfident negs =  0 determined =  1 overdetermined =  3
+avg fp = 22.800 avg fn = 1.545
+
+n = 4096, d = 50, t = 384
+
+iter = 0 / 20 rmse: 1.00 tp = 50 fp = 100 fn = 0iter = 0 / 20 rmse: 0.13 tp = 49 fp = 56 fn = 1iter = 0 / 20 rmse: 0.17 tp = 45 fp = 25 fn = 5iter = 1 / 20 rmse: 1.00 tp = 50 fp = 108 fn = 0iter = 1 / 20 rmse: 0.11 tp = 49 fp = 61 fn = 1iter = 1 / 20 rmse: 0.06 tp = 48 fp = 7 fn = 2iter = 2 / 20 rmse: 1.00 tp = 50 fp = 104 fn = 0iter = 2 / 20 rmse: 0.10 tp = 47 fp = 58 fn = 3iter = 2 / 20 rmse: 0.08 tp = 46 fp = 20 fn = 4iter = 3 / 20 rmse: 1.00 tp = 50 fp = 139 fn = 0iter = 3 / 20 rmse: 0.13 tp = 47 fp = 74 fn = 3iter = 3 / 20 rmse: 0.14 tp = 46 fp = 37 fn = 4iter = 4 / 20 rmse: 1.00 tp = 50 fp = 127 fn = 0iter = 4 / 20 rmse: 0.10 tp = 50 fp = 84 fn = 0iter = 4 / 20 rmse: 0.15 tp = 49 fp = 36 fn = 1iter = 5 / 20 rmse: 1.00 tp = 50 fp = 97 fn = 0iter = 5 / 20 rmse: 0.13 tp = 50 fp = 58 fn = 0iter = 5 / 20 rmse: 0.16 tp = 46 fp = 35 fn = 4iter = 6 / 20 rmse: 1.00 tp = 50 fp = 145 fn = 0iter = 6 / 20 rmse: 0.10 tp = 50 fp = 85 fn = 0iter = 6 / 20 rmse: 0.16 tp = 48 fp = 38 fn = 2iter = 7 / 20 rmse: 1.00 tp = 50 fp = 129 fn = 0iter = 7 / 20 rmse: 0.10 tp = 48 fp = 61 fn = 2iter = 7 / 20 rmse: 0.14 tp = 48 fp = 37 fn = 2iter = 8 / 20 rmse: 1.00 tp = 50 fp = 140 fn = 0iter = 8 / 20 rmse: 0.12 tp = 49 fp = 81 fn = 1iter = 8 / 20 rmse: 0.11 tp = 46 fp = 34 fn = 4iter = 9 / 20 rmse: 1.00 tp = 50 fp = 122 fn = 0iter = 9 / 20 rmse: 0.16 tp = 47 fp = 63 fn = 3iter = 9 / 20 rmse: 0.15 tp = 48 fp = 35 fn = 2iter = 10 / 20 rmse: 1.00 tp = 50 fp = 158 fn = 0iter = 10 / 20 rmse: 0.10 tp = 50 fp = 88 fn = 0iter = 10 / 20 rmse: 0.14 tp = 48 fp = 44 fn = 2iter = 11 / 20 rmse: 1.00 tp = 50 fp = 101 fn = 0iter = 11 / 20 rmse: 0.14 tp = 49 fp = 56 fn = 1iter = 11 / 20 rmse: 0.12 tp = 47 fp = 31 fn = 3iter = 12 / 20 rmse: 1.00 tp = 50 fp = 114 fn = 0iter = 12 / 20 rmse: 0.16 tp = 50 fp = 68 fn = 0iter = 12 / 20 rmse: 0.16 tp = 47 fp = 36 fn = 3iter = 13 / 20 rmse: 1.00 tp = 50 fp = 128 fn = 0iter = 13 / 20 rmse: 0.11 tp = 49 fp = 69 fn = 1iter = 13 / 20 rmse: 0.11 tp = 50 fp = 29 fn = 0iter = 14 / 20 rmse: 1.00 tp = 50 fp = 122 fn = 0iter = 14 / 20 rmse: 0.13 tp = 49 fp = 62 fn = 1iter = 14 / 20 rmse: 0.16 tp = 42 fp = 9 fn = 8iter = 15 / 20 rmse: 1.00 tp = 50 fp = 133 fn = 0iter = 15 / 20 rmse: 0.08 tp = 49 fp = 77 fn = 1iter = 15 / 20 rmse: 0.11 tp = 49 fp = 28 fn = 1iter = 16 / 20 rmse: 1.00 tp = 50 fp = 143 fn = 0iter = 16 / 20 rmse: 0.13 tp = 49 fp = 76 fn = 1iter = 16 / 20 rmse: 0.15 tp = 47 fp = 31 fn = 3iter = 17 / 20 rmse: 1.00 tp = 50 fp = 137 fn = 0iter = 17 / 20 rmse: 0.12 tp = 49 fp = 76 fn = 1iter = 17 / 20 rmse: 0.22 tp = 43 fp = 40 fn = 7iter = 18 / 20 rmse: 1.00 tp = 50 fp = 100 fn = 0iter = 18 / 20 rmse: 0.12 tp = 49 fp = 54 fn = 1iter = 18 / 20 rmse: 0.07 tp = 48 fp = 13 fn = 2iter = 19 / 20 rmse: 1.00 tp = 50 fp = 104 fn = 0iter = 19 / 20 rmse: 0.13 tp = 50 fp = 50 fn = 0iter = 19 / 20 rmse: 0.15 tp = 50 fp = 23 fn = 0
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.289771, recall = 1.000000
+total tp = 1000.0 total fp =  2451.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 122.550 avg fn = 0.000
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 6 / 20 cases
+precision = 0.419092, recall = 0.979000
+total tp = 979.0 total fp =  1357.0 total fn =  21.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 67.850 avg fn = 1.500
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 2 / 20 cases
+precision = 0.615435, recall = 0.941000
+total tp = 941.0 total fp =  588.0 total fn =  59.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 29.400 avg fn = 3.278
+
+n = 4096, d = 60, t = 384
+
+iter = 0 / 20 rmse: 1.00 tp = 60 fp = 208 fn = 0iter = 0 / 20 rmse: 0.12 tp = 58 fp = 118 fn = 2iter = 0 / 20 rmse: 0.26 tp = 57 fp = 44 fn = 3iter = 1 / 20 rmse: 1.00 tp = 60 fp = 208 fn = 0iter = 1 / 20 rmse: 0.10 tp = 59 fp = 105 fn = 1iter = 1 / 20 rmse: 0.15 tp = 58 fp = 41 fn = 2iter = 2 / 20 rmse: 1.00 tp = 60 fp = 202 fn = 0iter = 2 / 20 rmse: 0.12 tp = 60 fp = 112 fn = 0iter = 2 / 20 rmse: 0.42 tp = 49 fp = 51 fn = 11iter = 3 / 20 rmse: 1.00 tp = 60 fp = 203 fn = 0iter = 3 / 20 rmse: 0.14 tp = 59 fp = 122 fn = 1iter = 3 / 20 rmse: 0.31 tp = 54 fp = 35 fn = 6iter = 4 / 20 rmse: 1.00 tp = 60 fp = 208 fn = 0iter = 4 / 20 rmse: 0.13 tp = 59 fp = 122 fn = 1iter = 4 / 20 rmse: 0.16 tp = 56 fp = 36 fn = 4iter = 5 / 20 rmse: 1.00 tp = 60 fp = 225 fn = 0iter = 5 / 20 rmse: 0.09 tp = 58 fp = 118 fn = 2iter = 5 / 20 rmse: 0.57 tp = 38 fp = 38 fn = 22iter = 6 / 20 rmse: 1.00 tp = 60 fp = 179 fn = 0iter = 6 / 20 rmse: 0.09 tp = 59 fp = 95 fn = 1iter = 6 / 20 rmse: 0.11 tp = 58 fp = 25 fn = 2iter = 7 / 20 rmse: 1.00 tp = 60 fp = 205 fn = 0iter = 7 / 20 rmse: 0.11 tp = 60 fp = 111 fn = 0iter = 7 / 20 rmse: 0.48 tp = 46 fp = 53 fn = 14iter = 8 / 20 rmse: 1.00 tp = 60 fp = 193 fn = 0iter = 8 / 20 rmse: 0.10 tp = 59 fp = 89 fn = 1iter = 8 / 20 rmse: 0.29 tp = 50 fp = 40 fn = 10iter = 9 / 20 rmse: 1.00 tp = 60 fp = 187 fn = 0iter = 9 / 20 rmse: 0.10 tp = 59 fp = 103 fn = 1iter = 9 / 20 rmse: 0.29 tp = 46 fp = 38 fn = 14iter = 10 / 20 rmse: 1.00 tp = 60 fp = 187 fn = 0iter = 10 / 20 rmse: 0.11 tp = 59 fp = 109 fn = 1iter = 10 / 20 rmse: 0.18 tp = 54 fp = 40 fn = 6iter = 11 / 20 rmse: 1.00 tp = 60 fp = 199 fn = 0iter = 11 / 20 rmse: 0.10 tp = 57 fp = 109 fn = 3iter = 11 / 20 rmse: 0.36 tp = 46 fp = 48 fn = 14iter = 12 / 20 rmse: 1.00 tp = 60 fp = 167 fn = 0iter = 12 / 20 rmse: 0.13 tp = 57 fp = 85 fn = 3iter = 12 / 20 rmse: 0.17 tp = 54 fp = 37 fn = 6iter = 13 / 20 rmse: 1.00 tp = 60 fp = 192 fn = 0iter = 13 / 20 rmse: 0.14 tp = 59 fp = 108 fn = 1iter = 13 / 20 rmse: 0.22 tp = 54 fp = 37 fn = 6iter = 14 / 20 rmse: 1.00 tp = 60 fp = 197 fn = 0iter = 14 / 20 rmse: 0.13 tp = 60 fp = 121 fn = 0iter = 14 / 20 rmse: 0.23 tp = 49 fp = 34 fn = 11iter = 15 / 20 rmse: 1.00 tp = 60 fp = 193 fn = 0iter = 15 / 20 rmse: 0.11 tp = 58 fp = 115 fn = 2iter = 15 / 20 rmse: 0.14 tp = 50 fp = 42 fn = 10iter = 16 / 20 rmse: 1.00 tp = 60 fp = 222 fn = 0iter = 16 / 20 rmse: 0.09 tp = 60 fp = 117 fn = 0iter = 16 / 20 rmse: 0.39 tp = 50 fp = 52 fn = 10iter = 17 / 20 rmse: 1.00 tp = 60 fp = 177 fn = 0iter = 17 / 20 rmse: 0.11 tp = 60 fp = 107 fn = 0iter = 17 / 20 rmse: 0.23 tp = 53 fp = 47 fn = 7iter = 18 / 20 rmse: 1.00 tp = 60 fp = 196 fn = 0iter = 18 / 20 rmse: 0.10 tp = 59 fp = 104 fn = 1iter = 18 / 20 rmse: 0.56 tp = 45 fp = 49 fn = 15iter = 19 / 20 rmse: 1.00 tp = 60 fp = 199 fn = 0iter = 19 / 20 rmse: 0.13 tp = 58 fp = 107 fn = 2iter = 19 / 20 rmse: 0.18 tp = 53 fp = 43 fn = 7
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.233146, recall = 1.000000
+total tp = 1200.0 total fp =  3947.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 197.350 avg fn = 0.000
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 5 / 20 cases
+precision = 0.350924, recall = 0.980833
+total tp = 1177.0 total fp =  2177.0 total fn =  23.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 108.850 avg fn = 1.533
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 0 / 20 cases
+precision = 0.551351, recall = 0.850000
+total tp = 1020.0 total fp =  830.0 total fn =  180.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 41.500 avg fn = 9.000
+
+n = 4096, t = 384
+
+
+COMP
+
+	d	Precision	Recall (Sensitivity)	Specificity	surep	unsurep	false_pos	RMSE
+	5	0.990			1.000		1.000		 5.0	  0.1	    0.1		1.00
+	10	0.897			1.000		1.000		 9.9	  1.2	    1.1		1.00
+	15	0.775			1.000		0.999		14.3	  5.0	    4.3		1.00
+	20	0.648			1.000		0.997		16.6	 14.2	   10.8		1.00
+	25	0.558			1.000		0.995		18.4	 26.4	   19.8		1.00
+	30	0.481			1.000		0.992		15.9	 46.4	   32.4		1.00
+	35	0.422			1.000		0.988		14.1	 68.8	   47.9		1.00
+	40	0.371			1.000		0.983		 8.8	 99.2	   68.0		1.00
+	50	0.290			1.000		0.970		 4.0	168.6	  122.5		1.00
+	60	0.233			1.000		0.951		 1.2	256.1	  197.3		1.00
+
+combined_COMP_SBL
+
+	d	Precision	Recall (Sensitivity)	Specificity	surep	unsurep	false_pos	RMSE
+	5	1.000			1.000		1.000		 5.0	  0.0	    0.0		0.03
+	10	0.943			1.000		1.000		 9.9	  0.7	    0.6		0.04
+	15	0.862			1.000		0.999		14.3	  3.1	    2.4		0.05
+	20	0.783			1.000		0.999		16.6	  8.9	    5.5		0.05
+	25	0.693			1.000		0.997		18.4	 17.6	   11.1		0.05
+	30	0.613			0.995		0.995		15.9	 32.8	   18.9		0.06
+	35	0.569			1.000		0.993		14.1	 47.5	   26.6		0.07
+	40	0.523			0.991		0.991		 8.8	 67.0	   36.1		0.08
+	50	0.419			0.979		0.983		 4.0	112.8	   67.8		0.12
+	60	0.351			0.981		0.973		 1.2	166.5	  108.8		0.11
+
+combined_COMP_NNOMP_random_cv
+
+	d	Precision	Recall (Sensitivity)	Specificity	surep	unsurep	false_pos	RMSE
+	5	1.000			1.000		1.000		 5.0	  0.0	    0.0		0.04
+	10	0.995			1.000		1.000		 9.9	  0.1	    0.1		0.04
+	15	0.961			0.997		1.000		14.3	  1.2	    0.6		0.04
+	20	0.959			0.998		1.000		16.6	  4.2	    0.8		0.05
+	25	0.926			0.980		1.000		18.4	  8.1	    1.9		0.06
+	30	0.794			0.988		0.998		15.9	 21.4	    7.7		0.07
+	35	0.700			0.987		0.996		14.1	 35.2	   14.8		0.08
+	40	0.632			0.979		0.994		 8.8	 53.2	   22.8		0.10
+	50	0.615			0.941		0.993		 4.0	 72.5	   29.4		0.14
+	60	0.551			0.850		0.990		 1.2	 91.3	   41.5		0.28
+
+n = 8192, d = 5, t = 384
+
+iter = 0 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 0 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 0 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 1 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 1 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 1 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 2 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 2 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 2 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 3 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 3 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 3 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 4 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 4 / 20 rmse: 0.07 tp = 5 fp = 0 fn = 0iter = 4 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 5 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 5 / 20 rmse: 0.01 tp = 5 fp = 0 fn = 0iter = 5 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 6 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 6 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 6 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 7 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 7 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 7 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 8 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 8 / 20 rmse: 0.06 tp = 5 fp = 0 fn = 0iter = 8 / 20 rmse: 0.07 tp = 5 fp = 0 fn = 0iter = 9 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 9 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 9 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 10 / 20 rmse: 1.00 tp = 5 fp = 1 fn = 0iter = 10 / 20 rmse: 0.05 tp = 5 fp = 1 fn = 0iter = 10 / 20 rmse: 0.01 tp = 5 fp = 0 fn = 0iter = 11 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 11 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 11 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 12 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 12 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 12 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 13 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 13 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 13 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 14 / 20 rmse: 1.00 tp = 5 fp = 1 fn = 0iter = 14 / 20 rmse: 0.01 tp = 5 fp = 1 fn = 0iter = 14 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 15 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 15 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 15 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 16 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 16 / 20 rmse: 0.02 tp = 5 fp = 0 fn = 0iter = 16 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 17 / 20 rmse: 1.00 tp = 5 fp = 1 fn = 0iter = 17 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 17 / 20 rmse: 0.03 tp = 5 fp = 0 fn = 0iter = 18 / 20 rmse: 1.00 tp = 5 fp = 0 fn = 0iter = 18 / 20 rmse: 0.05 tp = 5 fp = 0 fn = 0iter = 18 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0iter = 19 / 20 rmse: 1.00 tp = 5 fp = 1 fn = 0iter = 19 / 20 rmse: 0.09 tp = 5 fp = 1 fn = 0iter = 19 / 20 rmse: 0.04 tp = 5 fp = 0 fn = 0
+No errors in 16 / 20 cases
+No fp in 16 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.961538, recall = 1.000000
+total tp = 100.0 total fp =  4.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 1.000 avg fn = 0.000
+No errors in 17 / 20 cases
+No fp in 17 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.970874, recall = 1.000000
+total tp = 100.0 total fp =  3.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 1.000 avg fn = 0.000
+No errors in 20 / 20 cases
+No fp in 20 / 20 cases
+No fn in 20 / 20 cases
+precision = 1.000000, recall = 1.000000
+total tp = 100.0 total fp =  0.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 0.000 avg fn = 0.000
+
+n = 8192, d = 10, t = 384
+
+iter = 0 / 20 rmse: 1.00 tp = 10 fp = 5 fn = 0iter = 0 / 20 rmse: 0.04 tp = 10 fp = 3 fn = 0iter = 0 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 1 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 1 / 20 rmse: 0.04 tp = 10 fp = 2 fn = 0iter = 1 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 2 / 20 rmse: 1.00 tp = 10 fp = 1 fn = 0iter = 2 / 20 rmse: 0.05 tp = 10 fp = 1 fn = 0iter = 2 / 20 rmse: 0.02 tp = 10 fp = 0 fn = 0iter = 3 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 3 / 20 rmse: 0.02 tp = 10 fp = 1 fn = 0iter = 3 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 4 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 4 / 20 rmse: 0.04 tp = 10 fp = 2 fn = 0iter = 4 / 20 rmse: 0.04 tp = 10 fp = 1 fn = 0iter = 5 / 20 rmse: 1.00 tp = 10 fp = 4 fn = 0iter = 5 / 20 rmse: 0.04 tp = 10 fp = 3 fn = 0iter = 5 / 20 rmse: 0.05 tp = 10 fp = 0 fn = 0iter = 6 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 6 / 20 rmse: 0.04 tp = 10 fp = 1 fn = 0iter = 6 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 7 / 20 rmse: 1.00 tp = 10 fp = 1 fn = 0iter = 7 / 20 rmse: 0.04 tp = 10 fp = 1 fn = 0iter = 7 / 20 rmse: 0.06 tp = 10 fp = 0 fn = 0iter = 8 / 20 rmse: 1.00 tp = 10 fp = 3 fn = 0iter = 8 / 20 rmse: 0.03 tp = 10 fp = 1 fn = 0iter = 8 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 9 / 20 rmse: 1.00 tp = 10 fp = 1 fn = 0iter = 9 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 9 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 10 / 20 rmse: 1.00 tp = 10 fp = 3 fn = 0iter = 10 / 20 rmse: 0.05 tp = 10 fp = 1 fn = 0iter = 10 / 20 rmse: 0.05 tp = 10 fp = 0 fn = 0iter = 11 / 20 rmse: 1.00 tp = 10 fp = 3 fn = 0iter = 11 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 11 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 12 / 20 rmse: 1.00 tp = 10 fp = 5 fn = 0iter = 12 / 20 rmse: 0.04 tp = 10 fp = 3 fn = 0iter = 12 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 13 / 20 rmse: 1.00 tp = 10 fp = 4 fn = 0iter = 13 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 13 / 20 rmse: 0.06 tp = 10 fp = 2 fn = 0iter = 14 / 20 rmse: 1.00 tp = 10 fp = 3 fn = 0iter = 14 / 20 rmse: 0.04 tp = 10 fp = 2 fn = 0iter = 14 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 15 / 20 rmse: 1.00 tp = 10 fp = 4 fn = 0iter = 15 / 20 rmse: 0.03 tp = 10 fp = 3 fn = 0iter = 15 / 20 rmse: 0.02 tp = 10 fp = 0 fn = 0iter = 16 / 20 rmse: 1.00 tp = 10 fp = 5 fn = 0iter = 16 / 20 rmse: 0.05 tp = 10 fp = 0 fn = 0iter = 16 / 20 rmse: 0.02 tp = 10 fp = 0 fn = 0iter = 17 / 20 rmse: 1.00 tp = 10 fp = 6 fn = 0iter = 17 / 20 rmse: 0.03 tp = 10 fp = 2 fn = 0iter = 17 / 20 rmse: 0.04 tp = 10 fp = 0 fn = 0iter = 18 / 20 rmse: 1.00 tp = 10 fp = 1 fn = 0iter = 18 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 18 / 20 rmse: 0.03 tp = 10 fp = 0 fn = 0iter = 19 / 20 rmse: 1.00 tp = 10 fp = 2 fn = 0iter = 19 / 20 rmse: 0.03 tp = 10 fp = 1 fn = 0iter = 19 / 20 rmse: 0.05 tp = 10 fp = 0 fn = 0
+No errors in 0 / 20 cases
+No fp in 0 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.772201, recall = 1.000000
+total tp = 200.0 total fp =  59.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  0
+avg fp = 2.950 avg fn = 0.000
+No errors in 5 / 20 cases
+No fp in 5 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.881057, recall = 1.000000
+total tp = 200.0 total fp =  27.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 1.800 avg fn = 0.000
+No errors in 18 / 20 cases
+No fp in 18 / 20 cases
+No fn in 20 / 20 cases
+precision = 0.985222, recall = 1.000000
+total tp = 200.0 total fp =  3.0 total fn =  0.0 unconfident negs =  0 determined =  0 overdetermined =  20
+avg fp = 1.500 avg fn = 0.000
+
+n = 8192, d = 15, t = 384
+
+iter = 0 / 20 rmse: 1.00 tp = 15 fp = 14 fn = 0iter = 0 / 20 rmse: 0.05 tp = 15 fp = 7 fn = 0iter = 0 / 20 rmse: 0.05 tp = 15 fp = 1 fn = 0iter = 1 / 20 rmse: 1.00 tp = 15 fp = 9 fn = 0iter = 1 / 20 rmse: 0.05 tp = 15 fp = 6 fn = 0iter = 1 / 20 rmse: 0.07 tp = 15 fp = 4 fn = 0iter = 2 / 20 rmse: 1.00 tp = 15 fp = 8 fn = 0iter = 2 / 20 rmse: 0.04 tp = 15 fp = 4 fn = 0iter = 2 / 20 rmse: 0.03 tp = 15 fp = 0 fn = 0iter = 3 / 20 rmse: 1.00 tp = 15 fp = 14 fn = 0iter = 3 / 20 rmse: 0.12 tp = 15 fp = 9 fn = 0iter = 3 / 20 rmse: 0.05 tp = 15 fp = 0 fn = 0iter = 4 / 20 rmse: 1.00 tp = 15 fp = 9 fn = 0iter = 4 / 20 rmse: 0.03 tp = 15 fp = 6 fn = 0iter = 4 / 20 rmse: 0.04 tp = 15 fp = 0 fn = 0iter = 5 / 20 rmse: 1.00 tp = 15 fp = 4 fn = 0iter = 5 / 20 rmse: 0.04 tp = 15 fp = 1 fn = 0iter = 5 / 20 rmse: 0.03 tp = 15 fp = 1 fn = 0iter = 6 / 20 rmse: 1.00 tp = 15 fp = 3 fn = 0iter = 6 / 20 rmse: 0.06 tp = 15 fp = 1 fn = 0

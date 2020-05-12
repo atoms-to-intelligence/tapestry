@@ -59,11 +59,11 @@ class CS(COMP):
         # This noise accounts for cycle time variability
         # Cycle time is assumed to be Gaussian distributed, due to which log
         # of y is Gaussian. Hence 
-        p = 0.95
-        error = np.random.normal(0., 0.1, size=self.t)
+        #p = 0.95
+        error = np.random.normal(0., config.eps_std_dev, size=self.t)
         #print('Original y', y)
         #print('error exponents', error)
-        y = y * ((1+p) ** error)
+        y = y * ((1 + config.p) ** error)
         #print('p:', p, 'y with exponentiated error:', y)
       else:
         raise ValueError('Invalid noise model %s' % noise_model)
@@ -83,14 +83,17 @@ class CS(COMP):
   # Initial concentration of RNA in each sample
   def create_conc_matrix_from_infection_array(self, arr):
     # Fix tau to 0.01 * minimum value we expect in x
-    self.tau = 0.01 * 1 / 32768.
+    # XXX: Actually tau should be defined by the algorithm.
+    self.tau = 0.01 * 1 / config.scale
     #self.tau = 0.01 * 0.1
     #conc = 1 + np.random.poisson(lam=5, size=self.n)
-    conc = np.random.randint(low=1, high=32769, size=self.n) / 32768
+    #conc = np.random.randint(low=config.x_low * config.scale, high=config.x_high *
+    #    config.scale + 1, size=self.n) / config.scale
+    conc = np.random.uniform(config.x_low, config.x_high, size=self.n)
     #conc = 0.1 + 0.9 * np.random.rand(self.n)
     #conc = np.random.randint(low=1, high=11, size=self.n) / 10.
     #conc = np.ones(self.n)
-    self.conc = conc * arr # Only keep those entries which are 
+    self.conc = conc * arr # Only keep those entries which are non-zero in arr
 
   # Solve the CS problem using Lasso
   #
@@ -155,16 +158,25 @@ class CS(COMP):
     elif algo == 'SBL':
       A = self.M.T
       y = results
-      #assert np.all(y!=0)
-      #A1 = A/y[:, None]
-      #y1 = np.ones(y.shape)
-      # This sigval computation was not correct
-      #sigval = 0.01 * np.linalg.norm(y, 2)
-      #sigval = 0.01 * np.mean(y1)
-      sigval = 0.01 * np.mean(y)
-      #answer = sbl.sbl(A1, y1, sigval, self.tau)
-      answer = sbl.sbl(A, y, sigval, self.tau)
-      #print(answer)
+
+      tau = 0. #0.01 * np.min(y/np.sum(A, axis=-1))
+
+      y_max = np.max(y)
+      assert y_max >= 0
+      if y_max > 0:
+        A = A / y_max
+        y = y / y_max
+
+        pos_y = y[y>0.]
+        pos_A = A[y>0.]
+        sigval = np.std(pos_y/np.sum(pos_A, axis=-1))
+      else:
+        # sigma should be 0 but this will mess with the algo. Set it to some small
+        # value
+        sigval = 0.1
+      y = np.array(y, dtype=np.float64)
+      A = np.array(A, dtype=np.float64)
+      answer = sbl.sbl(A, y, sigval, tau)
     elif algo == 'l1ls':
       A = self.M.T
       y = results
