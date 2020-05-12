@@ -19,7 +19,14 @@ def specificity(precision, recall, n, d, preds):
   return 1 - (recall * d * ( (1 / precision) - 1) / (n - d)) 
 
 def compute_rmse(x, x_est):
-    return np.linalg.norm(x - x_est) / np.linalg.norm(x)
+  if np.all(x == 0):
+    # if x is 0 vector, then RMSE is either 0 if x_est is also 0 or considered to
+    # be 1 if x_est is not 0
+    if np.all(x_est == 0):
+      return 0.
+    else:
+      return 1.
+  return np.linalg.norm(x - x_est) / np.linalg.norm(x)
 
 class SingleExpt:
   def __init__(self, tp, fp, fn, uncon_negs, determined, overdetermined, surep,
