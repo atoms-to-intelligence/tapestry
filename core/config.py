@@ -44,9 +44,17 @@ set_root_dir('.')
 ########     Following configs are for the app backend only     ########
 
 
+# Whether to display result of one algorithm or multiple
+multiple_algos = True
+
 # Decoding algorithm to be used with the app backend.
 app_algo = 'COMP'
 
+# Decoding algorithms
+app_algos = ['COMP', 'combined_COMP_SBL', 'combined_COMP_NNOMP_random_cv']
+
+# corresponding algorithm name displayed to the User
+app_algos_displayable = ['COMP', 'SBL', 'NNOMP']
 
 # Cycle time cutoff. Samples with greater than or equal to this value are
 # considered negative
