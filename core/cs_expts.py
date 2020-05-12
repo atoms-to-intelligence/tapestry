@@ -804,8 +804,11 @@ def run_stats_for_these_matrices1():
       #"optimized_M_48_320_kirkman",
       #"optimized_M_60_500_kirkman",
       #"optimized_M_60_500_kirkman",
+      #"optimized_M_63_546_kirkman",
+      #"optimized_M_69_667_kirkman",
+      "optimized_M_75_800_kirkman",
       #"optimized_M_93_1240_kirkman",
-      "optimized_M_192_5120_social_golfer",
+      #"optimized_M_192_5120_social_golfer",
       ]
   ns = [
       #117,
@@ -814,7 +817,11 @@ def run_stats_for_these_matrices1():
       #300,
       #500,
       #500,
-		  1024,
+      #504,
+      #506,
+      500,
+      #1000,
+		  #1024,
       ]
   mats = [MDict[label][:, :n] for (label, n) in zip(labels, ns) ]
   for i, n in enumerate(ns):
@@ -826,10 +833,11 @@ def run_stats_for_these_matrices1():
       #[6, 8, 11, 13],
       #[6, 8, 11, 13],
       #[6, 8, 11, 13],
-      #[10, 13, 17, 19],
-      #[10, 13, 17, 19],
+      #[19, 17, 13, 10,],
+      #[19, 17, 13, 10,],
+      [19, 17, 13, 10,],
       #[15, 20, 25, 30],
-      [ 30, 25, 20, 15 ],
+      #[ 30, 25, 20, 15 ],
       ] #list(range(1, 4))
   #d_ranges = [[ 15 ] for t in ts] #list(range(1, 4))
   #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 

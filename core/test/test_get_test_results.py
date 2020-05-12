@@ -14,7 +14,7 @@ from core.get_test_results import *
 #sanity_check_for_matrices()
 test_harvard_data()
 #api_sanity_checks()
-#fake_data_test()
+fake_data_test()
 #at_deployment()
 
 #import numpy as np

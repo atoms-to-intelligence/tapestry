@@ -4,13 +4,15 @@
 import sys
 sys.path.append(".")
 
+import numpy as np
+import json
+import re
+
 from core import config
 from core.cs_expts import CSExpts
 from utils.pickle_manager import stats_manager, expt_stats_pickle_manager
 from core.matrices import kirkman_mlabels, MDict
 
-import numpy as np
-import json
 
 # Use bootstrapping to compute confidence intervals
 #
@@ -26,7 +28,6 @@ def parse_stats_and_get_confidence_intervals(explist, k=3, n_batches=120,
   # 120 aggregate stats such as precision, recall etc
   # each individual stat is a dict containing all stats
   stats_list = [compute_stats_for_batch(batch) for batch in batches]
-
 
   # Mean and confidence intevals for each stat computed of 120 batches of 1000
   # expts.
@@ -53,6 +54,7 @@ def make_many_batches(explist, n_batches):
 # Computes stats for one batch of experiments
 def compute_stats_for_batch(batch):
   expt = batch[0]
+
   # We already have the CSExpts class - we'll just use that to compute stats
   agg_expt = CSExpts('dummy_name', expt["n"], expt["d"], expt["t"], expt["mr"],
     expt["algo"], expt["mlabel"])
@@ -60,7 +62,7 @@ def compute_stats_for_batch(batch):
     agg_expt.add_stats(expt["tp"], expt["fp"], expt["fn"], expt["uncon_negs"],
         expt["determined"], expt["overdetermined"],
         expt["surep"], expt["unsurep"], expt["wrongly_undetected"],
-        expt["score"])
+        expt["score"], expt['rmse'])
 
   # This method computes more stats. It returns something but we don't care
   agg_expt.return_stats(len(batch))
@@ -146,10 +148,16 @@ def get_stats_for_these_matrices(sizes, labels, ds, algos):
     for algo in algos:
       print(f"Algo: {algo}")
       explist = stats_manager.load(label, algo, d)
+      #print(f'size: {size}, batch len: ', len(explist))
       combined = parse_stats_and_get_confidence_intervals(explist, k=3,
-          n_batches=120, keys=['precision', 'recall', 'specificity'])
+          n_batches=120, keys=['recall', 'specificity'])
       s = json.dumps(combined, indent=2)
-      print(s)
+      pat = re.compile(r"\d+\.\d{4,}")
+      def mround(match):
+        return "{:.3f}".format(float(match.group()))
+
+      sys.stdout.write(re.sub(pat, mround, s) + '\n')
+      #print(s)
 
 # Migrate from using single PickleManager to a directory structure
 def migrate_stats_from_dict_to_directory():
@@ -159,10 +167,29 @@ def migrate_stats_from_dict_to_directory():
       for d in stats[mlabel][algo]:
         stats_manager.save(mlabel, algo, d, stats[mlabel][algo][d])
 
+def get_stats_2_pct_prevalance_matrices():
+  labels = [
+      "optimized_M_27_117_kirkman",
+      "optimized_M_48_320_kirkman",
+      #"optimized_M_60_500_kirkman",
+      "optimized_M_75_800_kirkman[:, :500]",
+      "optimized_M_192_5120_social_golfer[:, :1024]",
+      ]
+  sizes = [
+      "27x117",
+      "48x320",
+      '75x500', 
+      '192x1024',
+      ]
+  ds = [ 5, 11, 17, 30 ]
+  algos = ['combined_COMP_SBL']
+  get_stats_for_these_matrices(sizes, labels, ds, algos)
+
 if __name__ == '__main__':
+  get_stats_2_pct_prevalance_matrices()
   #migrate_stats_from_dict_to_directory()
   #get_stats_for_deployed_matrices()
-  get_stats_for_kirkman_matrices()
+  #get_stats_for_kirkman_matrices()
   #print(make_many_batches([1, 2, 3], 10))
   #pm = PickleManager(config.stats_pickle, config.stats_pickle_tmp)
   #stats = pm.get_stats_dict()
