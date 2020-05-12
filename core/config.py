@@ -45,7 +45,7 @@ set_root_dir('.')
 
 
 # Whether to display result of one algorithm or multiple
-multiple_algos = True
+use_multiple_algos = True
 
 # Decoding algorithm to be used with the app backend.
 app_algo = 'COMP'
@@ -54,7 +54,11 @@ app_algo = 'COMP'
 app_algos = ['COMP', 'combined_COMP_SBL', 'combined_COMP_NNOMP_random_cv']
 
 # corresponding algorithm name displayed to the User
-app_algos_displayable = ['COMP', 'SBL', 'NNOMP']
+app_algos_displayable = {
+        'COMP' : 'COMP',
+        'combined_COMP_SBL' : 'SBL',
+        'combined_COMP_NNOMP_random_cv' : 'NNOMP'
+        }
 
 # Cycle time cutoff. Samples with greater than or equal to this value are
 # considered negative

@@ -169,21 +169,49 @@ def get_test_results(matrix_label, cycle_times, n=None):
     n = M.shape[1]
   assert n <= M.shape[1]
   M = M[:, :n]
+  
+  if config.use_multiple_algos == False:
+    algos = [ config.app_algo ]
+  else:
+    algos = config.app_algos
 
-  sure_list, unsure_list, neg_list, x = app_utils.get_test_results(M, cycle_times)
+  # These are now lists of lists, one list for each algo
+  sure_lists = []
+  unsure_lists = []
+  neg_lists = []
+  xs = []
+  final_result_string = '' # list of strings
+  for algo in algos:
+    sure_list, unsure_list, neg_list, x = app_utils.get_test_results(M,
+        cycle_times, algo)
 
-  result_string = get_result_string_from_lists(sure_list, unsure_list,
-      neg_list, x, n)
+    result_string = get_result_string_from_lists(sure_list, unsure_list,
+        neg_list, x, n)
+
+    result_string = concatenate_result_with_algo(algo, result_string)
+
+    # Append to the lists
+    sure_lists.append(sure_list)
+    unsure_lists.append(unsure_list)
+    neg_lists.append(neg_list)
+    xs.append(xs)
+    final_result_string = final_result_string + result_string
+
 
   res = {
-      "result_string" :  result_string,
-      "sure_list" :      sure_list,
-      "unsure_list" :    unsure_list,
-      "neg_list" :       neg_list, 
-      "x" :              x,
+      "result_string" :  final_result_string,
+      "sure_list" :      sure_lists,
+      "unsure_list" :    unsure_lists,
+      "neg_list" :       neg_lists, 
+      "x" :              xs,
       }
   return res
 
+def concatenate_result_with_algo(algo, result_string):
+  header =       f'Results for Algorithm: {config.app_algos_displayable[algo]}\n'
+  separator =    f'=========================================\n'
+  footer =       f'-----------------------------------------\n'
+  return '\n' + header  + '\n' + result_string + '\n' + separator 
 
 # Composes the result string from the list of surely positives, possibly
 # positives, negatives and the x values
@@ -494,10 +522,10 @@ def test_harvard_data():
   neg_list = res["neg_list"]
   x = res["x"]
   print(result_string)
-  print(sure_list)
-  print(unsure_list)
-  print(neg_list)
-  print(x)
+  #print(sure_list)
+  #print(unsure_list)
+  #print(neg_list)
+  #print(x)
   pos_list = res['sure_list'] + res['unsure_list']
   for idx in pos_idx:
     assert idx in pos_list
