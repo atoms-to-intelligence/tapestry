@@ -586,7 +586,7 @@ def fake_data_test():
     bool_x, cts = get_random_fake_test_data(msize, mlabel)
     res = get_test_results(mlabel, cts)
     print("Results for data faked for %s matrix %s" % (msize, mlabel))
-    print('bool_x:', bool_x)
+    print('bool_x:', [f"{item[0]} : {item[1]:.3f}" for item in bool_x])
     print(res["result_string"])
     pos_list = res['sure_list'] + res['unsure_list']
     #for idx in bool_x:
