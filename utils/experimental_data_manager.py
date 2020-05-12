@@ -86,6 +86,7 @@ def get_random_fake_test_data(mat_size, mat_label):
   t = int(mat_size.split('x')[0])
   n = int(mat_size.split('x')[1])
   pos_idx = np.random.choice(list(range(n)), size=d)
+  pos_idx = sorted(pos_idx)
   bool_x = np.zeros(n)
   bool_x[pos_idx] = 1
   x = np.random.rand(n) * bool_x
