@@ -6,7 +6,8 @@ import numpy as np
 import math
 import kmeans1d
 
-def sbl(A, y, sigval, tau, eps=1e-3):
+# thresholding_method is either 'tau' or 'cluster'
+def sbl(A, y, sigval, tau, eps=1e-3, thresholding_method='tau'):
   '''
   Refer to SLide 31 of http://math.iisc.ernet.in/~nmi/Chandra%20Murthy.pdf for algorithm
   Inputs:
@@ -69,7 +70,6 @@ def sbl(A, y, sigval, tau, eps=1e-3):
     #mu[mu<=0] = min_pos_mu
     #log_mu = np.log(mu)
     #clusters, centroids = kmeans1d.cluster(log_mu, 2)
-    #clusters, centroids = kmeans1d.cluster(mu, 2)
     #lower_centroid = centroids[0]
     #clusters = np.array(clusters)
     #lower_cluster = mu[clusters == 0]
@@ -82,11 +82,16 @@ def sbl(A, y, sigval, tau, eps=1e-3):
     #print('clusters = ', clusters)
     #print('centroids = ', centroids)
 
-    #mu = mu * np.array(clusters)
+    assert thresholding_method in [ 'tau', 'cluster' ]
+
+    if thresholding_method == 'cluster':
+      clusters, centroids = kmeans1d.cluster(mu, 2)
+      mu = mu * np.array(clusters)
 
     x_est = np.zeros(n)
     x_est[ind_nonzero_x] = mu
-    x_est[x_est < tau] = 0
+    if thresholding_method == 'tau':
+      x_est[x_est < tau] = 0
 
   #print(x_est)
   return x_est

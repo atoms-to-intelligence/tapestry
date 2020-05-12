@@ -792,7 +792,8 @@ def run_stats_for_these_matrices(labels, save):
   mats = [MDict[label] for label in labels]
   #d_ranges = [ list(range(1, 16)) + [20, 25, 30, 35, 40] for item  in labels]
   ts = [M.shape[0] for M in mats]
-  d_ranges = [[5, 8, 10, 12, 15, 17, 20] for t in ts] #list(range(1, 4))
+  d_ranges = [ [ 30 ] for t in ts] #list(range(1, 4))
+  #d_ranges = [[5, 8, 10, 12, 15, 17, 20] for t in ts] #list(range(1, 4))
   #d_ranges = [[ 15 ] for t in ts] #list(range(1, 4))
   #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
   #d_ranges = [list(range(1, 6)) for label in labels]
