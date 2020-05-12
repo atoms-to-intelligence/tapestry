@@ -208,7 +208,7 @@ def get_test_results(matrix_label, cycle_times, n=None):
   return res
 
 def concatenate_result_with_algo(algo, result_string):
-  header =       f'Results for Algorithm: {config.app_algos_displayable[algo]}\n'
+  header =       f'Results using Algorithm: {config.app_algos_displayable[algo]}\n'
   separator =    f'=========================================\n'
   footer =       f'-----------------------------------------\n'
   return '\n' + header  + '\n' + result_string + '\n' + separator 
@@ -244,8 +244,12 @@ def get_result_string_from_lists(sure_list, unsure_list, neg_list, x, n, algo):
 
   x_str = ""
   if algo != 'COMP':
-    x_str = "Detected viral loads: %s\n" % \
-            ", ".join(["%.3f" % (item) for item in x])
+    x_str = "Estimated viral loads: \n%s\n" % \
+        ",\n".join(["%d : %.3f" % (idx + 1, item) for idx, item in enumerate(x) if
+          item > 0])
+  else:
+    x_str = 'Viral loads not estimated by this algorithm\n'
+
   result_string = m0 + s0 + s1 + s2 + s3 + x_str
 
   return result_string
