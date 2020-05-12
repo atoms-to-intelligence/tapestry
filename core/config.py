@@ -72,7 +72,6 @@ p = 0.95
 
 ########     Following config is for synthetic experiments only     ########
 
-
 # Flip +ve bits of y with this prob
 bit_flip_prob = 0.
 
@@ -80,6 +79,10 @@ bit_flip_prob = 0.
 # Exponential Gaussian or Variable Gaussian
 noise_model = 'exponential_gaussian'
 #noise_model = 'variable_gaussian'
+
+# This is the standard deviation of the random variable epsilon. Noise model is
+# y = Ax(1+p)**eps, where eps is Gaussian with 0 mean and below standard deviation
+eps_std_dev = 0.1
 
 
 # Data Model Parameters are here

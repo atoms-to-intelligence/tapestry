@@ -59,11 +59,11 @@ class CS(COMP):
         # This noise accounts for cycle time variability
         # Cycle time is assumed to be Gaussian distributed, due to which log
         # of y is Gaussian. Hence 
-        p = 0.95
-        error = np.random.normal(0., 0.1, size=self.t)
+        #p = 0.95
+        error = np.random.normal(0., config.eps_std_dev, size=self.t)
         #print('Original y', y)
         #print('error exponents', error)
-        y = y * ((1+p) ** error)
+        y = y * ((1 + config.p) ** error)
         #print('p:', p, 'y with exponentiated error:', y)
       else:
         raise ValueError('Invalid noise model %s' % noise_model)
