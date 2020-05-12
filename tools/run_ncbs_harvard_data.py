@@ -140,9 +140,11 @@ def run_on_list_of_files():
     print("\n=====================")
     print('Test %d:' % (i+1))
     bool_y = (y > 0).astype(np.int32)
+    A = M
+    y = y * np.sum(A, axis=-1)
     print_infected_people(y, bool_y, 'COMP')
-    print_infected_people(y, bool_y, 'combined_COMP_NNOMP_random_cv')
-    print_infected_people(y, bool_y, 'SBL')
+    #print_infected_people(y, bool_y, 'combined_COMP_NNOMP_random_cv')
+    print_infected_people(y, bool_y, 'combined_COMP_SBL')
     #print_infected_people(y, 'l1ls')
     #print_infected_people(y, 'NNOMP')
 
@@ -209,8 +211,10 @@ def run_harvard_data():
   y = y * bool_y
   print('cts:', cts)
   print('y:', y)
-  print_infected_people(y, bool_y, 'SBL')
-  print_infected_people(y, bool_y, 'combined_COMP_NNOMP_random_cv')
+  A = M
+  y = y * np.sum(A, axis=-1)
+  print_infected_people(y, bool_y, 'combined_COMP_SBL')
+  #print_infected_people(y, bool_y, 'combined_COMP_NNOMP_random_cv')
 
 run_on_list_of_files()
 run_harvard_data()
