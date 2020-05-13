@@ -461,7 +461,9 @@ class CS(COMP):
 
     A = self.M.T
     A = np.take(A, non_zero_cols, axis=1)
+    #print(f'Remaining A : {A}, {A.shape}')
     A = np.take(A, non_zero_rows, axis=0)
+    #print(f'Remaining A : {A}, {A.shape}')
     #print('y: ', y)
     #print('Non-zero rows:', non_zero_rows)
     #print('Non-zero rows len:', non_zero_rows.shape)
@@ -483,11 +485,20 @@ class CS(COMP):
     d = self.d
     s = self.s
     l = 0.1
+    #print(f'non_zero_cols: {non_zero_cols}')
+    #print(f'non_zero_rows: {non_zero_rows}')
+    #print(f'y: {y}')
+    #print(f' t = {t}, n = {n}')
+    #print(f'A = {A}, {A.shape}')
 
+    # In case of invalid input, we may have the case that some rows are positive
+    # but all columns are taken out. It should never happen that all rows are
+    # negative but some columns remain from output of COMP. Hence second assertion
+    # is invalid.
     if t == 0:
       assert n == 0
-    elif n == 0:
-      assert t == 0
+    #elif n == 0:
+    #  assert t == 0
 
     infected = np.zeros(self.n)
     answer = np.zeros(self.n)
@@ -496,7 +507,7 @@ class CS(COMP):
     determined = 1
     overdetermined = 0
     # Calling internal algo is needed only when there is at least one infection
-    if t != 0:
+    if A.size != 0:
       # Create another CS class to run the secondary algorithm
       # Better to set mr parameter to None since it depends on number of rows
       # and will change for this internal CS object. frac will be used instead
