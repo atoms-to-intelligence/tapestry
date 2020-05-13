@@ -10,6 +10,7 @@ from inbuilt_algos import nnompcv
 from inbuilt_algos import sbl
 from inbuilt_algos import l1ls
 import algos
+from utils import output_validation_utils
 
 from core import config
 
@@ -448,8 +449,8 @@ class CS(COMP):
     assert self.mr == None
 
     bool_y = (y > 0).astype(np.int32)
-    infected_comp, infected_dd, _score, _tp, _fp, _fn, surep, unsurep, _ =\
-        self.decode_comp_new(bool_y, compute_stats)
+    infected_comp, infected_dd, _score, _tp, _fp, _fn, surep, unsurep, \
+        num_infected_in_test = self.decode_comp_new(bool_y, compute_stats)
 
     # Find the indices of 1's above. These will be retained. Rest will be
     # discarded
@@ -460,6 +461,12 @@ class CS(COMP):
     #print('Indices of Non-zero rows:', non_zero_rows)
 
     A = self.M.T
+
+    # Compute errors
+    errors = output_validation_utils.detect_discrepancies_in_test(
+        A.shape[0], bool_y, num_infected_in_test, log=False)
+    total_errors = errors['err1'] + errors['err2']
+
     A = np.take(A, non_zero_cols, axis=1)
     #print(f'Remaining A : {A}, {A.shape}')
     A = np.take(A, non_zero_rows, axis=0)
@@ -506,8 +513,13 @@ class CS(COMP):
     prob0_new = np.ones(self.n)
     determined = 1
     overdetermined = 0
+
     # Calling internal algo is needed only when there is at least one infection
-    if A.size != 0:
+    #
+    # It is also avoided when there are any discrepancies in the test. Only COMP
+    # output is returned. Discrepancies usually happen due to spurious testing.
+    # This behaviour may change later.
+    if A.size != 0 and total_errors == 0:
       # Create another CS class to run the secondary algorithm
       # Better to set mr parameter to None since it depends on number of rows
       # and will change for this internal CS object. frac will be used instead

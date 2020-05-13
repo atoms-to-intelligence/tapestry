@@ -6,6 +6,7 @@ import numpy as np
 
 from core import config
 from core.cs import CS
+from utils.output_validation_utils import detect_discrepancies_in_test
 
 # Get results given a matrix M and cycle times cts
 def get_test_results(M, cts, algo):
@@ -63,20 +64,11 @@ def _get_infected_lists(M, y, algo):
         num_infected_in_test = cs.decode_lasso(y, algo, prefer_recall=False,
             compute_stats=False)
 
-  _detect_discrepancies_in_test(t, bool_y, num_infected_in_test)
+  detect_discrepancies_in_test(t, bool_y, num_infected_in_test)
   sure_list, unsure_list, neg_list = _get_lists_from_infected(infected,
       infected_dd, n)
   
   return sure_list, unsure_list, neg_list, x
-
-# Detects discrepancies which can happen due to experimental error or using
-# wrong matrix, or poor algorithm performance.
-def _detect_discrepancies_in_test(t, bool_y, num_infected_in_test):
-  for test in range(t):
-    if bool_y[test] > 0 and num_infected_in_test[test] == 0:
-      print('y[%d] is infected but no infected people found' % test)
-    if bool_y[test] == 0 and num_infected_in_test[test] > 0:
-      print('y[%d] is not infected but infected people found' % test)
 
 # Get list of sure, unsure and negative people
 def _get_lists_from_infected(infected, infected_dd, n):
