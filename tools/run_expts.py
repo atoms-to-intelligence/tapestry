@@ -1,3 +1,4 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 import sys
 sys.path.append('.')
 
@@ -15,7 +16,7 @@ def run_stats_for_these_matrices1():
       #"optimized_M_75_800_kirkman",
       #"optimized_M_93_1240_kirkman",
       #"optimized_M_192_5120_social_golfer",
-      "optimized_M_36_180_kirkman",
+      #"optimized_M_36_180_kirkman",
       #"optimized_M_81_918_kirkman",
       "optimized_M_45_105_kirkman",
       ]
@@ -30,8 +31,8 @@ def run_stats_for_these_matrices1():
       #506,
       #500,
       #1000,
-		  #1024,
-      72,
+      #1024,
+      #72,
       #108,
       105,
       ]
@@ -50,20 +51,37 @@ def run_stats_for_these_matrices1():
       #[19, 17, 13, 10,],
       #[15, 20, 25, 30],
       #[ 30, 25, 20, 15 ],
-      [ 7, 9, 10, 12, 15],
+      #[ 7, 9, 10, 12, 15],
       #[10, 15, 20, 25],
-      [ 10, 12, 15, 17, 20, 25, 30], #[20, 25, 30]
+      #[ 10, 12, 15, 17, 20,], 
+      [20,]
       ] #list(range(1, 4))
   #d_ranges = [[ 15 ] for t in ts] #list(range(1, 4))
   #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
   #d_ranges = [list(range(1, 6)) for label in labels]
 
-  num_expts = 1
+  num_expts = 20
   #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',
   #    'combined_COMP_l1ls_cv']
   #algos = ['COMP', 'combined_COMP_SBL', 'combined_COMP_SBL_clustered',
   #        'precise_SBL_combined_COMP_SBL', 'precise_SBL_COMP'] #'combined_COMP_NNOMP_random_cv']
-  algos = ['combined_COMP_SBL_clustered'] * 4
+  #algos = ['combined_COMP_SBL_clustered'] * 4
+  #algos = ['combined_COMP_SBL_majority', 'combined_COMP_SBL_clustered']
+
+  algos = [
+      "SBL_clustered",
+      "SBL_majority_10_0.3",
+      "SBL_majority_10_0.5",
+      "SBL_majority_10_0.7",
+      "SBL_majority_100_0.3",
+      "SBL_majority_100_0.5",
+      "SBL_majority_100_0.7",
+      "SBL_union_10",
+      "SBL_intersection_10",
+      "SBL_union_100",
+      "SBL_intersection_100",
+      ]
+
   save = True
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
       num_expts, save)
