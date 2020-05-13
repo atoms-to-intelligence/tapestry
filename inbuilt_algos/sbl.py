@@ -7,7 +7,7 @@ import math
 import kmeans1d
 
 # thresholding_method is either 'tau' or 'cluster'
-def sbl(A, y, sigval, tau, eps=1e-3, thresholding_method='tau'):
+def sbl(A, y, eps=1e-3, thresholding_method='tau'):
   '''
   Refer to SLide 31 of http://math.iisc.ernet.in/~nmi/Chandra%20Murthy.pdf for algorithm
   Inputs:
@@ -16,6 +16,25 @@ def sbl(A, y, sigval, tau, eps=1e-3, thresholding_method='tau'):
   sigval = variance of noise in measurement
   tau = threshold on signal
   '''
+  # Doing this preprocessing inside sbl() function itself
+  tau = 0. #0.01 * np.min(y/np.sum(A, axis=-1))
+
+  y_max = np.max(y)
+  assert y_max >= 0
+  if y_max > 0:
+    A = A / y_max
+    y = y / y_max
+
+    pos_y = y[y>0.]
+    pos_A = A[y>0.]
+    sigval = np.std(pos_y/np.sum(pos_A, axis=-1))
+  else:
+    # sigma should be 0 but this will mess with the algo. Set it to some small
+    # value
+    sigval = 0.1
+  y = np.array(y, dtype=np.float64)
+  A = np.array(A, dtype=np.float64)
+
   [m,n] = A.shape
   
   # Pre-Processing

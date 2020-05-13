@@ -4,6 +4,7 @@
 # Each new algorithm added to the algos/ directory must be added to this file
 # by importing like this
 from . import zeros
+from . import clustered_sbl
 
 # Dictionary containing a mapping of algorithm name to corresponding function. 
 #
@@ -22,6 +23,7 @@ from . import zeros
 algo_dict = {
     "ZEROS" : zeros.zeros,
     "ZEROS_cv" : zeros.zeros_cv,
+    "SBL_clustered" : clustered_sbl.clustered_sbl,
     # e.g.
     # "SBL" : sbl.sbl,
     # "SBL_cv" : sbl.sbl_cv, etc
