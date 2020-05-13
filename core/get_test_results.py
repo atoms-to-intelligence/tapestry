@@ -175,12 +175,12 @@ def get_test_results(matrix_label, cycle_times, n=None):
   else:
     algos = config.app_algos
 
-  # These are now lists of lists, one list for each algo
-  sure_lists = []
-  unsure_lists = []
-  neg_lists = []
-  xs = []
-  final_result_string = '' # list of strings
+  # These are now dicts of lists, one list for each algo
+  sure_lists = {}
+  unsure_lists = {}
+  neg_lists = {}
+  xs = {}
+  final_result_string = ''
   for algo in algos:
     sure_list, unsure_list, neg_list, x = app_utils.get_test_results(M,
         cycle_times, algo)
@@ -191,12 +191,11 @@ def get_test_results(matrix_label, cycle_times, n=None):
     result_string = concatenate_result_with_algo(algo, result_string)
 
     # Append to the lists
-    sure_lists.append(sure_list)
-    unsure_lists.append(unsure_list)
-    neg_lists.append(neg_list)
-    xs.append(xs)
+    sure_lists[algo] = sure_list
+    unsure_lists[algo] = unsure_list
+    neg_lists[algo] = neg_list
+    xs[algo] = x.tolist()
     final_result_string = final_result_string + result_string
-
 
   res = {
       "result_string" :  final_result_string,
@@ -522,6 +521,7 @@ def api_sanity_checks():
 # exception.
 def test_harvard_data():
   from utils.experimental_data_manager import read_harvard_data_cts
+  import json
   #print('Testing Harvard data with config.app_algo =', config.app_algo)
   pos_idx, cts = read_harvard_data_cts()
   res = get_test_results("optimized_M_3", cts)
@@ -531,11 +531,13 @@ def test_harvard_data():
   neg_list = res["neg_list"]
   x = res["x"]
   print(result_string)
-  #print(sure_list)
-  #print(unsure_list)
-  #print(neg_list)
-  #print(x)
-  pos_list = res['sure_list'] + res['unsure_list']
+  print(sure_list)
+  print(unsure_list)
+  print(neg_list)
+  print(x)
+  # Following line checks json serializability of res
+  print(json.dumps(res, indent=2))
+  #pos_list = res['sure_list'] + res['unsure_list']
   #for idx in pos_idx:
   #  assert idx in pos_list
 
@@ -588,7 +590,7 @@ def fake_data_test():
     print("Results for data faked for %s matrix %s" % (msize, mlabel))
     print('bool_x:', [f"{item[0]} : {item[1]:.3f}" for item in bool_x])
     print(res["result_string"])
-    pos_list = res['sure_list'] + res['unsure_list']
+    #pos_list = res['sure_list'] + res['unsure_list']
     #for idx in bool_x:
     #  assert idx in pos_list
 
