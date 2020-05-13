@@ -104,6 +104,9 @@ def sbl(A, y, eps=1e-3, thresholding_method='tau'):
     assert thresholding_method in [ 'tau', 'cluster' ]
 
     if thresholding_method == 'cluster':
+      #mu1 = np.array(mu)
+      #mu1[mu1 < 0] = 0
+      #mu_square = mu1 * mu1 * mu1
       clusters, centroids = kmeans1d.cluster(mu, 2)
       mu = mu * np.array(clusters)
 

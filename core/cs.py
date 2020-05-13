@@ -111,6 +111,7 @@ class CS(COMP):
 
     prob1 = None
     prob0 = None
+    answer_high_precision = np.zeros(self.n)
     if algo == 'lasso':
       #lasso = LassoLars(alpha=self.l)
       lasso = Lasso(alpha=self.l, max_iter=10000)
@@ -156,6 +157,23 @@ class CS(COMP):
       answer, infected, prob1, prob0, determined, overdetermined =\
           self.decode_comp_combined(results, secondary_algo,
           compute_stats=compute_stats)
+    elif algo.startswith('combined_SBL_clustered_'):
+      # e.g. combined_SBL_clustered_combined_COMP_SBL
+      # e.g. combined_SBL_clustered_COMP
+      l = len('combined_SBL_clustered_')
+      primary_algo = 'combined_COMP_SBL_clustered'
+      secondary_algo = algo[l:]
+      assert secondary_algo not in ['SBL_clustered', 'combined_COMP_SBL_clustered']
+
+      y = results
+      # First run SBL_clustered to get precise results
+      # Then run secondary algorithm to get high recall results
+      # "answer" is those from high recall ones. 
+      # we'll create "answer_precise_SBL" and "infected_precise_SBL". 
+      # infected_dd will become union of infected_dd and infected_precise_SBL
+      # Hence surep will contain results from SBL_clustered as well.
+      answer_high_precision = self.get_high_precision_algo_answer(primary_algo, y)
+      answer = self.get_high_recall_algo_answer(secondary_algo, y)
     elif algo == 'SBL':
       A = self.M.T
       y = results
@@ -211,7 +229,8 @@ class CS(COMP):
     # detect something that should definitely have been detected
     wrongly_undetected = np.sum(infected_dd - infected_dd * infected)
 
-    infected = (infected + infected_dd > 0).astype(np.int32)
+    infected_high_precision = (answer_high_precision > 0).astype(np.int32)
+    infected = (infected + infected_dd + infected_high_precision > 0).astype(np.int32)
 
     if compute_stats:
       # Compute stats
@@ -242,6 +261,30 @@ class CS(COMP):
     return answer, infected, infected_dd, prob1, prob0, score, tp, fp, fn,\
         num_unconfident_negatives, determined, overdetermined, surep,\
         unsurep, wrongly_undetected, num_infected_in_test
+
+  def get_high_precision_algo_answer(self, algo, y):
+    assert algo == 'combined_COMP_SBL_clustered'
+    x, infected, infected_dd, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\
+        overdetermined, surep, unsurep, wrongly_undetected,\
+        num_infected_in_test = self.decode_lasso(y, algo, prefer_recall=False,
+            compute_stats=False)
+    # ignore everything and just send x
+    return x
+
+  def get_high_recall_algo_answer(self, algo, y):
+    if algo == 'COMP':
+      bool_y = (y > 0).astype(np.int32)
+      infected, infected_dd, score, tp, fp, fn, surep, unsurep,\
+          num_infected_in_test = \
+          self.decode_comp_new(bool_y, compute_stats=False)
+      x = np.zeros(n)
+      return infected
+    else:
+      x, infected, infected_dd, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\
+          overdetermined, surep, unsurep, wrongly_undetected,\
+          num_infected_in_test = self.decode_lasso(y, algo, prefer_recall=False,
+              compute_stats=False)
+      return x
 
   def decode_lasso_for_cv(self, train_Ms, train_ys, test_Ms, test_ys,
       algo='lasso', l=None, sigma=None):
