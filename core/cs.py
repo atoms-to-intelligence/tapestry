@@ -157,10 +157,10 @@ class CS(COMP):
       answer, infected, prob1, prob0, determined, overdetermined =\
           self.decode_comp_combined(results, secondary_algo,
           compute_stats=compute_stats)
-    elif algo.startswith('combined_SBL_clustered_'):
+    elif algo.startswith('precise_SBL_'):
       # e.g. combined_SBL_clustered_combined_COMP_SBL
       # e.g. combined_SBL_clustered_COMP
-      l = len('combined_SBL_clustered_')
+      l = len('precise_SBL_')
       primary_algo = 'combined_COMP_SBL_clustered'
       secondary_algo = algo[l:]
       assert secondary_algo not in ['SBL_clustered', 'combined_COMP_SBL_clustered']
@@ -229,10 +229,17 @@ class CS(COMP):
     # detect something that should definitely have been detected
     wrongly_undetected = np.sum(infected_dd - infected_dd * infected)
 
+    # Add infections from high precision algo
     infected_high_precision = (answer_high_precision > 0).astype(np.int32)
-    infected = (infected + infected_dd + infected_high_precision > 0).astype(np.int32)
+    # For ease of implementation we add above to infected_dd. This will become
+    # sure_list later
+    infected_dd = (infected_dd + infected_high_precision > 0).astype(np.int32)
+    infected = (infected + infected_dd > 0).astype(np.int32)
 
     if compute_stats:
+      # re-compute surep from above infected_dd
+      surep = np.sum(infected_dd)
+
       # Compute stats
       tpos = (infected * self.arr)
       fneg = (1 - infected) * self.arr
@@ -277,7 +284,7 @@ class CS(COMP):
       infected, infected_dd, score, tp, fp, fn, surep, unsurep,\
           num_infected_in_test = \
           self.decode_comp_new(bool_y, compute_stats=False)
-      x = np.zeros(n)
+      x = np.zeros(self.n)
       return infected
     else:
       x, infected, infected_dd, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\

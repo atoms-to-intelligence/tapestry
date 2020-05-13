@@ -61,8 +61,9 @@ def run_stats_for_these_matrices1():
   num_expts = 1
   #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',
   #    'combined_COMP_l1ls_cv']
-  algos = ['COMP', 'combined_COMP_SBL', 'combined_COMP_SBL_clustered',
-          'combined_SBL_clustered_combined_COMP_SBL', 'combined_SBL_clustered_COMP'] #'combined_COMP_NNOMP_random_cv']
+  #algos = ['COMP', 'combined_COMP_SBL', 'combined_COMP_SBL_clustered',
+  #        'precise_SBL_combined_COMP_SBL', 'precise_SBL_COMP'] #'combined_COMP_NNOMP_random_cv']
+  algos = ['combined_COMP_SBL_clustered'] * 4
   save = True
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
       num_expts, save)
