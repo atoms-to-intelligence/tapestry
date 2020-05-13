@@ -33,7 +33,7 @@ x = stats_manager.load("TEST", "SBL", 3)
 print(x, type(x), len(x))
 
 stats_manager.save("HAATHI", "SBL", 3, ["apple", "orange"])
-x = stats_manager.load("optimized_M_45_285_kirkman", "COMP", 3)
+x = stats_manager.load("HAATHI", "SBL", 3)
 print(x, type(x), len(x))
 
 
