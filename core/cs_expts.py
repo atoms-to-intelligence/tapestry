@@ -98,6 +98,7 @@ class CSExpts:
     self.min_precision = np.inf
     self.all_precisions = []
     self.all_recalls = []
+    self.all_fps = []
     self.single_expts = []
 
   # manage stats for a single expt
@@ -189,6 +190,9 @@ class CSExpts:
     # Compute per-expt recall
     recall = tp / (tp + fn)
     self.all_recalls.append(recall)
+
+    # Compute per-expt false pos
+    self.all_fps.append(fp)
 
   def print_stats(self, num_expts, header=False):
     preds = self.total_tp + self.total_fp
@@ -580,9 +584,9 @@ def print_expts(expts, num_expts, t):
     print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%.1f\t%.1f\t%.1f\t%.2f\t%.3f' % (expt.d, expt.precision,
       expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep,
       expt.total_fp / num_expts, expt.total_fn / num_expts, expt.rmse, expt.min_precision))
-    expt.all_precisions = sorted(expt.all_precisions)
-    print('All Precisions:', stats_helper.get_sorted_indices(expt.all_precisions))
-    print('All Recalls:', stats_helper.get_sorted_indices(expt.all_recalls))
+    #print('\nAll Precisions:', stats_helper.get_sorted_indices(expt.all_precisions))
+    #print('\nAll Recalls:', stats_helper.get_sorted_indices(expt.all_recalls))
+    #print('\nAll fps:', stats_helper.get_sorted_indices(expt.all_fps, invert=True))
     #lower = expt.all_precisions[5]
     #upper = expt.all_precisions[-1]
     #print('95% Confidence Interval: ', (lower, upper))
