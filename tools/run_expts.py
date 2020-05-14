@@ -16,10 +16,10 @@ def run_stats_for_these_matrices1():
       #"optimized_M_75_800_kirkman",
       #"optimized_M_93_1240_kirkman",
       #"optimized_M_192_5120_social_golfer",
-      #"optimized_M_36_180_kirkman",
+      "optimized_M_36_180_kirkman",
       #"optimized_M_81_918_kirkman",
-      #"optimized_M_45_105_kirkman",
-      "optimized_M_24_80_kirkman",
+      "optimized_M_45_105_kirkman",
+      #"optimized_M_24_80_kirkman",
       ]
   ns = [
       #117,
@@ -33,10 +33,10 @@ def run_stats_for_these_matrices1():
       #500,
       #1000,
       #1024,
-      #72,
+      72,
       #108,
-      #105,
-      56,
+      105,
+      #56,
       ]
   mats = [MDict[label][:, :n] for (label, n) in zip(labels, ns) ]
   for i, n in enumerate(ns):
@@ -53,11 +53,11 @@ def run_stats_for_these_matrices1():
       #[19, 17, 13, 10,],
       #[15, 20, 25, 30],
       #[ 30, 25, 20, 15 ],
-      #[ 7, 9, 10, 12, 15],
+      [9], #[ 7, 10, 12, 15],
       #[10, 15, 20, 25],
       #[ 10, 12, 15, 17, 20,], 
-      #[15, ]
-      [ 4, 5, 6, 7]
+      [12], #[20, 15, 10]
+      #[ 4, 5, 6, 7]
       ] #list(range(1, 4))
   #d_ranges = [[ 15 ] for t in ts] #list(range(1, 4))
   #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
@@ -70,6 +70,7 @@ def run_stats_for_these_matrices1():
           'precise_SBL_combined_COMP_SBL', 'precise_SBL_COMP'] #'combined_COMP_NNOMP_random_cv']
   #algos = ['COMP', 'combined_COMP_SBL_clustered']
   #algos = ['combined_COMP_SBL_majority', 'combined_COMP_SBL_clustered']
+  #algos = ['combined_COMP_SBL']
 
 #  algos = [
 #      "combined_COMP_SBL_clustered",

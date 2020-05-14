@@ -99,6 +99,7 @@ class CSExpts:
     self.all_precisions = []
     self.all_recalls = []
     self.all_fps = []
+    self.all_fns = []
     self.single_expts = []
 
   # manage stats for a single expt
@@ -193,6 +194,8 @@ class CSExpts:
 
     # Compute per-expt false pos
     self.all_fps.append(fp)
+    # Compute per-expt false neg
+    self.all_fns.append(fn)
 
   def print_stats(self, num_expts, header=False):
     preds = self.total_tp + self.total_fp
@@ -211,13 +214,13 @@ class CSExpts:
       recall = self.total_tp / actual
 
     if num_expts == self.no_fp:
-      avg_fp = 0
+      self.avg_fp = 0
     else:
-      avg_fp = self.total_fp / (num_expts - self.no_fp)
+      self.avg_fp = self.total_fp / num_expts
     if num_expts == self.no_fn:
-      avg_fn = 0
+      self.avg_fn = 0
     else:
-      avg_fn = self.total_fn / (num_expts - self.no_fn)
+      self.avg_fn = self.total_fn / num_expts
 
     if header:
       print('******', self.name, 'Statistics', '******')
@@ -256,6 +259,15 @@ class CSExpts:
         'no_error'      : self.no_error,
         'expts'         : num_expts,
         }
+
+    if num_expts == self.no_fp:
+      self.avg_fp = 0
+    else:
+      self.avg_fp = self.total_fp / num_expts
+    if num_expts == self.no_fn:
+      self.avg_fn = 0
+    else:
+      self.avg_fn = self.total_fn / num_expts
 
     self.preds = preds
     self.actual = actual
@@ -575,18 +587,24 @@ def run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix,
   return explist
 
 def print_expts(expts, num_expts, t):
-  print('\td\tPrecision\tRecall (Sensitivity)\tSpecificity\tsurep\tunsurep\tfp\tfn\tRMSE\tmin_precision')
+  #print('\td\tPrecision\tRecall (Sensitivity)\tSpecificity\tsurep\tunsurep\tfp\tfn\tRMSE\tmin_precision')
+  print('\td\tPrecision\tSensitivity\tSpecificity\tsure\tundetermined\tfalse_pos\tfalse_neg\ttotal_tests')
   for expt in expts:
     if expt.precision == 0:
       total_tests = t + expt.n
     else:
       total_tests = t + expt.d / expt.precision
-    print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%.1f\t%.1f\t%.1f\t%.2f\t%.3f' % (expt.d, expt.precision,
+    #print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%.1f\t%.1f\t%.1f\t%.2f\t%.3f' % (expt.d, expt.precision,
+    #  expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep,
+    #  expt.total_fp / num_expts, expt.total_fn / num_expts, expt.rmse, expt.min_precision))
+    print('\t%d\t%.3f\t\t%.3f\t\t%.3f\t\t%4.1f\t%.1f\t\t%.1f\t\t%.1f\t\t%d' % (expt.d, expt.precision,
       expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep,
-      expt.total_fp / num_expts, expt.total_fn / num_expts, expt.rmse, expt.min_precision))
+      expt.total_fp / num_expts, expt.total_fn / num_expts, expt.t + expt.avg_unsurep))
     #print('\nAll Precisions:', stats_helper.get_sorted_indices(expt.all_precisions))
     #print('\nAll Recalls:', stats_helper.get_sorted_indices(expt.all_recalls))
     #print('\nAll fps:', stats_helper.get_sorted_indices(expt.all_fps, invert=True))
+    #print('\nAll fns:', stats_helper.get_sorted_indices(expt.all_fns, invert=True))
+    #print('\nfns: ', np.unique(expt.all_fns, return_counts=True), '\n')
     #lower = expt.all_precisions[5]
     #upper = expt.all_precisions[-1]
     #print('95% Confidence Interval: ', (lower, upper))
