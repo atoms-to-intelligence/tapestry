@@ -54,33 +54,33 @@ def run_stats_for_these_matrices1():
       #[ 7, 9, 10, 12, 15],
       #[10, 15, 20, 25],
       #[ 10, 12, 15, 17, 20,], 
-      [20,]
+      [20, 17, 15]
       ] #list(range(1, 4))
   #d_ranges = [[ 15 ] for t in ts] #list(range(1, 4))
   #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
   #d_ranges = [list(range(1, 6)) for label in labels]
 
-  num_expts = 20
+  num_expts = 100
   #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',
   #    'combined_COMP_l1ls_cv']
   #algos = ['COMP', 'combined_COMP_SBL', 'combined_COMP_SBL_clustered',
   #        'precise_SBL_combined_COMP_SBL', 'precise_SBL_COMP'] #'combined_COMP_NNOMP_random_cv']
-  #algos = ['combined_COMP_SBL_clustered'] * 4
+  algos = ['combined_COMP_SBL_clustered']
   #algos = ['combined_COMP_SBL_majority', 'combined_COMP_SBL_clustered']
 
-  algos = [
-      "SBL_clustered",
-      "SBL_majority_10_0.3",
-      "SBL_majority_10_0.5",
-      "SBL_majority_10_0.7",
-      "SBL_majority_100_0.3",
-      "SBL_majority_100_0.5",
-      "SBL_majority_100_0.7",
-      "SBL_union_10",
-      "SBL_intersection_10",
-      "SBL_union_100",
-      "SBL_intersection_100",
-      ]
+#  algos = [
+#      "combined_COMP_SBL_clustered",
+#      "combined_COMP_SBL_majority_10_0.3",
+#      "combined_COMP_SBL_majority_10_0.5",
+#      "combined_COMP_SBL_majority_10_0.7",
+#      "combined_COMP_SBL_majority_100_0.3",
+#      "combined_COMP_SBL_majority_100_0.5",
+#      "combined_COMP_SBL_majority_100_0.7",
+#      "combined_COMP_SBL_union_10",
+#      "combined_COMP_SBL_intersection_10",
+#      "combined_COMP_SBL_union_100",
+#      "combined_COMP_SBL_intersection_100",
+#      ]
 
   save = True
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,

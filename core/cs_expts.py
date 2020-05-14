@@ -94,6 +94,8 @@ class CSExpts:
     self.wrongly_undetected = 0
     self.total_score = 0
     self.total_rmse = 0
+    self.min_precision = np.inf
+    self.all_precisions = []
     self.single_expts = []
 
   # manage stats for a single expt
@@ -175,6 +177,11 @@ class CSExpts:
     self.wrongly_undetected += wrongly_undetected
     self.total_score += score
     self.total_rmse += rmse
+    # Compute minimum precision
+    precision = tp / (tp + fp)
+    self.all_precisions.append(precision)
+    if precision < self.min_precision:
+      self.min_precision = precision
 
   def print_stats(self, num_expts, header=False):
     preds = self.total_tp + self.total_fp
@@ -471,7 +478,7 @@ def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos,
     t = M.shape[0]
     print(f"\nt = {t}, n = {n}, matrix = {label}\n")
     for algo, expts in zip(algos, explist):
-      print(algo)
+      print('\n' + algo + f', num_expts = {num_expts}\n')
       print_expts(expts, num_expts, t)
   #return stats
 
@@ -557,15 +564,20 @@ def run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix,
   return explist
 
 def print_expts(expts, num_expts, t):
-  print('\td\tPrecision\tRecall (Sensitivity)\tSpecificity\tsurep\tunsurep\tfalse_pos\tRMSE')
+  print('\td\tPrecision\tRecall (Sensitivity)\tSpecificity\tsurep\tunsurep\tfp\tfn\tRMSE\tmin_precision')
   for expt in expts:
     if expt.precision == 0:
       total_tests = t + expt.n
     else:
       total_tests = t + expt.d / expt.precision
-    print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t\t%.2f' % (expt.d, expt.precision,
+    print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%.1f\t%.1f\t%.1f\t%.2f\t%.3f' % (expt.d, expt.precision,
       expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep,
-      expt.total_fp / num_expts, expt.rmse))
+      expt.total_fp / num_expts, expt.total_fn / num_expts, expt.rmse, expt.min_precision))
+    expt.all_precisions = sorted(expt.all_precisions)
+    print('All Precisions:', expt.all_precisions)
+    lower = expt.all_precisions[5]
+    upper = expt.all_precisions[-1]
+    print('95% Confidence Interval: ', (lower, upper))
     #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
     #  expt.recall, total_tests, expt.determined, expt.overdetermined))
     #print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,

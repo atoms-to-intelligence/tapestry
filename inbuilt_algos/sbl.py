@@ -104,10 +104,13 @@ def sbl(A, y, eps=1e-3, thresholding_method='tau'):
     assert thresholding_method in [ 'tau', 'cluster' ]
 
     if thresholding_method == 'cluster':
-      #mu1 = np.array(mu)
-      #mu1[mu1 < 0] = 0
-      #mu_square = mu1 * mu1 * mu1
-      clusters, centroids = kmeans1d.cluster(mu, 2)
+      # Cluster with mu_square instead of with mu to get even more precise results!
+      # Still catch 40% of positives on avg
+      mu1 = np.array(mu)
+      mu1[mu1 < 0] = 0
+      mu_square = mu1 * mu1
+      #mu_square = mu
+      clusters, centroids = kmeans1d.cluster(mu_square, 2)
       mu = mu * np.array(clusters)
 
     x_est = np.zeros(n)
