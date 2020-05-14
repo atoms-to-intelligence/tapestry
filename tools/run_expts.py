@@ -60,7 +60,7 @@ def run_stats_for_these_matrices1():
   #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
   #d_ranges = [list(range(1, 6)) for label in labels]
 
-  num_expts = 100
+  num_expts = 1000
   #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',
   #    'combined_COMP_l1ls_cv']
   #algos = ['COMP', 'combined_COMP_SBL', 'combined_COMP_SBL_clustered',

@@ -5,6 +5,7 @@ if __name__=='__main__':
 from matrix_gen import sts
 from core.cs import *
 from utils.pickle_manager import stats_manager
+from utils import stats_helper
 
 import json
 import pandas as pd
@@ -96,6 +97,7 @@ class CSExpts:
     self.total_rmse = 0
     self.min_precision = np.inf
     self.all_precisions = []
+    self.all_recalls = []
     self.single_expts = []
 
   # manage stats for a single expt
@@ -177,11 +179,16 @@ class CSExpts:
     self.wrongly_undetected += wrongly_undetected
     self.total_score += score
     self.total_rmse += rmse
+
     # Compute minimum precision
     precision = tp / (tp + fp)
     self.all_precisions.append(precision)
     if precision < self.min_precision:
       self.min_precision = precision
+
+    # Compute per-expt recall
+    recall = tp / (tp + fn)
+    self.all_recalls.append(recall)
 
   def print_stats(self, num_expts, header=False):
     preds = self.total_tp + self.total_fp
@@ -574,10 +581,11 @@ def print_expts(expts, num_expts, t):
       expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep,
       expt.total_fp / num_expts, expt.total_fn / num_expts, expt.rmse, expt.min_precision))
     expt.all_precisions = sorted(expt.all_precisions)
-    print('All Precisions:', expt.all_precisions)
-    lower = expt.all_precisions[5]
-    upper = expt.all_precisions[-1]
-    print('95% Confidence Interval: ', (lower, upper))
+    print('All Precisions:', stats_helper.get_sorted_indices(expt.all_precisions))
+    print('All Recalls:', stats_helper.get_sorted_indices(expt.all_recalls))
+    #lower = expt.all_precisions[5]
+    #upper = expt.all_precisions[-1]
+    #print('95% Confidence Interval: ', (lower, upper))
     #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
     #  expt.recall, total_tests, expt.determined, expt.overdetermined))
     #print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
