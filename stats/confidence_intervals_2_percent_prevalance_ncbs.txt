@@ -1,0 +1,56 @@
+Matrix: 27x117, d = 5
+Algo: combined_COMP_SBL
+{
+  "recall": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "specificity": [
+    0.973,
+    0.967,
+    0.978
+  ]
+}
+Matrix: 48x320, d = 11
+Algo: combined_COMP_SBL
+{
+  "recall": [
+    0.995,
+    0.982,
+    1.0
+  ],
+  "specificity": [
+    0.937,
+    0.930,
+    0.942
+  ]
+}
+Matrix: 75x500, d = 17
+Algo: combined_COMP_SBL
+{
+  "recall": [
+    0.976,
+    0.962,
+    0.991
+  ],
+  "specificity": [
+    0.940,
+    0.933,
+    0.946
+  ]
+}
+Matrix: 192x1024, d = 30
+Algo: combined_COMP_SBL
+{
+  "recall": [
+    0.985,
+    0.975,
+    0.992
+  ],
+  "specificity": [
+    0.977,
+    0.976,
+    0.979
+  ]
+}
