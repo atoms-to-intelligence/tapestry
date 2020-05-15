@@ -24,6 +24,7 @@ https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
 * [Running Algorithms on Lab Experiments](#running-algorithms-on-lab-experiments)
   * [Experimental data location](#experimental-data-location)
 * [Running Tests](#running-tests)
+* [Experimental Results](#experimental-results)
 * [Advanced Behaviour / Details](#advanced-behaviour--details)
   * [Detailed Statistics](#detailed-statistics)
   * [Other directory Layout](#other-directory-layout)
@@ -437,6 +438,61 @@ tests are run on it.
 
 Some smaller tests are also present in various files, such as `inbuilt_algos/test_sbl.py`,
 `core/test_get_test_results.py` etc.
+
+# Experimental Results
+
+`tools/get_experimental_results.py` takes 2 command-line arguments: name of the sensing
+matrix and the pata to file containing cycle time values. This file should be a text
+file containing one cycle time value per line. The script also takes an optional
+argument n which specifies that first 'n' columns of the matrix are to be considered.
+Running this script as described above prints the test result from each decoding
+algorithm in the `core/config.app_algos` list.
+
+This is the usage of the script:
+```shell
+/group-test# python3 tools/get_experimental_results.py --matrix optimized_M_30_120_kirkman --cycle-times data/harvard/harvard_30_120.txt
+```
+or
+```shell
+/group-test# python3 tools/get_experimental_results.py -M optimized_M_30_120_kirkman --ct data/harvard/harvard_30_120.txt -n 120
+```
+
+This should ouput the following result:
+```shell
+
+Results using Algorithm: COMP
+
+Number of Samples : 120
+Positive Samples: 20, 41, 114 
+Remaining samples are negative
+Viral loads not estimated by this algorithm
+
+=========================================
+
+Results using Algorithm: SBL
+
+Number of Samples : 120
+Positive Samples: 20, 41, 114 
+Remaining samples are negative
+Estimated viral loads: 
+20 : 0.828,
+41 : 0.004,
+114 : 0.873
+
+=========================================
+
+Results using Algorithm: NNOMP
+
+Number of Samples : 120
+Positive Samples: 20, 41, 114 
+Remaining samples are negative
+Estimated viral loads: 
+20 : 0.833,
+114 : 0.878
+
+=========================================
+
+```
 
 # Advanced Behaviour / Details
 
