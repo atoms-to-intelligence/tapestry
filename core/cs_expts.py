@@ -183,13 +183,19 @@ class CSExpts:
     self.total_rmse += rmse
 
     # Compute minimum precision
-    precision = tp / (tp + fp)
+    if tp + fp != 0:
+      precision = tp / (tp + fp)
+    else:
+      precision = 1.
     self.all_precisions.append(precision)
     if precision < self.min_precision:
       self.min_precision = precision
 
     # Compute per-expt recall
-    recall = tp / (tp + fn)
+    if tp + fn != 0:
+      recall = tp / (tp + fn)
+    else:
+      recall = 1.
     self.all_recalls.append(recall)
 
     # Compute per-expt false pos
@@ -232,7 +238,7 @@ class CSExpts:
         'total fn = ', self.total_fn, 'unconfident negs = ',
         self.uncon_negs, 'determined = ', self.determined,\
             'overdetermined = ', self.overdetermined)
-    print('avg fp = %.3f' % avg_fp, 'avg fn = %.3f' % avg_fn)
+    print('avg fp = %.3f' % self.avg_fp, 'avg fn = %.3f' % self.avg_fn)
 
   def return_stats(self, num_expts):
     #precision = self.total_tp / float(self.total_tp + self.total_fp)
