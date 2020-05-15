@@ -10,6 +10,7 @@ from inbuilt_algos import nnompcv
 from inbuilt_algos import sbl
 from inbuilt_algos import l1ls
 import algos
+from utils import output_validation_utils
 
 from core import config
 
@@ -110,6 +111,7 @@ class CS(COMP):
 
     prob1 = None
     prob0 = None
+    answer_high_precision = np.zeros(self.n)
     if algo == 'lasso':
       #lasso = LassoLars(alpha=self.l)
       lasso = Lasso(alpha=self.l, max_iter=10000)
@@ -155,28 +157,28 @@ class CS(COMP):
       answer, infected, prob1, prob0, determined, overdetermined =\
           self.decode_comp_combined(results, secondary_algo,
           compute_stats=compute_stats)
+    elif algo.startswith('precise_SBL_'):
+      # e.g. combined_SBL_clustered_combined_COMP_SBL
+      # e.g. combined_SBL_clustered_COMP
+      l = len('precise_SBL_')
+      primary_algo = 'combined_COMP_SBL_clustered'
+      secondary_algo = algo[l:]
+      assert secondary_algo not in ['SBL_clustered', 'combined_COMP_SBL_clustered']
+
+      y = results
+      # First run SBL_clustered to get precise results
+      # Then run secondary algorithm to get high recall results
+      # "answer" is those from high recall ones. 
+      # we'll create "answer_precise_SBL" and "infected_precise_SBL". 
+      # infected_dd will become union of infected_dd and infected_precise_SBL
+      # Hence surep will contain results from SBL_clustered as well.
+      answer_high_precision = self.get_high_precision_algo_answer(primary_algo, y)
+      answer = self.get_high_recall_algo_answer(secondary_algo, y)
     elif algo == 'SBL':
       A = self.M.T
       y = results
 
-      tau = 0. #0.01 * np.min(y/np.sum(A, axis=-1))
-
-      y_max = np.max(y)
-      assert y_max >= 0
-      if y_max > 0:
-        A = A / y_max
-        y = y / y_max
-
-        pos_y = y[y>0.]
-        pos_A = A[y>0.]
-        sigval = np.std(pos_y/np.sum(pos_A, axis=-1))
-      else:
-        # sigma should be 0 but this will mess with the algo. Set it to some small
-        # value
-        sigval = 0.1
-      y = np.array(y, dtype=np.float64)
-      A = np.array(A, dtype=np.float64)
-      answer = sbl.sbl(A, y, sigval, tau)
+      answer = sbl.sbl(A, y)
     elif algo == 'l1ls':
       A = self.M.T
       y = results
@@ -227,9 +229,17 @@ class CS(COMP):
     # detect something that should definitely have been detected
     wrongly_undetected = np.sum(infected_dd - infected_dd * infected)
 
+    # Add infections from high precision algo
+    infected_high_precision = (answer_high_precision > 0).astype(np.int32)
+    # For ease of implementation we add above to infected_dd. This will become
+    # sure_list later
+    infected_dd = (infected_dd + infected_high_precision > 0).astype(np.int32)
     infected = (infected + infected_dd > 0).astype(np.int32)
 
     if compute_stats:
+      # re-compute surep from above infected_dd
+      surep = np.sum(infected_dd)
+
       # Compute stats
       tpos = (infected * self.arr)
       fneg = (1 - infected) * self.arr
@@ -258,6 +268,30 @@ class CS(COMP):
     return answer, infected, infected_dd, prob1, prob0, score, tp, fp, fn,\
         num_unconfident_negatives, determined, overdetermined, surep,\
         unsurep, wrongly_undetected, num_infected_in_test
+
+  def get_high_precision_algo_answer(self, algo, y):
+    assert algo == 'combined_COMP_SBL_clustered'
+    x, infected, infected_dd, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\
+        overdetermined, surep, unsurep, wrongly_undetected,\
+        num_infected_in_test = self.decode_lasso(y, algo, prefer_recall=False,
+            compute_stats=False)
+    # ignore everything and just send x
+    return x
+
+  def get_high_recall_algo_answer(self, algo, y):
+    if algo == 'COMP':
+      bool_y = (y > 0).astype(np.int32)
+      infected, infected_dd, score, tp, fp, fn, surep, unsurep,\
+          num_infected_in_test = \
+          self.decode_comp_new(bool_y, compute_stats=False)
+      x = np.zeros(self.n)
+      return infected
+    else:
+      x, infected, infected_dd, prob1, prob0, score, tp, fp, fn, uncon_negs, determined,\
+          overdetermined, surep, unsurep, wrongly_undetected,\
+          num_infected_in_test = self.decode_lasso(y, algo, prefer_recall=False,
+              compute_stats=False)
+      return x
 
   def decode_lasso_for_cv(self, train_Ms, train_ys, test_Ms, test_ys,
       algo='lasso', l=None, sigma=None):
@@ -448,8 +482,8 @@ class CS(COMP):
     assert self.mr == None
 
     bool_y = (y > 0).astype(np.int32)
-    infected_comp, infected_dd, _score, _tp, _fp, _fn, surep, unsurep, _ =\
-        self.decode_comp_new(bool_y, compute_stats)
+    infected_comp, infected_dd, _score, _tp, _fp, _fn, surep, unsurep, \
+        num_infected_in_test = self.decode_comp_new(bool_y, compute_stats)
 
     # Find the indices of 1's above. These will be retained. Rest will be
     # discarded
@@ -460,8 +494,16 @@ class CS(COMP):
     #print('Indices of Non-zero rows:', non_zero_rows)
 
     A = self.M.T
+
+    # Compute errors
+    errors = output_validation_utils.detect_discrepancies_in_test(
+        A.shape[0], bool_y, num_infected_in_test, log=False)
+    total_errors = errors['err1'] + errors['err2']
+
     A = np.take(A, non_zero_cols, axis=1)
+    #print(f'Remaining A : {A}, {A.shape}')
     A = np.take(A, non_zero_rows, axis=0)
+    #print(f'Remaining A : {A}, {A.shape}')
     #print('y: ', y)
     #print('Non-zero rows:', non_zero_rows)
     #print('Non-zero rows len:', non_zero_rows.shape)
@@ -483,11 +525,20 @@ class CS(COMP):
     d = self.d
     s = self.s
     l = 0.1
+    #print(f'non_zero_cols: {non_zero_cols}')
+    #print(f'non_zero_rows: {non_zero_rows}')
+    #print(f'y: {y}')
+    #print(f' t = {t}, n = {n}')
+    #print(f'A = {A}, {A.shape}')
 
+    # In case of invalid input, we may have the case that some rows are positive
+    # but all columns are taken out. It should never happen that all rows are
+    # negative but some columns remain from output of COMP. Hence second assertion
+    # is invalid.
     if t == 0:
       assert n == 0
-    elif n == 0:
-      assert t == 0
+    #elif n == 0:
+    #  assert t == 0
 
     infected = np.zeros(self.n)
     answer = np.zeros(self.n)
@@ -495,8 +546,13 @@ class CS(COMP):
     prob0_new = np.ones(self.n)
     determined = 1
     overdetermined = 0
+
     # Calling internal algo is needed only when there is at least one infection
-    if t != 0:
+    #
+    # It is also avoided when there are any discrepancies in the test. Only COMP
+    # output is returned. Discrepancies usually happen due to spurious testing.
+    # This behaviour may change later.
+    if A.size != 0 and total_errors == 0:
       # Create another CS class to run the secondary algorithm
       # Better to set mr parameter to None since it depends on number of rows
       # and will change for this internal CS object. frac will be used instead

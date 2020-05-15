@@ -1,3 +1,4 @@
+# vim: tabstop=2 expandtab shiftwidth=2 softtabstop=8
 import sys
 sys.path.append(".")
 
@@ -15,24 +16,24 @@ if __name__ == '__main__':
   from core.get_test_results import get_result_string_from_lists
 
   n = 384
-  config.app_algo = 'SBL'
-  sure_list, unsure_list, neg_list, x = get_test_results(A, cts)
-  #print('sure_list:', sure_list)
-  #print('unsure_list:', unsure_list)
-  #print('neg_list:', neg_list)
-  #print('x:', x)
-  result_string = get_result_string_from_lists(sure_list, unsure_list,
-      neg_list, x, n)
-  print(result_string)
+  for algo in config.app_algos:
+    sure_list, unsure_list, neg_list, x = get_test_results(A, cts, algo)
+    #print('sure_list:', sure_list)
+    #print('unsure_list:', unsure_list)
+    #print('neg_list:', neg_list)
+    #print('x:', x)
+    result_string = get_result_string_from_lists(sure_list, unsure_list,
+        neg_list, x, n, algo)
+    print(result_string)
   #pos_idx, cts = read_harvard_data_cts()
   #print('Harvard data (24x60)')
   #print('Positive indicies:', pos_idx)
   #print('Cycle times:', "[", ", ".join(["%.1f" % item for item in cts]), "]")
 
-  #print('\nFake Data (16x40)\n')
-  #for i in range(10):
-  #  pos_idx, cts = get_random_fake_test_data('16x40', 'optimized_M_16_40_ncbs')
-  #  print('Positive indicies:', pos_idx)
-  #  print('Cycle times:', "[", ", ".join(["%.1f" % item for item in cts]), "]")
+  print('\nFake Data (16x40)\n')
+  for i in range(10):
+    pos_idx, cts = get_random_fake_test_data('16x40', 'optimized_M_16_40_ncbs')
+    print('Positive indicies:', pos_idx)
+    print('Cycle times:', "[", ", ".join(["%.1f" % item for item in cts]), "]")
 
 

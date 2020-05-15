@@ -143,21 +143,22 @@ def get_stats_for_kirkman_matrices():
   get_stats_for_these_matrices(sizes, labels, ds, algos)
 
 def get_stats_for_these_matrices(sizes, labels, ds, algos):
-  for size, label, d in zip(sizes, labels, ds):
-    print(f"Matrix: {size}, d = {d}")
+  for size, label, d_range in zip(sizes, labels, ds):
     for algo in algos:
-      print(f"Algo: {algo}")
-      explist = stats_manager.load(label, algo, d)
-      #print(f'size: {size}, batch len: ', len(explist))
-      combined = parse_stats_and_get_confidence_intervals(explist, k=3,
-          n_batches=120, keys=['recall', 'specificity'])
-      s = json.dumps(combined, indent=2)
-      pat = re.compile(r"\d+\.\d{4,}")
-      def mround(match):
-        return "{:.3f}".format(float(match.group()))
+      for d in d_range:
+        print(f"Matrix: {size}, Algo: {algo}, d = {d}")
+        explist = stats_manager.load(label, algo, d)[0:100]
+        #print(f'size: {size}, batch len: ', len(explist))
+        combined = parse_stats_and_get_confidence_intervals(explist, k=3,
+            n_batches=120, keys=['precision', 'recall', 'specificity', 'avg_surep', 'avg_unsurep',
+            'avg_fp', 'avg_fn'])
+        s = json.dumps(combined, indent=2)
+        pat = re.compile(r"\d+\.\d{4,}")
+        def mround(match):
+          return "{:.3f}".format(float(match.group()))
 
-      sys.stdout.write(re.sub(pat, mround, s) + '\n')
-      #print(s)
+        sys.stdout.write(re.sub(pat, mround, s) + '\n')
+        #print(s)
 
 # Migrate from using single PickleManager to a directory structure
 def migrate_stats_from_dict_to_directory():
@@ -185,8 +186,23 @@ def get_stats_2_pct_prevalance_matrices():
   algos = ['combined_COMP_SBL']
   get_stats_for_these_matrices(sizes, labels, ds, algos)
 
+def get_stats_clinical_trials_TMH():
+  labels = [
+      'optimized_M_36_180_kirkman[:, :72]',
+      'optimized_M_45_105_kirkman[:, :105]',
+      ]
+  sizes = [
+      '36x72',
+      '45x105',
+      ]
+  ds = [ [7, 9, 12], [10, 12, 15] ]
+  algos = [ 'precise_SBL_combined_COMP_SBL' ]
+  get_stats_for_these_matrices(sizes, labels, ds, algos)
+
+
 if __name__ == '__main__':
-  get_stats_2_pct_prevalance_matrices()
+  get_stats_clinical_trials_TMH()
+  #get_stats_2_pct_prevalance_matrices()
   #migrate_stats_from_dict_to_directory()
   #get_stats_for_deployed_matrices()
   #get_stats_for_kirkman_matrices()

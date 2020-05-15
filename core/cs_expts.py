@@ -5,6 +5,7 @@ if __name__=='__main__':
 from matrix_gen import sts
 from core.cs import *
 from utils.pickle_manager import stats_manager
+from utils import stats_helper
 
 import json
 import pandas as pd
@@ -94,6 +95,11 @@ class CSExpts:
     self.wrongly_undetected = 0
     self.total_score = 0
     self.total_rmse = 0
+    self.min_precision = np.inf
+    self.all_precisions = []
+    self.all_recalls = []
+    self.all_fps = []
+    self.all_fns = []
     self.single_expts = []
 
   # manage stats for a single expt
@@ -176,6 +182,27 @@ class CSExpts:
     self.total_score += score
     self.total_rmse += rmse
 
+    # Compute minimum precision
+    if tp + fp != 0:
+      precision = tp / (tp + fp)
+    else:
+      precision = 1.
+    self.all_precisions.append(precision)
+    if precision < self.min_precision:
+      self.min_precision = precision
+
+    # Compute per-expt recall
+    if tp + fn != 0:
+      recall = tp / (tp + fn)
+    else:
+      recall = 1.
+    self.all_recalls.append(recall)
+
+    # Compute per-expt false pos
+    self.all_fps.append(fp)
+    # Compute per-expt false neg
+    self.all_fns.append(fn)
+
   def print_stats(self, num_expts, header=False):
     preds = self.total_tp + self.total_fp
     actual = self.total_tp + self.total_fn
@@ -193,13 +220,13 @@ class CSExpts:
       recall = self.total_tp / actual
 
     if num_expts == self.no_fp:
-      avg_fp = 0
+      self.avg_fp = 0
     else:
-      avg_fp = self.total_fp / (num_expts - self.no_fp)
+      self.avg_fp = self.total_fp / num_expts
     if num_expts == self.no_fn:
-      avg_fn = 0
+      self.avg_fn = 0
     else:
-      avg_fn = self.total_fn / (num_expts - self.no_fn)
+      self.avg_fn = self.total_fn / num_expts
 
     if header:
       print('******', self.name, 'Statistics', '******')
@@ -211,7 +238,7 @@ class CSExpts:
         'total fn = ', self.total_fn, 'unconfident negs = ',
         self.uncon_negs, 'determined = ', self.determined,\
             'overdetermined = ', self.overdetermined)
-    print('avg fp = %.3f' % avg_fp, 'avg fn = %.3f' % avg_fn)
+    print('avg fp = %.3f' % self.avg_fp, 'avg fn = %.3f' % self.avg_fn)
 
   def return_stats(self, num_expts):
     #precision = self.total_tp / float(self.total_tp + self.total_fp)
@@ -238,6 +265,15 @@ class CSExpts:
         'no_error'      : self.no_error,
         'expts'         : num_expts,
         }
+
+    if num_expts == self.no_fp:
+      self.avg_fp = 0
+    else:
+      self.avg_fp = self.total_fp / num_expts
+    if num_expts == self.no_fn:
+      self.avg_fn = 0
+    else:
+      self.avg_fn = self.total_fn / num_expts
 
     self.preds = preds
     self.actual = actual
@@ -471,7 +507,7 @@ def run_many_parallel_expts_many_matrices(mats, mlabels, d_ranges, algos,
     t = M.shape[0]
     print(f"\nt = {t}, n = {n}, matrix = {label}\n")
     for algo, expts in zip(algos, explist):
-      print(algo)
+      print('\n' + algo + f', num_expts = {num_expts}\n')
       print_expts(expts, num_expts, t)
   #return stats
 
@@ -557,15 +593,27 @@ def run_many_parallel_expts_internal(num_expts, n, t, add_noise, matrix,
   return explist
 
 def print_expts(expts, num_expts, t):
-  print('\td\tPrecision\tRecall (Sensitivity)\tSpecificity\tsurep\tunsurep\tfalse_pos\tRMSE')
+  #print('\td\tPrecision\tRecall (Sensitivity)\tSpecificity\tsurep\tunsurep\tfp\tfn\tRMSE\tmin_precision')
+  print('\td\tPrecision\tSensitivity\tSpecificity\tsure\tundetermined\tfalse_pos\tfalse_neg\ttotal_tests')
   for expt in expts:
     if expt.precision == 0:
       total_tests = t + expt.n
     else:
       total_tests = t + expt.d / expt.precision
-    print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t\t%.2f' % (expt.d, expt.precision,
+    #print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%.1f\t%.1f\t%.1f\t%.2f\t%.3f' % (expt.d, expt.precision,
+    #  expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep,
+    #  expt.total_fp / num_expts, expt.total_fn / num_expts, expt.rmse, expt.min_precision))
+    print('\t%d\t%.3f\t\t%.3f\t\t%.3f\t\t%4.1f\t%.1f\t\t%.1f\t\t%.1f\t\t%d' % (expt.d, expt.precision,
       expt.recall, expt.specificity, expt.avg_surep, expt.avg_unsurep,
-      expt.total_fp / num_expts, expt.rmse))
+      expt.total_fp / num_expts, expt.total_fn / num_expts, expt.t + expt.avg_unsurep))
+    #print('\nAll Precisions:', stats_helper.get_sorted_indices(expt.all_precisions))
+    #print('\nAll Recalls:', stats_helper.get_sorted_indices(expt.all_recalls))
+    #print('\nAll fps:', stats_helper.get_sorted_indices(expt.all_fps, invert=True))
+    #print('\nAll fns:', stats_helper.get_sorted_indices(expt.all_fns, invert=True))
+    #print('\nfns: ', np.unique(expt.all_fns, return_counts=True), '\n')
+    #lower = expt.all_precisions[5]
+    #upper = expt.all_precisions[-1]
+    #print('95% Confidence Interval: ', (lower, upper))
     #print('\t%d\t%.3f\t\t%.3f\t%.1f\t\t%3d\t\t%3d' % (expt.d, expt.precision,
     #  expt.recall, total_tests, expt.determined, expt.overdetermined))
     #print('\t%d\t%.3f\t\t\t%.3f\t\t%.3f\t\t%4.1f\t%5.1f\t%7.1f\t%8d\t' % (expt.d, expt.precision,
@@ -792,7 +840,8 @@ def run_stats_for_these_matrices(labels, save):
   mats = [MDict[label] for label in labels]
   #d_ranges = [ list(range(1, 16)) + [20, 25, 30, 35, 40] for item  in labels]
   ts = [M.shape[0] for M in mats]
-  d_ranges = [[5, 8, 10, 12, 15, 17, 20] for t in ts] #list(range(1, 4))
+  d_ranges = [ [ 30 ] for t in ts] #list(range(1, 4))
+  #d_ranges = [[5, 8, 10, 12, 15, 17, 20] for t in ts] #list(range(1, 4))
   #d_ranges = [[ 15 ] for t in ts] #list(range(1, 4))
   #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
   #d_ranges = [list(range(1, 6)) for label in labels]
@@ -804,57 +853,4 @@ def run_stats_for_these_matrices(labels, save):
   run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
       num_expts, save)
 
-def run_stats_for_these_matrices1():
-  labels = [
-      #"optimized_M_27_117_kirkman",
-      #"optimized_M_45_330_STS",
-      #"optimized_M_48_320_kirkman",
-      #"optimized_M_60_500_kirkman",
-      #"optimized_M_60_500_kirkman",
-      #"optimized_M_63_546_kirkman",
-      #"optimized_M_69_667_kirkman",
-      "optimized_M_75_800_kirkman",
-      #"optimized_M_93_1240_kirkman",
-      #"optimized_M_192_5120_social_golfer",
-      ]
-  ns = [
-      #117,
-      #300,
-      #304,
-      #300,
-      #500,
-      #500,
-      #504,
-      #506,
-      500,
-      #1000,
-		  #1024,
-      ]
-  mats = [MDict[label][:, :n] for (label, n) in zip(labels, ns) ]
-  for i, n in enumerate(ns):
-    labels[i] = f"{labels[i]}[:, :{n}]"
-  #d_ranges = [ list(range(1, 16)) + [20, 25, 30, 35, 40] for item  in labels]
-  ts = [M.shape[0] for M in mats]
-  d_ranges = [
-      #[3, 4, 5, 7],
-      #[6, 8, 11, 13],
-      #[6, 8, 11, 13],
-      #[6, 8, 11, 13],
-      #[19, 17, 13, 10,],
-      #[19, 17, 13, 10,],
-      [19, 17, 13, 10,],
-      #[15, 20, 25, 30],
-      #[ 30, 25, 20, 15 ],
-      ] #list(range(1, 4))
-  #d_ranges = [[ 15 ] for t in ts] #list(range(1, 4))
-  #d_ranges = [ list(range(1, (t // 3) + 1)) for t in ts ] 
-  #d_ranges = [list(range(1, 6)) for label in labels]
-
-  num_expts = 20
-  #algos = ['COMP', 'SBL', 'combined_COMP_NNOMP_random_cv',
-  #    'combined_COMP_l1ls_cv']
-  algos = ['COMP', 'combined_COMP_SBL', ] #'combined_COMP_NNOMP_random_cv']
-  save = True
-  run_many_parallel_expts_many_matrices(mats, labels, d_ranges, algos,
-      num_expts, save)
 

@@ -134,11 +134,11 @@ for kk in range(nsignals):
   #sigval = 0.01 * np.median(Ax[Ax>0])
   #y = Ax + np.random.normal(0, sigval, m)
   y = Ax * (1 + np.random.normal(0, 0.01, m))
-  sigval = 0.01 * np.linalg.norm(y, 2)
+  #sigval = 0.01 * np.linalg.norm(y, 2)
 
-  tau = 0.01*min(x[x>0])
+  #tau = 0.01*min(x[x>0])
 
-  x_est = sbl.sbl(A, y, sigval, tau)
+  x_est = sbl.sbl(A, y, thresholding_method='cluster')
 
   tp = np.count_nonzero(np.bitwise_and(x_est>0, x>0))
   pp = np.count_nonzero(x_est>0)
