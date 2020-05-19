@@ -30,6 +30,5 @@ jobs:
         python inbuilt_algos/test/test_sbl.py
         python test/test_all.py
         python utils/test/test_app_utils.py
-        python utils/test/test_experimental_data_manager.py
         python utils/test/test_matrix_utils.py
         python utils/test/test_pickle_manager.py
