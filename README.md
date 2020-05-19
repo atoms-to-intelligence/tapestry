@@ -1,6 +1,10 @@
 # Compressed Sensing Algorithms for Pooled Sampling and Testing using qPCR 
-Code for the algorithms used in the following paper:
-https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
+
+Code for the algorithms used in the following papers:
+* Sabyasachi Ghosh, et al. "Tapestry: A Single-Round Smart Pooling Technique for
+COVID-19 Testing." medRxiv (2020). https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
+* Sabyasachi Ghosh, et al. "A Compressed Sensing Approach to Group-testing for
+COVID-19 Detection." (2020).  https://arxiv.org/abs/2005.07895
 
 <!-- vim-markdown-toc GFM -->
 
@@ -23,12 +27,13 @@ https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
   * [Performing Cross-validation for your algorithm](#performing-cross-validation-for-your-algorithm)
 * [Running Algorithms on Lab Experiments](#running-algorithms-on-lab-experiments)
   * [Experimental data location](#experimental-data-location)
+  * [Detailed Instructions](#detailed-instructions)
 * [Running Tests](#running-tests)
-* [Experimental Results](#experimental-results)
 * [Advanced Behaviour / Details](#advanced-behaviour--details)
   * [Detailed Statistics](#detailed-statistics)
   * [Other directory Layout](#other-directory-layout)
   * [Core code layout](#core-code-layout)
+* [References / Acknowledgements](#references--acknowledgements)
 
 <!-- vim-markdown-toc -->
 
@@ -37,9 +42,15 @@ https://www.medrxiv.org/content/10.1101/2020.04.23.20077727v2
 Clone this repository with
 
 ```
+git clone https://github.com/atoms-to-intelligence/tapestry.git
+cd tapestry
+```
+<!--
+```
 git clone https://github.com/ssgosh/group-test
 cd group-test
 ```
+-->
 
 Python 3.6 or above must be installed on your system. The python libraries
 neeeded for running the scripts in this repo are listed in `requirements.txt`.
@@ -414,9 +425,11 @@ for the cross-validation algo to be visible to rest of the code.
 
 # Running Algorithms on Lab Experiments
 
+Please use `tools/get_experimental_results.py` to run experiments. Detailed
+instructions [here](detailed-instructions)
+
 The script `tools/run_ncbs_harvard_data.py` runs the algorithms `COMP`, `SBL`, and
-`combined_COMP_NNOMP_random_cv` on these datasets. Please modify this script
-and add any algorithms you may want to run.
+`combined_COMP_NNOMP_random_cv` on these datasets. 
 
 The file `tools/experimental_data_manager.py` contains methods which return
 data from experiments performed at Harvard. Any new experimental data will be added
@@ -430,16 +443,7 @@ data (such as `harvard`, `ncbs`). These are in various formats, and may contain 
 flourescence values for each well and cycle or cycle time thresholds for a given
 flourescence. 
 
-# Running Tests
-
-`test/test_all.py` performs various sanity checks for deployed matrices and also runs
-each deployed matrix on various algorithms. Do add your algorithm to file so that
-tests are run on it.
-
-Some smaller tests are also present in various files, such as `inbuilt_algos/test_sbl.py`,
-`core/test_get_test_results.py` etc.
-
-# Experimental Results
+## Detailed Instructions
 
 `tools/get_experimental_results.py` takes 2 command-line arguments: name of the sensing
 matrix and the pata to file containing cycle time values. This file should be a text
@@ -450,11 +454,11 @@ algorithm in the `core/config.app_algos` list.
 
 This is the usage of the script:
 ```shell
-/group-test# python3 tools/get_experimental_results.py --matrix optimized_M_30_120_kirkman --cycle-times data/harvard/harvard_30_120.txt
+# python3 tools/get_experimental_results.py --matrix optimized_M_30_120_kirkman --cycle-times data/harvard/harvard_30_120.txt
 ```
 or
 ```shell
-/group-test# python3 tools/get_experimental_results.py -M optimized_M_30_120_kirkman --ct data/harvard/harvard_30_120.txt -n 120
+# python3 tools/get_experimental_results.py -M optimized_M_30_120_kirkman --ct data/harvard/harvard_30_120.txt -n 120
 ```
 
 This should ouput the following result:
@@ -494,6 +498,15 @@ Estimated viral loads:
 
 ```
 
+# Running Tests
+
+`test/test_all.py` performs various sanity checks for deployed matrices and also runs
+each deployed matrix on various algorithms. Do add your algorithm to file so that
+tests are run on it.
+
+Some smaller tests are also present in various files, such as `inbuilt_algos/test_sbl.py`,
+`core/test_get_test_results.py` etc.
+
 # Advanced Behaviour / Details
 
 ## Detailed Statistics
@@ -522,6 +535,11 @@ pickled experiments via bootstrapping.
 ## Core code layout
 
 TBD
+
+# References / Acknowledgements
+
+* Kirkman matrices were created using the following code:
+https://github.com/arezae4/golfer
 
 <!---
 ![Python application](https://github.com/ssgosh/group-test/workflows/Python%20application/badge.svg)
