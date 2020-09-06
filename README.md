@@ -1,4 +1,4 @@
-# Compressed Sensing Algorithms for Pooled Sampling and Testing using qPCR 
+# Compressed Sensing Algorithms for Sample Pooling and Testing using qPCR 
 
 Code for the algorithms used in the following papers:
 * Sabyasachi Ghosh, et al. "Tapestry: A Single-Round Smart Pooling Technique for
