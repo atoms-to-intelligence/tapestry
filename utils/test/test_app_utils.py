@@ -44,19 +44,7 @@ if __name__ == '__main__':
       print("x:", x)
 
 
-  def harvard_90_1140_test():
-    data_file = os.path.join(config.data_dir, 'harvard', "harvard_90_1140.txt") 
-    cts = read_standard_cts(data_file)
-    M = optimized_M_90_1140_kirkman
-    for algo in config.app_algos:
-      print(algo)
-      sure_list, unsure_list, neg_list, x = get_test_results(M, cts, algo)
-      print("Sure list:", sure_list)
-      print("Unsure list:", unsure_list)
-      print("x:", x)
-
   run_tests()
   harvard_30_120_test()
-  harvard_90_1140_test()
 
 
