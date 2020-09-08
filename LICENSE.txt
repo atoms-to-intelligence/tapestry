@@ -1,0 +1,26 @@
+TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+Effective from September 8, 2020.
+   
+
+
+A.	The software related to “Compressed Sensing Algorithms for Sample Pooling and Testing using qPCR” (“Software”) has been created and experimentally validated jointly by researchers at Indian Institute of Technology Bombay, NCBS Bangalore, and InStem Bangalore (collectively, “Owners”) as part of a collaborative project.
+
+
+B.	COVID-19 is a global public health emergency and the Owners are releasing this Software (“Release”) for use in COVID-19 testing. Any person or entity may use the Software to build products for COVID-19 testing subject to the following terms and conditions:  
+
+	1.	Permission is hereby granted, free of charge, to any person obtaining a copy of this Software, to deal in the Software, including the rights to use, copy, modify, merge, make derivative works, publish, and/or distribute, copies of the Software  for Covid-19 testing (“Licensed Purpose”).
+
+	2.	The copyright notice below shall be included in all copies or substantial portions of the Software:
+
+		Copyright © 2020 Indian Institute of Technology Bombay. 
+
+	3.	All rights are reserved for use of the Software for any purpose other than the Licensed Purpose in Section 1.
+
+	4.	Use, reproduction and/or distribution of any other intellectual property, other than the Software, including rights in patents, trade secrets or other proprietary information in the above said project, for any purpose will be based on explicit written permission from the Owners.  
+
+	5.	The Release herein does not limit the Owners’ rights to pursue and enforce intellectual property protection for inventions, devices, systems, or know-how associated with the “‘Compressed Sensing Algorithms for Sample Pooling and Testing using qPCR.” 
+
+	6.	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE (E.G. THE LICENSED PURPOSE) AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT OWNERS OF THE SOFTWARE, INDIVIDUALLY OR COLLECTIVELY, BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
